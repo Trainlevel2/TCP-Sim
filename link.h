@@ -15,6 +15,7 @@ class link {
   display();
 
  private:
+  vector<packet> buffer();
   int transmitDirection = -1; //-1 for not set, 0 for reverse, 1 for forward
   int currentThroughput = -1; //the amount of packets going through
   int maxThroughput = -1; // maximum data that can go through the packet

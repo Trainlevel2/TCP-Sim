@@ -16,10 +16,14 @@ using namespace std;
   }  
   
   // Displays the packet for testing purposes
-  packet::display(){
+  link::display(){
 	cout << "Link display:" << endl;
 	cout << "The transmit direction is:\t" << transmitDirection << endl;
 	cout << "The current throughput is:\t" << currentThroughput << endl;
 	cout << "The maximum throughput is:\t" << maxThroughput << endl;
 	cout << "The link goes from " << *src << " to " << *dst << endl;
+	cout << "The link's buffer going into the router contains the following packets: " << endl;
+	for(int i = 0; i < buffer.size(); i++){
+		buffer[i].display();
+	}
   }
