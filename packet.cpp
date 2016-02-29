@@ -5,20 +5,20 @@
 using namespace std;
 #include "packet.h"
 
-  // The packet constructor initializes the packet with set information of data and destination. 
-  packet::packet(int dat, Router* src, Router* dst){
+// The packet constructor initializes the packet with set information of data and destination. 
+packet::packet(int dat, Router* src, Router* dst){
 	data = dat;
 	source = src;
 	destination = dst;
 	timestamp = getTime();	//HOW DO I GET THE TIME OF THE SIMULATION???
-  }
-  
-  
-  // Displays the packet for testing purposes
-  packet::display(){
+}
+
+
+// Displays the packet for testing purposes
+packet::display(){
 	cout << "Packet display:" << endl;
 	cout << "data: \t" << data << endl;
 	cout << "destination: \t" << *destination << endl;
 	cout << "source: \t" << *source << endl;
 	cout << "timestamp: \t" << timestamp << endl;
-  }
+}
