@@ -1,4 +1,3 @@
-
 #ifndef _LINK_H
 #define _LINK_H
 
@@ -9,18 +8,18 @@
 class link {
 
 	public:
-		link(int src_ip, int dest_ip, int bitrate);
-
+		// The link constructor initializes the link with set information of data and destination.
+		link::link(flow f, int maxT, node* src, node* dest);
 		int sendPacket(packet* pkt);
 		packet* getPacket();
-
+		void display();
 	private:
-		int src_ip;
-		int dest_ip;
+		node* src = nullptr;
+		node* dest = nullptr;
 		int bitrate;
-
+		int maxThroughput = -1; // maximum data that can go through the packet
 		//packet buffer
-		queue<packet*> buffer;
+		vector<packet*> buffer;
 };
 
 #endif //_PACKET_H
