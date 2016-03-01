@@ -6,25 +6,29 @@ using namespace std;
 #include "link.h"
 
 // The packet constructor initializes the packet with set information of data and destination. 
-link::link(flow f, int maxT, node* src, node* dest){
-	flow = f;
-	maxThroughput = maxT; 
-	source = source;
-	destination = dest; 
+link::link(int maxT, int buff, node* source, node* destination);{
+	maxThroughput = maxT;
+	src = source;
+	dest = destination; 
+	buffsiz = buff;
 }  
 
-packet* link::getPacket(){
+packet* link::popPacket(){
 	buffer.pop();
 	return buffer.front();
 }
 
-void sendPacket(packet* pkt){
-	buffer.push(pkt);
-
+int link::pushPacket(packet* pkt){
+	if (buffer.size()<buffsiz) {
+		buffer.push(pkt);
+	}
+	else if (buffer.size()==buffsiz) {
+		delete pkt;
+	}
 }
 
 // Displays the packet for testing purposes
-link::display(){
+void link::display(){
 cout << "Link display:" << endl;
 cout << "Flow:\t" << flow << endl;
 cout << "The maximum throughput is:\t" << maxThroughput << endl;

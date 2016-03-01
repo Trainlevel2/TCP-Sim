@@ -1,4 +1,6 @@
 priority_queue<event> q; //sorted by time
+//each event has a time associated with it, and events occur at the hosts.
+
 array<link> link;
 array<router> router;
 

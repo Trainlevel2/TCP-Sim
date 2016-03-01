@@ -6,10 +6,10 @@ using namespace std;
 #include "packet.h"
 
 // The packet constructor initializes the packet with set information of data and destination. 
-packet::packet(int dat, Router* src, Router* dst){
+packet::packet(int dat, node* source, node* destination) {
 	data = dat;
-	source = src;
-	destination = dst;
+	src = source;
+	dest = destination;
 	timestamp = getTime();	//HOW DO I GET THE TIME OF THE SIMULATION???
 }
 
