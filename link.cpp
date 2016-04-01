@@ -28,6 +28,7 @@ int link::pushPacket(packet* pkt){
 	else if (buffer.size()==buffsiz) {
 		delete pkt;
 	}
+	return 0;
 }
 
 // Displays the packet for testing purposes
@@ -37,6 +38,7 @@ void link::display(){
 	cout << "The maximum throughput is:\t" << maxThroughput << endl;
 	cout << "The link goes from " << src->toString() << " to " << dest->toString() << endl;
 	cout << "The link's buffer going into the router contains the following packets: " << endl;
-	for(int i = 0; i < buffer.size(); i++){
+	for (int i = 0; i < buffer.size(); i++) {
 		buffer[i]->display();
+	}
 }

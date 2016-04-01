@@ -1,6 +1,7 @@
 #ifndef _ROUTER_H
 #define _ROUTER_H
 
+#include <vector>
 using namespace std;
 #include "node.h"
 

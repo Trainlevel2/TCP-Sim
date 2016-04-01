@@ -1,7 +1,7 @@
 #ifndef _HOST_H
 #define _HOST_H
 #include "packet.h"
-#include "link.h"
+class link;
 
 
 //host is very different from router -> not a node

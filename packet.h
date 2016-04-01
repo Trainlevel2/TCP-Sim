@@ -3,6 +3,7 @@
 
 #ifndef _PACKET_H
 #define _PACKET_H
+class node;
 
 class packet {
 

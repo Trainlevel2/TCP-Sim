@@ -13,7 +13,7 @@ packet* node::recievePacket(link* link){
 	return NULL;
 }
 
-void sendPacket(host* dest, int size){
+void node::sendPacket(host* dest, int size){
 	return;
 }
 

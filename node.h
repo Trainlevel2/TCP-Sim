@@ -2,8 +2,9 @@
 #define _NODE_H
 
 #include <string>
-#include "link.h"
 #include "packet.h"
+#include "host.h"
+class link;
 class node {
 
 	public:
