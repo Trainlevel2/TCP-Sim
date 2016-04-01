@@ -3,6 +3,7 @@
 
 #include "packet.h"
 #include "flow.h"
+#include "node.h"
 #include <queue>
 
 /*

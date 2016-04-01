@@ -1,4 +1,5 @@
 using namespace std;
+#include "host.h"
 #include "link.h"
 #include <iostream>
 #include <fstream>
@@ -7,36 +8,38 @@ using namespace std;
 #include <cstdlib>
 
 // The packet constructor initializes the packet with set information of data and destination. 
-host::host(int ip,link* link_ptr) {
+host::host(int ip, link* link_ptr) {
 	ip_addr = ip;
-	link = link_ptr;
+	this->link_ptr = link_ptr;
 }
 
-packet* host::recievePacket(link* link);
-{ 	
-	return link.getPacket();
-
+void host::recievePacket(packet* pptr)
+{
+	//TODO: send ACK to flow
+	//return lptr->getPacket();
 }
 
-int host::sendPacket(link* link, packet* pkt, int dest_ip)
+void host::sendPacket(host* dest, int size)
 {
 
 	//choose link
 	//push packet to buffer of chosen link
-	chooseLink().sendPacket(obtainPacket());
+	//chooseLink().sendPacket(obtainPacket());
+	//only one link for hosts
 	
+	//TODO: create packet + push to link
 }
 
-packet* obtainPacket()
+packet* host::obtainPacket()
 {
-	
+	return NULL;
 }
-
+/*
 link* chooseLink()
 {
 	
 }
-
+*/
 
 
 

@@ -1,9 +1,10 @@
 #ifndef _FLOW_H
 #define _FLOW_H
-
+#include "host.h"
 
 /*
-	Every flow points to a link, which specifies their source and destination address. 
+	Every flow is an abstracted stream of data which only 
+	controls what size and when packets are sent
 	
 	The flow generates packets at a rate controlled by the
 	congestion control algorithm defined for that flow. 
@@ -18,13 +19,16 @@
 class flow {
 
 	public:
-		//flow direction
-		//1 = link.src -> link.dest
-		//-1= link.dest -> link.src
-		//0 = no flow
-		int direction;
-		link* link;
-		int bitrate = 0;
+		host* source;
+		host* dest;
+		int data;
+		int state; //0=start, 1=searchMax
+		int lastSent;
+		flow(host* source, host* dest, int data);
+	private:
+		void searchMax(int size);
+		void receiveAck();
+		void timeoutAck();
 		
 };
 
