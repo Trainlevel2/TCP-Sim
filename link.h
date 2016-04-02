@@ -2,9 +2,9 @@
 #define _LINK_H
 
 #include "packet.h"
-#include "flow.h"
+#include "node.h"
 #include <queue>
-
+class flow;
 /*
 	Links connect hosts and routers, and carry packets from one end to the other. 
 	Every link has a specified capacity in bits per second.

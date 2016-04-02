@@ -3,6 +3,7 @@
 
 #ifndef _PACKET_H
 #define _PACKET_H
+class node;
 
 class packet {
 
@@ -13,7 +14,7 @@ class packet {
 		packet(int dat, node* src, node* dst);
 
 		// Displays the packet for testing purposes
-		display();
+		void display();
 
 	private:
 		int data = -1;
