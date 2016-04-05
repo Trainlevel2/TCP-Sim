@@ -1,6 +1,6 @@
 Router
 	Functions:
-		Router - the constructor creates the Router object, and initializes all data shown in “Data Structures”
+		Router - constructor
 		getLinks - retrieves all links connected to the router
 		chooseLink - decide which link to send a given packet to given a routing algorithm. At first, we will test the network by using a random routing algorithm. Afterwards, this routing algorithm will be implemented via the routing table.
 		receivePacket - receive packet, and modify routing table and packet header information accordingly.

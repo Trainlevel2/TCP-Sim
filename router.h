@@ -2,30 +2,40 @@
 #define _ROUTER_H
 
 #include <vector>
-using namespace std;
+#include <queue>
 #include "node.h"
+#include "packet.h"
+#include "link.h"
+using namespace std;
 
 
 class router: public node {
+	private:
+
+		class outQueue {
+			public:
+				queue<packet*> outQueue;
+				link* lptr;
+		};
+
+		vector<outQueue> qVec;
+
 
 	public:
 		int ip_addr;
-		//specify host ip
 		router(int ip, vector<link*>* link_vector);
+		//every link connected to a router is associated with an output queue.
 		
-		//which link are we recieving the packet from?
-		void recievePacket(packet* pptr);
+		queue<packet*>* getQueue(link* lptr);
+
+		packet* recievePacket(packet* pptr,link* lptr);
+
+		link* chooseLink(packet* pptr);
 		
-		//which link are we sending through?
-		//which packet are we sending?
-		//what is the destination ip?
-		//int sendPacket(link* link, packet* pkt, int dest_ip);
-		void sendPacket(host* dest, int size);
+		void pushPacket(packet* pptr, link* lptr);
+		void transmitPacket(link* lptr);
 
-		link* chooseLink();
 
-	private:
-		vector<link*>* links;
 
 };
 

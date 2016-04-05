@@ -3,7 +3,9 @@
 
 #ifndef _PACKET_H
 #define _PACKET_H
-class node;
+
+#include "node.h"  
+class node;	//why is a node declared here? -kirk
 
 class packet {
 

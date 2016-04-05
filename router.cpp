@@ -1,29 +1,44 @@
 using namespace std;
 #include "router.h"
+#include <queue>
+#include <new>
 
 // The packet constructor initializes the packet with set information of data and destination. 
 router::router(int ip, vector<link*>* link_vector){
 	ip_addr = ip;
-	links = link_vector;
+	qVec.resize(link_vector->size());
+	for(int i=0;i<qVec.size();i++){
+		qVec[i].lptr = (*link_vector)[i];
+	}
 }
 
 
-void router::recievePacket(packet* pptr)
-{ 	
-	//TODO
-	//return link.getPacket();
+packet* recievePacket(link* lptr){
+	return lptr->currentPkt;
 }
 
-//int host::sendPacket(link* link, packet* pkt, int dest_ip)
-void router::sendPacket(host* dest, int size){
-	//TODO
+queue<packet*>* getQueue(link* lptr){
+	for(int i=0;i<qVec.size();i++){
+		if(qVec[i].lptr == lptr)
+		{
+			return &(qVec[i].outQueue);
+		}
+	}
+}
 
-	//get data from a file
-	
-	//break file up into packets
+void pushPacket(packet* pptr, link* lptr){
+	getQueue(lptr)->push(pptr);
+}
 
-	//choose link
-	
-	//push packet to buffer of chosen link
-	
+
+void transmitPacket(link* lptr){
+	getQueue(lptr)->pop();
+}
+
+
+link* chooseLink(packet* pptr){
+	//loop through routing table
+	//match pptr->dest
+	//exctract appropriate link
+
 }
