@@ -17,9 +17,9 @@ class packet {
 
 		// Displays the packet for testing purposes
 		void display();
+		int data = -1;
 
 	private:
-		int data = -1;
 		int timestamp = -1; // Time of birth for the packet
 		node* src = nullptr; // Packet birthplace
 		node* dest = nullptr; // Destiny determines that the packet must go here to rest
