@@ -27,7 +27,7 @@ class flow {
 		flow(host* source, host* dest, int data);
 	private:
 		void searchMax(int size);
-		void receiveAck();
+		void receiveAck(packet p);
 		void timeoutAck();
 		
 };
