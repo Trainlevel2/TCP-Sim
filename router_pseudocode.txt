@@ -1,3 +1,0 @@
-void sendPacket(link* lptr, packet* pptr){
-	this.findQueue(link* lptr, )
-}

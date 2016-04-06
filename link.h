@@ -33,6 +33,8 @@ class link {
 		int id;
 
 		//propagation of current packet
+		//this function should modify the current packet value
+		//after propagation delay
 		void propagate(packet* pptr);
 		void tpropagate();
 		packet* currentPkt; //CURRENT packet being transmitted on the link

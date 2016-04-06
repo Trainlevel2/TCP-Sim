@@ -4,6 +4,7 @@
 //importing libraries
 #include <iostream>
 #include <cstdio>
+#include <string>
 using namespace std;
 #include "link.h"
 #include "node.h"
@@ -14,6 +15,7 @@ link::link(int maxT, int id, node* source, node* destination){
 	maxThroughput = maxT;
 	src = source;
 	dest = destination;
+<<<<<<< HEAD
 	//char buffer[50];
 	//int n = sprintf(buffer,"%d..%d",src->ip_addr,dest->ip_addr);
 	//printf("The id of this link is [%s], which is %d characters long",buffer,n);
@@ -25,6 +27,23 @@ void link::propagate(packet* pptr){
 	currentPkt = pptr;
 	pushEvent("LINK_0_TRANSMIT_PACKET", maxThroughput / pptr->data);
 	//q.push(pptr, maxThroughput/pptr->data);
+=======
+	
+	char buffer[50];
+	int n = sprintf(buffer,"%d..%d",src->ip_addr,dest->ip_addr);
+	printf("The id of this link is [%s], which is %d characters long",buffer,n);
+	id = buffer;
+	//buffsiz = buff;
+}
+
+
+void propagate(packet* pptr){
+	string s = ""<<pptr;
+	q.push(s, bitrate/data);
+	//after propagation
+	//currentPkt must = pptr.
+	currentPkt = pptr;
+>>>>>>> 8442b7e42fa648bddcddd49869630f63ec4a8301
 }
 
 void link::tpropagate() {
