@@ -21,6 +21,10 @@ link::link(int maxT, int buff, node* source, node* destination){
 	//buffsiz = buff;
 }
 
+void propagate(packet* pptr){
+	timeheap.push(pptr, bitrate/data);
+}
+
 /*
 	packet* link::popPacket(){
 		buffer.pop_back();
