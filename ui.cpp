@@ -27,6 +27,11 @@ void linkRouters()
 	//
 }
 
+// Run through and record data on the Network
+// Implement flows
+void SimulateNetwork(){
+	
+}
 
 int main(int argc, char *argv[])
 {
@@ -49,10 +54,11 @@ int main(int argc, char *argv[])
 			addRouter();
 		else if(s=="c")
 			linkRouters();
-		else if(s=="d")
+		else if(s=="q")
 			s="train";
 		else
 			cout<<"Invalid Response. Enter 'a', 'b', 'c', or 'd'."<<endl;
 	}
+	SimulateNetwork();
 	return 0;
 }
