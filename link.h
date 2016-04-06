@@ -32,9 +32,7 @@ class link {
 		string toString();
 
 		//propagation of current packet
-		void propagate(packet* pptr){
-
-		}
+		void propagate(packet* pptr);
 
 	private:
 		node* src = nullptr;

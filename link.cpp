@@ -21,6 +21,10 @@ link::link(int maxT, int buff, node* source, node* destination){
 	//buffsiz = buff;
 }
 
+void propagate(packet* pptr){
+	timeheap.push(pptr, bitrate/data);
+}
+
 /*
 	packet* link::popPacket(){
 		buffer.pop_back();
@@ -50,6 +54,7 @@ string link::toString() {
 	if (from == a) {
 		s += "a";
 	}
+<<<<<<< HEAD
 	else if (from == b) {
 		s += "b";
 	}
@@ -65,3 +70,6 @@ string link::toString() {
 	//	s += buffer[i];
 	//}
 }
+=======
+}
+>>>>>>> origin/master
