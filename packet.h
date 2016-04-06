@@ -16,7 +16,7 @@ class packet {
 		packet(int dat, node* src, node* dst);
 
 		// Displays the packet for testing purposes
-		void display();
+		string toString();
 		int data = -1;
 
 	private:

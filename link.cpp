@@ -39,13 +39,29 @@ link::link(int maxT, int buff, node* source, node* destination){
 	}
 */
 
-// Displays the link for testing purposes
-void link::display(){
-	cout << "Link id: "<< id << endl;
-	cout << "Max throughput:\t" << maxThroughput << endl;
-	cout << "The link goes from " << src->toString() << " to " << dest->toString() << endl;
-	cout << "The link's buffer going into the router contains the following packets: " << endl;
-	for (int i = 0; i < buffer.size(); i++) {
-		buffer[i]->display();
+// Displays the packet for testing purposes
+string link::toString() {
+	string s = "";
+	s += "Link display:";
+	//s += "\nThe maximum throughput is:\t" + maxThroughput + endl;
+	s += "\nThe link goes from " + src->toString() + " to " + dest->toString();
+	/*
+	s += "\nTransmitting from: ";
+	if (from == a) {
+		s += "a";
 	}
+	else if (from == b) {
+		s += "b";
+	}
+	else if (from == nullptr) {
+		s += "NOT TRANSMITTING";
+	}
+	*/
+	s += "\nTransmission rate: " + maxThroughput;
+
+
+	//s += "\nThe link's buffer going into the router contains the following packets: \n";
+	//for (int i = 0; i < buffer.size(); i++) {
+	//	s += buffer[i];
+	//}
 }

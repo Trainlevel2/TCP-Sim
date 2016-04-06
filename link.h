@@ -29,7 +29,7 @@ class link {
 		link(int maxT, node* src, node* dest);
 		//int pushPacket(packet* pkt);
 		//packet* popPacket();
-		void toString();
+		string toString();
 
 		//propagation of current packet
 		void propagate(packet* pptr){
