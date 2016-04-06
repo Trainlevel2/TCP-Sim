@@ -5,6 +5,7 @@
 #include "packet.h"
 #include "host.h"
 class link;
+class host;
 class node {
 
 	public:

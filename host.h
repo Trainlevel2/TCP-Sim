@@ -4,34 +4,28 @@
 #include <vector>
 #include <queue>
 #include "node.h"
-#include "packet.h"
-#include "link.h"
 using namespace std;
+class link;
+class packet;
 
 class host{
 	
 	public:
 		int ip_addr;
 
-		host(int ip, vector<link*>* link_vector);
+		host(int ip, link* link_ptr);
 			
-		packet* receivePacket(link* lptr);	  
-		queue<packet*>* getQueue(link* lptr); 
+		packet* receivePacket();	  
+		queue<packet*>* getQueue(); 
 			
-		void pushPacket(packet* pptr, link* lptr);
-		void transmitPacket(link* lptr);
+		void pushPacket(packet* pptr);
+		void transmitPacket();
 
 	private:
 	
 		link* link_ptr;
-
-		class outQueue {
-			public:
-				queue<packet*> outQueue;
-				link* lptr;
-		};
-
-		vector<outQueue> qVec;
+		queue<packet*> outQueue;
+		vector<packet*> qVec;
 
 	
 };
