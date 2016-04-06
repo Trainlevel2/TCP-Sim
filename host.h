@@ -1,39 +1,39 @@
 #ifndef _HOST_H
 #define _HOST_H
+
+#include <vector>
+#include <queue>
+#include "node.h"
 #include "packet.h"
-class link;
+#include "link.h"
+using namespace std;
 
-
-//host is very different from router -> not a node
 class host{
 	
 	public:
 		int ip_addr;
 
-		host(int ip, link* lptr);
-
-		//which link are we recieving the packet from?
-		void recievePacket(packet* pptr);
-
-		//which link are we sending through?
-		//which packet are we sending?
-		//what is the destination ip?
-
-		//let's abstract the IP to just a host pointer
-		//only one link per host is allowed, and let the function create the packet given data size.
-		//int sendPacket(link* link, packet* pkt, int dest_ip);
-		void sendPacket(host* dest, int size);
-
-		//what does this mean?
-		//get data from a file
-		packet* obtainPacket();
-
-		//only one link in hosts
-		//pick link
-		//link* chooseLink();
+		host(int ip, vector<link*>* link_vector);
+			
+		packet* receivePacket(link* lptr);	  
+		queue<packet*>* getQueue(link* lptr); 
+			
+		void pushPacket(packet* pptr, link* lptr);
+		void transmitPacket(link* lptr);
 
 	private:
+	
 		link* link_ptr;
+
+		class outQueue {
+			public:
+				queue<packet*> outQueue;
+				link* lptr;
+		};
+
+		vector<outQueue> qVec;
+
+	
 };
 
 #endif //_HOST_H
