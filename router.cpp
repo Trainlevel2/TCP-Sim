@@ -16,16 +16,16 @@ router::router(int ip, vector<link*>* link_vector){
 }
 
 //get the packet present on a connected link.
-packet* recievePacket(link* lptr){
+packet* router::recievePacket(link* lptr) {
 	return lptr->currentPkt;
 }
 
 //get the output queue which corresponds to a connected link.
-queue<packet*>* getQueue(link* lptr){
+queue<packet*>* router::getQueue(link* lptr){
 	for(int i=0;i<qVec.size();i++){
 		if(qVec[i].lptr == lptr)
 		{
-			return &(qVec[i].outQueue);
+			return &(qVec[i].outQQ);
 		}
 	}
 }
@@ -34,7 +34,7 @@ queue<packet*>* getQueue(link* lptr){
 //if the queue is full, the packet is lost.
 //returns 0 if successful,
 //returns 1 on packet loss.
-int pushPacket(packet* pptr, link* lptr){
+int router::pushPacket(packet* pptr, link* lptr){
 	queue<packet*>* Q = getQueue(lptr);
 	if(Q->size() < maxSize)
 	{
@@ -49,7 +49,7 @@ int pushPacket(packet* pptr, link* lptr){
 }
 
 //transmit packet to a certain outbound link.
-void transmitPacket(link* lptr){
+void router::transmitPacket(link* lptr){
 	queue<packet*>* Q = getQueue(lptr);
 	//lptr->currentPkt = Q->front();
 	
@@ -60,8 +60,13 @@ void transmitPacket(link* lptr){
 }
 
 //use routing table to determine packet's outbound link
-link* chooseLink(packet* pptr){
+link* router::chooseLink(){
 	//loop through routing table
 	//match pptr->dest
 	//exctract appropriate link
+	return NULL;
+}
+
+router::outQueue::outQueue()
+{
 }

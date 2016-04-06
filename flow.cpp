@@ -14,7 +14,8 @@ flow::flow(host* source, host* dest, int data) {
 }
 
 void flow::searchMax(int size) {
-	source->sendPacket(dest, size);
+	packet p(100, NULL, NULL); //TODO: GET HOSTS
+	source->pushPacket(&p);
 	state = 1;
 }
 

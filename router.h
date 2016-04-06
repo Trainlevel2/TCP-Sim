@@ -18,7 +18,8 @@ class router: public node {
 
 		class outQueue {
 			public:
-				queue<packet*> outQueue;
+				outQueue();
+				queue<packet*> outQQ;
 				link* lptr;
 		};
 
@@ -34,10 +35,10 @@ class router: public node {
 		queue<packet*>* getQueue(link* lptr);
 
 		//get the packet present on a connected link.
-		packet* recievePacket(packet* pptr,link* lptr);
+		packet* recievePacket(link* lptr);
 
 		//use routing table to determine packet's outbound link
-		link* chooseLink(packet* pptr);
+		link* chooseLink();
 
 		//push packet to router output queue.
 		//if the queue is full, the packet is lost.
