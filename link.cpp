@@ -14,6 +14,7 @@ link::link(int maxT, int buff, node* source, node* destination){
 	maxThroughput = maxT;
 	src = source;
 	dest = destination;
+	
 	char buffer[50];
 	int n = sprintf(buffer,"%d..%d",src->ip_addr,dest->ip_addr);
 	printf("The id of this link is [%s], which is %d characters long",buffer,n);
@@ -21,8 +22,12 @@ link::link(int maxT, int buff, node* source, node* destination){
 	//buffsiz = buff;
 }
 
+
 void propagate(packet* pptr){
 	timeheap.push(pptr, bitrate/data);
+
+	//after the time has elapsed
+	currentPkt = pptr;
 }
 
 /*
