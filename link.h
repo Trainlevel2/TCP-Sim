@@ -3,6 +3,7 @@
 
 #include "packet.h"
 #include "node.h"
+#include <string>
 #include <queue>
 class flow;
 /*
@@ -24,19 +25,30 @@ class link {
 
 	public:
 		// The link constructor initializes the link with set information of data and destination.
-		link(int maxT, int buff_max, node* src, node* dest);
-		int pushPacket(packet* pkt);
-		packet* popPacket();
-		void display();
+		//link(int maxT, int buff_max, node* src, node* dest);
+		link(int maxT, int id, node* src, node* dest);
+		//int pushPacket(packet* pkt);
+		//packet* popPacket();
+		string toString();
+		int id;
+
+		//propagation of current packet
+		//this function should modify the current packet value
+		//after propagation delay
+		void propagate(packet* pptr);
+		void tpropagate();
+		packet* currentPkt; //CURRENT packet being transmitted on the link
+
 	private:
 		node* src = nullptr;
 		node* dest = nullptr;
 
-		int bitrate;
-		int maxThroughput = -1; // maximum data that can go through the packet
+		int maxThroughput = -1; 
+
 		//packet buffer
-		vector<packet*> buffer;
-		int buffsiz = 0;
+		//vector<packet*> buffer;
+		//int buffsiz = 0;
+		//vector<packet*>* buffer = nullptr;
 };
 
-#endif //_PACKET_H
+#endif //_LINK_H

@@ -3,42 +3,94 @@
 
 //importing libraries
 #include <iostream>
+#include <cstdio>
+#include <string>
 using namespace std;
 #include "link.h"
 #include "node.h"
+extern void pushEvent(string e, int elapseTime);
 
 // The packet constructor initializes the packet with set information of data and destination. 
-link::link(int maxT, int buff, node* source, node* destination){
+link::link(int maxT, int id, node* source, node* destination){
 	maxThroughput = maxT;
 	src = source;
-	dest = destination; 
-	buffsiz = buff;
+	dest = destination;
+<<<<<<< HEAD
+	//char buffer[50];
+	//int n = sprintf(buffer,"%d..%d",src->ip_addr,dest->ip_addr);
+	//printf("The id of this link is [%s], which is %d characters long",buffer,n);
+	this->id = id;
+	//buffsiz = buff;
 }
 
-packet* link::popPacket(){
-	buffer.pop_back();
-	return buffer.front();
+void link::propagate(packet* pptr){
+	currentPkt = pptr;
+	pushEvent("LINK_0_TRANSMIT_PACKET", maxThroughput / pptr->data);
+	//q.push(pptr, maxThroughput/pptr->data);
+=======
+	
+	char buffer[50];
+	int n = sprintf(buffer,"%d..%d",src->ip_addr,dest->ip_addr);
+	printf("The id of this link is [%s], which is %d characters long",buffer,n);
+	id = buffer;
+	//buffsiz = buff;
 }
 
-int link::pushPacket(packet* pkt){
-	//TODO: FIX- the buffer is based on the size of the packets, not # of packets
-	if (buffer.size()<buffsiz) {
-		buffer.push_back(pkt);
-	}
-	else if (buffer.size()==buffsiz) {
-		delete pkt;
-	}
-	return 0;
+
+void propagate(packet* pptr){
+	string s = ""<<pptr;
+	q.push(s, bitrate/data);
+	//after propagation
+	//currentPkt must = pptr.
+	currentPkt = pptr;
+>>>>>>> 8442b7e42fa648bddcddd49869630f63ec4a8301
 }
+
+void link::tpropagate() {
+	return;
+}
+/*
+	packet* link::popPacket(){
+		buffer.pop_back();
+		return buffer.front();
+	}
+
+	int link::pushPacket(packet* pkt){
+		//TODO: FIX- the buffer is based on the size of the packets, not # of packets
+		if (buffer.size()<buffsiz) {
+			buffer.push_back(pkt);
+		}
+		else if (buffer.size()==buffsiz) {
+			delete pkt;
+		}
+		return 0;
+	}
+*/
 
 // Displays the packet for testing purposes
-void link::display(){
-	cout << "Link display:" << endl;
-	//cout << "Flow:\t" << flow << endl;
-	cout << "The maximum throughput is:\t" << maxThroughput << endl;
-	cout << "The link goes from " << src->toString() << " to " << dest->toString() << endl;
-	cout << "The link's buffer going into the router contains the following packets: " << endl;
-	for (int i = 0; i < buffer.size(); i++) {
-		buffer[i]->display();
+string link::toString() {
+	string s = "";
+	s += "Link display:";
+	//s += "\nThe maximum throughput is:\t" + maxThroughput + endl;
+	s += "\nThe link goes from " + src->toString() + " to " + dest->toString();
+	/*
+	s += "\nTransmitting from: ";
+	if (from == a) {
+		s += "a";
 	}
+<<<<<<< HEAD
+	else if (from == b) {
+		s += "b";
+	}
+	else if (from == nullptr) {
+		s += "NOT TRANSMITTING";
+	}
+	*/
+	s += "\nTransmission rate: " + maxThroughput;
+
+
+	//s += "\nThe link's buffer going into the router contains the following packets: \n";
+	//for (int i = 0; i < buffer.size(); i++) {
+	//	s += buffer[i];
+	//}
 }

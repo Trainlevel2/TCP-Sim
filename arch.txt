@@ -1,6 +1,6 @@
 Router
 	Functions:
-		Router constructor
+		Router - constructor
 		getLinks - retrieves all links connected to the router
 		chooseLink - decide which link to send a given packet to given a routing algorithm. 
 			At first, we will test the network by using a random routing algorithm. 

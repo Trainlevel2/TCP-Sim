@@ -3,7 +3,9 @@
 
 #ifndef _PACKET_H
 #define _PACKET_H
-class node;
+
+#include "node.h"  
+class node;	//why is a node declared here? -kirk
 
 class packet {
 
@@ -14,10 +16,10 @@ class packet {
 		packet(int dat, node* src, node* dst);
 
 		// Displays the packet for testing purposes
-		void display();
+		string toString();
+		int data = -1;
 
 	private:
-		int data = -1;
 		int timestamp = -1; // Time of birth for the packet
 		node* src = nullptr; // Packet birthplace
 		node* dest = nullptr; // Destiny determines that the packet must go here to rest

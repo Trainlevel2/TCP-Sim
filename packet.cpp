@@ -19,10 +19,13 @@ packet::packet(int dat, node* source, node* destination) {
 
 
 // Displays the packet for testing purposes
-void packet::display(){
-	cout << "Packet display:" << endl;
-	cout << "data: \t" << data << endl;
-	cout << "destination: \t" << dest->toString() << endl;
-	cout << "source: \t" << src->toString() << endl;
-	//cout << "timestamp: \t" << timestamp << endl;
+string packet::toString() {
+	string s = "";
+	s += "Packet display:";
+	s += "\ndata: \t" + data;
+	s += "\ndestination: \t" + dest->toString();
+	s += "\nsource: \t" + src->toString();
+	s += "\n";
+	//s += "timestamp: \t"; s += timestamp; s += endl;
+	return s;
 }

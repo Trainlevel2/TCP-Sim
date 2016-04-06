@@ -1,31 +1,52 @@
+//ECE303 Project
+//Original Author: Kirk Cameron
+
+
 #ifndef _ROUTER_H
 #define _ROUTER_H
 
 #include <vector>
-using namespace std;
+#include <queue>
 #include "node.h"
+#include "packet.h"
+#include "link.h"
+using namespace std;
 
 
 class router: public node {
+	private:
+
+		class outQueue {
+			public:
+				queue<packet*> outQueue;
+				link* lptr;
+		};
+
+		vector<outQueue> qVec;
+
 
 	public:
 		int ip_addr;
-		//specify host ip
+		int maxSize; //of output packet queue
 		router(int ip, vector<link*>* link_vector);
 		
-		//which link are we recieving the packet from?
-		void recievePacket(packet* pptr);
-		
-		//which link are we sending through?
-		//which packet are we sending?
-		//what is the destination ip?
-		//int sendPacket(link* link, packet* pkt, int dest_ip);
-		void sendPacket(host* dest, int size);
+		//get the output queue which corresponds to a connected link.
+		queue<packet*>* getQueue(link* lptr);
 
-		link* chooseLink();
+		//get the packet present on a connected link.
+		packet* recievePacket(packet* pptr,link* lptr);
 
-	private:
-		vector<link*>* links;
+		//use routing table to determine packet's outbound link
+		link* chooseLink(packet* pptr);
+
+		//push packet to router output queue.
+		//if the queue is full, the packet is lost.
+		//returns 0 if successful,
+		//returns 1 on packet loss.
+		int pushPacket(packet* pptr, link* lptr);
+
+		//transmit packet to a certain outbound link.
+		void transmitPacket(link* lptr);
 
 };
 
