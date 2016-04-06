@@ -3,11 +3,12 @@
 #include <string>
 #include <queue> //for std::priority_queue
 using namespace std;
+#include "link.h"
 
 //GLOBAL VARIABLES for time management
 std::priority_queue<string> q;
 int time = 0;
-string log = "";
+string eventlog = "";
 vector<link> linkVector;
 
 // Display an ASCII View of how the network should look
@@ -46,7 +47,8 @@ void SimulateNetwork(){
 void pushEvent(string e, int elapseTime){
 	int currentTime = time;
 	int executeTime = time + elapseTime;
-	string event = (string)executeTime + "," + (string)currentTime + "," + e; //csv for simplicity
+	string event = executeTime + "," + currentTime;
+	event += "," + e; //csv for simplicity
 	q.push(event);
 }
 
@@ -54,14 +56,15 @@ void pushEvent(string e, int elapseTime){
 //Pushes data onto a log for output
 void popEvent(){
 	if(q.empty()){
-		cout << "ERROR: The event queue is empty! Cannot pop event!"
+		cout << "ERROR: The event queue is empty! Cannot pop event!";
 		return;
 	}
-	string event = q.pop();
+	string event = q.top();
+	q.pop();
 	
 	//Extract the original event message from the expanded event message
 	int find = event.find_last_of(","); //right after the last comma lies the original event message
-	string e = event.substr(lastComma+1);
+	string e = event.substr(find+1);
 	
 	//Extract the original event message's meaning
 	find = e.find("_");
@@ -75,13 +78,14 @@ void popEvent(){
 	
 	//Execute the event in the event e that was initially input into pushEvent
 	if(objectType == "LINK"){
-		int index = stoi(objectIndex)
-		if(function == "RECIEVE_PACKET"){
-			link[index].recievePacket();	
+		int index = stoi(objectIndex);
+		if (function == "TRANSMIT_PACKET"){
+			//linkVector[index].recievePacket();	
+			linkVector[index].tpropagate();
 		}
 	}
 	
-	log += endl + event; //add the event to the log
+	eventlog += "\n" + event; //add the event to the log
 }
 
 int main(int argc, char *argv[])

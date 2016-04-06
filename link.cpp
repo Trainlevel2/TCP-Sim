@@ -7,24 +7,29 @@
 using namespace std;
 #include "link.h"
 #include "node.h"
-
+extern void pushEvent(string e, int elapseTime);
 
 // The packet constructor initializes the packet with set information of data and destination. 
-link::link(int maxT, int buff, node* source, node* destination){
+link::link(int maxT, int id, node* source, node* destination){
 	maxThroughput = maxT;
 	src = source;
 	dest = destination;
-	char buffer[50];
-	int n = sprintf(buffer,"%d..%d",src->ip_addr,dest->ip_addr);
-	printf("The id of this link is [%s], which is %d characters long",buffer,n);
-	id = buffer;
+	//char buffer[50];
+	//int n = sprintf(buffer,"%d..%d",src->ip_addr,dest->ip_addr);
+	//printf("The id of this link is [%s], which is %d characters long",buffer,n);
+	this->id = id;
 	//buffsiz = buff;
 }
 
-void propagate(packet* pptr){
-	timeheap.push(pptr, bitrate/data);
+void link::propagate(packet* pptr){
+	currentPkt = pptr;
+	pushEvent("LINK_0_TRANSMIT_PACKET", maxThroughput / pptr->data);
+	//q.push(pptr, maxThroughput/pptr->data);
 }
 
+void link::tpropagate() {
+	return;
+}
 /*
 	packet* link::popPacket(){
 		buffer.pop_back();
@@ -70,6 +75,3 @@ string link::toString() {
 	//	s += buffer[i];
 	//}
 }
-=======
-}
->>>>>>> origin/master

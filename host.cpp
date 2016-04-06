@@ -22,11 +22,11 @@ host::host(int ip, vector<link*>* link_vector){
 }
 
 //Receives packet
-packet* receivePacket(link* lptr){
+packet* host::receivePacket(link* lptr){
 	return lptr->currentPkt;
 }
 
-queue<packet*>* getQueue(link* lptr){
+queue<packet*>* host::getQueue(link* lptr){
 	for(int i=0;i<qVec.size();i++){
 		if(qVec[i].lptr == lptr){
 			return &(qVec[i].outQueue);
@@ -35,10 +35,10 @@ queue<packet*>* getQueue(link* lptr){
 }
 
 //Sends packet
-void pushPacket(packet* pptr, link* lptr){
+void host::pushPacket(packet* pptr, link* lptr){
 	getQueue(lptr)->push(pptr);
 }
-void transmitPacket(link* lptr){
+void host::transmitPacket(link* lptr){
 	getQueue(lptr)->pop();
 }
 
