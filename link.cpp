@@ -4,6 +4,7 @@
 //importing libraries
 #include <iostream>
 #include <cstdio>
+#include <string>
 using namespace std;
 #include "link.h"
 #include "node.h"
@@ -24,9 +25,10 @@ link::link(int maxT, int buff, node* source, node* destination){
 
 
 void propagate(packet* pptr){
-	timeheap.push(pptr, bitrate/data);
-
-	//after the time has elapsed
+	string s = ""<<pptr;
+	q.push(s, bitrate/data);
+	//after propagation
+	//currentPkt must = pptr.
 	currentPkt = pptr;
 }
 
