@@ -10,6 +10,7 @@ flow::flow(host* source, host* dest, int data) {
 	state = 0;
 	lastSent = 16;
 	searchMax(lastSent);
+	
 }
 
 void flow::searchMax(int size) {
@@ -17,8 +18,10 @@ void flow::searchMax(int size) {
 	state = 1;
 }
 
-void flow::receiveAck() {
+void flow::receiveAck(packet* p) {
+	data -= p->data; 
 	lastSent *= 3 / 2;
+	lastSent = min(lastSent,data);
 	searchMax(lastSent);
 }
 
