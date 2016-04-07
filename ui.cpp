@@ -1,6 +1,8 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+#include <sstream>
+#include <fstream>
 #include <queue> //for std::priority_queue
 using namespace std;
 #include "link.h"
@@ -17,26 +19,27 @@ void printNetwork()
 	//
 }
 
-// Add a link from a given host/router to a new Host
-void addHost()
-{
-	//
+// Add a host
+void createHost(string hostName){
+	//implement later
+}
+
+// Add a router
+void createRouter(string routerName){
+	//implement later
 }
 
 // Add a link from a given host/router to a new Router
-void addRouter()
-{
-	//
+void createLink(string linkName, string hostA, string hostB, int a, int b, int c){
+	//implement later
 }
 
-// Add a link between two existing hosts/routers
-void linkRouters()
-{
-	//
+// Create flows
+void createFlow(string flowName, string hostA, string hostB, int a, int b){
+	//implement later
 }
 
 // Run through and record data on the Network
-// Implement flows
 void SimulateNetwork(){
 	
 }
@@ -91,28 +94,62 @@ void popEvent(){
 int main(int argc, char *argv[])
 {
 	cout<<"Welcome to the Network Simulator!"<<endl;
-	string s = "s";
-	cout<<"Enter the name of the first host:"<<endl;
-	string h1;
-	cin>>h1;
-	while(s!="train"){
-		printNetwork();
-		cout<<"What would you like to do?"<<endl;
-		cout<<"a. Add a host."<<endl;
-		cout<<"b. Add a router."<<endl;
-		cout<<"c. Link existing hosts/routers."<<endl;
-		cout<<"q. Quit."<<endl;
-		cin>>s;
-		if(s=="a")
-			addHost();
-		else if(s=="b")
-			addRouter();
-		else if(s=="c")
-			linkRouters();
-		else if(s=="q")
-			s="train";
-		else
-			cout<<"Invalid Response. Enter 'a', 'b', 'c', or 'd'."<<endl;
+	string ln, file, temp;
+	ifstream read;
+	cout<<"Input the filename: ";
+	cin>>file;
+	read.open(file.c_str());
+	while(!read.eof())
+	{
+		getline(read,ln);
+		// if(ln!="")		
+			// cout<<"reading "<<ln<<endl;
+		if(ln=="Hosts:"&&!read.eof()){
+			getline(read,ln);
+			istringstream iss(ln);
+			int numHost; iss>>numHost;
+			for(int i = 0; i<numHost&&iss; i++){
+				iss>>temp;
+				createHost(temp);
+				// cout<<"Added Host"<<endl;
+			}
+		}
+		else if(ln=="Routers:"&&!read.eof()){
+			getline(read,ln);
+			istringstream iss(ln);
+			int numRout; iss>>numRout;
+			for(int i = 0; i<numRout&&iss; i++){
+				iss>>temp;
+				createRouter(temp);
+				// cout<<"Added Router"<<endl;
+			}
+		}
+		else if(ln=="Links:"&&!read.eof()){
+			getline(read,ln);
+			istringstream iss(ln);
+			int numLink; iss>>numLink;
+			for(int i = 0; i<numLink&&iss; i++){
+				iss>>temp;
+				string h1; iss>>h1;
+				string h2; iss>>h2;
+				int a; int b; int c; iss>>a; iss>>b; iss>>c;
+				createLink(temp,h1,h2,a,b,c);
+				// cout<<"Added Link"<<endl;
+			}
+		}
+		else if(ln=="Flows:"&&!read.eof()){
+			getline(read,ln);
+			istringstream iss(ln);
+			int numFlow; iss>>numFlow;
+			for(int i = 0; i<numFlow&&iss; i++){
+				iss>>temp;
+				string h1; iss>>h1;
+				string h2; iss>>h2;
+				int a; int b; iss>>a; iss>>b;
+				createFlow(temp,h1,h2,a,b);				
+				// cout<<"Added Flow"<<endl;
+			}
+		}
 	}
 	SimulateNetwork();
 	return 0;
