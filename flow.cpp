@@ -8,13 +8,15 @@ flow::flow(host* source, host* dest, int data) {
 	this->dest = dest;
 	this->data = data;
 	state = 0;
-	lastSent = 16;
+}
+
+void flow::startFlow() {
+	lastSent = 10;
 	searchMax(lastSent);
-	
 }
 
 void flow::searchMax(int size) {
-	packet p(100, NULL, NULL); //TODO: GET HOSTS
+	packet p(size, source, dest); //TODO: GET HOSTS
 	source->pushPacket(&p);
 	state = 1;
 }

@@ -25,6 +25,7 @@ class flow {
 		int state; //0=start, 1=searchMax
 		int lastSent;
 		flow(host* source, host* dest, int data);
+		void startFlow();
 	private:
 		void searchMax(int size);
 		void receiveAck(packet* p);

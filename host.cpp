@@ -13,9 +13,9 @@ using namespace std;
 
 
 // The packet constructor initializes the packet with set information of data and destination. 
-host::host(int ip, link* link_ptr){
+host::host( string name, int ip){
 	ip_addr = ip;
-	this->link_ptr = link_ptr;
+	this->name = name;
 }
 
 //Receives packet
@@ -25,6 +25,10 @@ packet* host::receivePacket(){
 
 queue<packet*>* host::getQueue(){
 	return &outQueue;
+}
+
+void host::setLink(link* link_ptr) {
+	this->link_ptr = link_ptr;
 }
 
 //Sends packet

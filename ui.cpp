@@ -6,37 +6,82 @@
 #include <queue> //for std::priority_queue
 using namespace std;
 #include "link.h"
+#include "host.h"
+#include "router.h"
+#include "flow.h"
 
 //GLOBAL VARIABLES for time management
 std::priority_queue<string> q;
 int time = 0;
 string eventlog = "";
 vector<link> linkVector;
+vector<host> hostVector;
+vector<router> routerVector;
+vector<flow> flowVector;
+
+router* findRouter(string rname) {
+	for (int i = 0; i < routerVector.size(); i++)
+		if (routerVector[i].name == rname)
+			return &routerVector[i];
+}
+
+host* findHost(string hname) {
+	for (int i = 0; i < hostVector.size(); i++)
+		if (hostVector[i].name == hname)
+			return &hostVector[i];
+}
 
 // Display an ASCII View of how the network should look
 void printNetwork()
 {
-	//
+	cout << "HOSTS" << endl;
+	for (int i = 0; i < hostVector.size(); i++) {
+		cout << hostVector[i].name << ", " << hostVector[i].ip_addr << endl;
+	}
+
+	cout << "ROUTERS" << endl;
+	for (int i = 0; i < routerVector.size(); i++) {
+		cout << routerVector[i].name << endl;
+	}
+
+	cout << "LINKS" << endl;
+	for (int i = 0; i < linkVector.size(); i++) {
+		cout << linkVector[i].id << ", " << ((host*)linkVector[i].src)->name << ", " << ((host*)linkVector[i].dest)->name << endl;
+	}
 }
 
 // Add a host
 void createHost(string hostName){
 	//implement later
+	cout << "HOST: " << hostName << endl;
+	host h(hostName, hostVector.size());
+	hostVector.push_back(h);
 }
 
 // Add a router
 void createRouter(string routerName){
 	//implement later
+	cout << "ROUTER: " << routerName << endl;
+	router r(routerName);
+	routerVector.push_back(r);
 }
 
 // Add a link from a given host/router to a new Router
 void createLink(string linkName, string hostA, string hostB, int a, int b, int c){
 	//implement later
+	cout << "LINK: " << linkName << " FROM " << hostA << " TO " << hostB << ", PARAMETER " << a << endl;
+	//link(a, linkVector.size())
 }
 
 // Create flows
 void createFlow(string flowName, string hostA, string hostB, int a, int b){
 	//implement later
+	cout << "FLOW: " << flowName << " FROM " << hostA << " TO " << hostB << ", PARAMETER " << a << " " << b << endl;
+	flow l(findHost(hostA), findHost(hostB), a);
+	flowVector.push_back(l);
+	string event = "FLOW_" + (flowVector.size() - 1);
+	event += "_START";
+	pushEvent(event, b);
 }
 
 // Run through and record data on the Network
@@ -87,6 +132,12 @@ void popEvent(){
 			linkVector[index].tpropagate();
 		}
 	}
+	else if (objectType == "FLOW") {
+		int index = stoi(objectIndex);
+		if (function == "START") {
+			flowVector[index].startFlow();
+		}
+	}
 	
 	eventlog += "\n" + event; //add the event to the log
 }
@@ -96,12 +147,14 @@ int main(int argc, char *argv[])
 	cout<<"Welcome to the Network Simulator!"<<endl;
 	string ln, file, temp;
 	ifstream read;
-	cout<<"Input the filename: ";
-	cin>>file;
+	//cout<<"Input the filename: ";
+	//cin>>file;
+	file = ".\\TestCases\\testcase0.txt";
 	read.open(file.c_str());
 	while(!read.eof())
 	{
 		getline(read,ln);
+		//cout << "READING: " << ln << endl;
 		// if(ln!="")		
 			// cout<<"reading "<<ln<<endl;
 		if(ln=="Hosts:"&&!read.eof()){
@@ -152,5 +205,8 @@ int main(int argc, char *argv[])
 		}
 	}
 	SimulateNetwork();
+	//cin.ignore();
+	//printNetwork();
+	cin.ignore();
 	return 0;
 }

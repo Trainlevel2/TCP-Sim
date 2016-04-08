@@ -13,16 +13,16 @@ class host{
 	public:
 		int ip_addr;
 
-		host(int ip, link* link_ptr);
-			
+		host(string name, int ip);
+		string name;
 		packet* receivePacket();	  
 		queue<packet*>* getQueue(); 
 			
 		void pushPacket(packet* pptr);
 		void transmitPacket();
+		void setLink(link* link_ptr);
 
 	private:
-	
 		link* link_ptr;
 		queue<packet*> outQueue;
 		vector<packet*> qVec;

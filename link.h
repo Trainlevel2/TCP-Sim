@@ -38,10 +38,10 @@ class link {
 		void propagate(packet* pptr);
 		void tpropagate();
 		packet* currentPkt; //CURRENT packet being transmitted on the link
-
-	private:
 		node* src = nullptr;
 		node* dest = nullptr;
+
+	private:
 
 		int maxThroughput = -1; 
 
