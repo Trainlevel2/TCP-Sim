@@ -24,8 +24,8 @@ void router::addLink(link* l) {
 }
 
 //get the packet present on a connected link.
-packet* router::recievePacket(link* lptr) {
-	return lptr->currentPkt;
+void router::receivePacket(link* lptr) {
+	//return lptr->currentPkt;
 }
 
 //get the output queue which corresponds to a connected link.

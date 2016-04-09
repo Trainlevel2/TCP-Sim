@@ -3,9 +3,9 @@
 
 #include <string>
 #include "packet.h"
-#include "host.h"
+#include "link.h"
 class link;
-class host;
+class packet;
 class node {
 
 	public:
@@ -14,21 +14,19 @@ class node {
 		//node(int ip);
 		
 		//which link are we recieving the packet from?
-		virtual packet* recievePacket(link* link);
+		virtual void receivePacket(link* link) {};
+		
+		virtual void addLink(link* l) {};
 		
 
 		//which link are we sending through?
 		//which packet are we sending?
 		//what is the destination ip?
 		//virtual int sendPacket(link* link, packet* pkt, int dest_ip);
-		virtual void sendPacket(host* dest, int size);
+		//virtual void sendPacket(node* dest, int size);
 
 		string toString();
 
-	private:
-		int ip_addr;
-
-
 };
 
-#endif //_NODE_H
+#endif _NODE_H

@@ -8,19 +8,19 @@ using namespace std;
 class link;
 class packet;
 
-class host{
+class host : public node{
 	
 	public:
 		int ip_addr;
 
 		host(string name, int ip);
-		string name;
-		packet* receivePacket();	  
+		void receivePacket(link* l);	  
 		queue<packet*>* getQueue(); 
 			
 		void pushPacket(packet* pptr);
 		void transmitPacket();
-		void setLink(link* link_ptr);
+		void addLink(link* l);
+		string name;
 
 	private:
 		link* link_ptr;
@@ -30,4 +30,4 @@ class host{
 	
 };
 
-#endif //_HOST_H
+#endif _HOST_H

@@ -1,6 +1,7 @@
 #include <sstream>
 #include <string>
 using namespace std;
+#include "host.h"
 #include "node.h"
 #include "link.h"
 
@@ -9,17 +10,14 @@ using namespace std;
 //	ip_addr = ip;
 //}
 
-packet* node::recievePacket(link* link){ 	
-	return NULL;
-}
-
-void node::sendPacket(host* dest, int size){
-	return;
-}
+//void node::sendPacket(node* dest, int size){
+//	return;
+//}
 
 string node::toString() {
 	stringstream ss;
-	ss << ip_addr;
-	string outString = "IP: " + ss.str();
-	return outString;
+//	ss << ip_addr;
+//	string outString = "IP: " + ss.str();
+//	return outString;
+	return "";
 }

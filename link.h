@@ -3,9 +3,11 @@
 
 #include "packet.h"
 #include "node.h"
+#include "flow.h"
 #include <string>
 #include <queue>
 class flow;
+class node;
 /*
 	Links connect hosts and routers, and carry packets from one end to the other. 
 	Every link has a specified capacity in bits per second.

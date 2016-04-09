@@ -5,6 +5,8 @@
 #define _PACKET_H
 
 #include "host.h"  
+#include "flow.h"
+class flow;
 class host;	//why is a node declared here? -kirk
 
 class packet {
@@ -18,11 +20,10 @@ class packet {
 		// Displays the packet for testing purposes
 		string toString();
 		int data = -1;
-
-	private:
 		int timestamp = -1; // Time of birth for the packet
 		host* src = nullptr; // Packet birthplace
 		host* dest = nullptr; // Destiny determines that the packet must go here to rest
+		flow* f = nullptr;
 
 };
 

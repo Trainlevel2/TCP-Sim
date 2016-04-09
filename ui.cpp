@@ -10,6 +10,9 @@ using namespace std;
 #include "router.h"
 #include "flow.h"
 
+void pushEvent(string e, int elapseTime);
+void popEvent();
+
 //GLOBAL VARIABLES for time management
 std::priority_queue<string> q;
 int time = 0;
@@ -18,17 +21,20 @@ vector<link> linkVector;
 vector<host> hostVector;
 vector<router> routerVector;
 vector<flow> flowVector;
+vector<packet> packetVector;
 
 router* findRouter(string rname) {
 	for (int i = 0; i < routerVector.size(); i++)
 		if (routerVector[i].name == rname)
 			return &routerVector[i];
+	return NULL;
 }
 
 host* findHost(string hname) {
 	for (int i = 0; i < hostVector.size(); i++)
 		if (hostVector[i].name == hname)
 			return &hostVector[i];
+	return NULL;
 }
 
 // Display an ASCII View of how the network should look
@@ -67,10 +73,23 @@ void createRouter(string routerName){
 }
 
 // Add a link from a given host/router to a new Router
-void createLink(string linkName, string hostA, string hostB, int a, int b, int c){
+void createLink(string linkName, string nodeA, string nodeB, int a, int b, int c){
 	//implement later
-	cout << "LINK: " << linkName << " FROM " << hostA << " TO " << hostB << ", PARAMETER " << a << endl;
-	//link(a, linkVector.size())
+	cout << "LINK: " << linkName << " FROM " << nodeA << " TO " << nodeB << ", PARAMETER " << a << endl;
+	node* nA;
+	nA = findHost(nodeA);
+	if (!nA)
+		nA = findRouter(nodeA);
+	node* nB;
+	nB = findHost(nodeB);
+	if (!nB)
+		nB = findRouter(nodeB);
+
+	link l(a, linkVector.size(), nA, nB);
+	linkVector.push_back(l);
+
+	nA->addLink(&linkVector[linkVector.size() - 1]);
+	nB->addLink(&linkVector[linkVector.size() - 1]);
 }
 
 // Create flows
@@ -79,14 +98,18 @@ void createFlow(string flowName, string hostA, string hostB, int a, int b){
 	cout << "FLOW: " << flowName << " FROM " << hostA << " TO " << hostB << ", PARAMETER " << a << " " << b << endl;
 	flow l(findHost(hostA), findHost(hostB), a);
 	flowVector.push_back(l);
-	string event = "FLOW_" + (flowVector.size() - 1);
-	event += "_START";
+	stringstream ss;
+	ss << flowVector.size() - 1;
+	string event = "FLOW_" + ss.str() + "_START";
 	pushEvent(event, b);
 }
 
 // Run through and record data on the Network
 void SimulateNetwork(){
-	
+	string sss = q.top();
+	while (q.size() > 0) {
+		popEvent();
+	}
 }
 
 //Expects an event in the form of a string with standardized format, as well as time to elapse for the event
@@ -95,8 +118,11 @@ void SimulateNetwork(){
 void pushEvent(string e, int elapseTime){
 	int currentTime = time;
 	int executeTime = time + elapseTime;
-	string event = executeTime + "," + currentTime;
-	event += "," + e; //csv for simplicity
+	stringstream ss;
+	ss << executeTime;
+	string event = ss.str() + ",";
+	ss << currentTime;
+	event += ss.str() + "," + e; //csv for simplicity
 	q.push(event);
 }
 
