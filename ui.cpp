@@ -139,7 +139,8 @@ void popEvent(){
 	//Extract the time at which the message is executed. This becomes the current time in the time manager.
 	int find = event.find(",");
 	string timeNow = event.substr(0,find); //time after event is done
-	int timeNow = stoi(timeNow);
+	istringstream iss(timeNow);
+	int timeNow; iss>>timeNow;
 	if(timeNow > time){
 		time = timeNow;
 	}
