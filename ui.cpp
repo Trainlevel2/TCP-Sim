@@ -158,8 +158,12 @@ void popEvent(){
 	e = e.substr(find+1); //gets the rest of the message
 	find = e.find("_"); 
 	string objectIndex = e.substr(0,find);
-	
 	string function = e.substr(find+1);
+	
+	find = function.find("_"); //in case a function has 1 argument (only for timeouts right now)
+	string functionn = function.substr(0,find);
+	string arg = function.substr(find+1);
+	
 	
 	//Execute the event in the event e that was initially input into pushEvent
 	if(objectType == "LINK"){
@@ -175,8 +179,27 @@ void popEvent(){
 			flowVector[index].startFlow();
 		}
 	}
-	
+	else if(objectType == "HOST"){
+		int index = stoi(objectIndex);
+		if(functionn == "TIMEOUT"){
+			packet* pptr = &packetVector[stoi(arg)];
+			hostVector[index].timeout(pptr);
+		}
+	}
 	eventlog += "\n" + event; //add the event to the log
+}
+
+void popTimeout(int timeoutIndex){
+	//TODO: implement this
+	//how do you look through a priority_queue to find the timeout? STL priority queue doesn't seem to let us find stuff :(
+	
+	//can we do something like the following?
+	for(int i = 0; i < q.size(); i++){
+		if(q[i].find("TIMEOUT_0" != string::npos){ //found the timeout!
+			//DELETE Q[I]!
+			q.pop(i); //this isn't a valid function... how to emulate this?
+		}
+	}
 }
 
 int main(int argc, char *argv[])
