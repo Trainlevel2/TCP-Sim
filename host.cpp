@@ -35,6 +35,8 @@ void host::receivePacket(link* l){
 	else {
 		cout << "RECEIVED ACK" << endl;
 		p->f->receiveAck(p);
+		//Delete associated timeout
+		popTimeout(0); //the 0 is a stand-in for the timeout index, since there will only be one timeout at a time for now
 	}
 }
 
