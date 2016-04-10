@@ -136,8 +136,19 @@ void popEvent(){
 	string event = q.top();
 	q.pop();
 	
+	//Extract the time at which the message is executed. This becomes the current time in the time manager.
+	int find = event.find(",");
+	string timeNow = event.substr(0,find); //time after event is done
+	int timeNow = stoi(timeNow);
+	if(timeNow > time){
+		time = timeNow;
+	}
+	else{
+		cout << "ERROR: current event time ends before current time!" << endl;
+	}
+	
 	//Extract the original event message from the expanded event message
-	int find = event.find_last_of(","); //right after the last comma lies the original event message
+	find = event.find_last_of(","); //right after the last comma lies the original event message
 	string e = event.substr(find+1);
 	
 	//Extract the original event message's meaning
