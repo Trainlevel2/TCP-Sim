@@ -6,18 +6,26 @@ using namespace std;
 #include <queue>
 #include <new>
 //constructor 
-router::router(int ip, vector<link*>* link_vector){
-	ip_addr = ip;
-	qVec.resize(link_vector->size());
+router::router(string name){
+	this->name = name;
+	/*
+	qVec.resize(link_vector.size());
 	for(int i=0;i<qVec.size();i++){
-		qVec[i].lptr = (*link_vector)[i];
+		qVec[i].lptr = link_vector[i];
 	}
+	*/
 	maxSize = 20;
 }
 
+
+void router::addLink(link* l) {
+	qVec.resize(qVec.size()+1);
+	qVec[qVec.size() - 1].lptr = l;
+}
+
 //get the packet present on a connected link.
-packet* router::recievePacket(link* lptr) {
-	return lptr->currentPkt;
+void router::receivePacket(link* lptr) {
+	//return lptr->currentPkt;
 }
 
 //get the output queue which corresponds to a connected link.

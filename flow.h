@@ -1,6 +1,9 @@
 #ifndef _FLOW_H
 #define _FLOW_H
 #include "host.h"
+#include "packet.h"
+class host;
+class packet;
 
 /*
 	Every flow is an abstracted stream of data which only 
@@ -25,10 +28,11 @@ class flow {
 		int state; //0=start, 1=searchMax
 		int lastSent;
 		flow(host* source, host* dest, int data);
-	private:
-		void searchMax(int size);
+		void startFlow();
 		void receiveAck(packet* p);
+	private:
 		void timeoutAck();
+		void searchMax(int size);
 		
 };
 

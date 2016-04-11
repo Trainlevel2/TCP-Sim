@@ -3,9 +3,11 @@
 
 #include "packet.h"
 #include "node.h"
+#include "flow.h"
 #include <string>
 #include <queue>
 class flow;
+class node;
 /*
 	Links connect hosts and routers, and carry packets from one end to the other. 
 	Every link has a specified capacity in bits per second.
@@ -38,10 +40,10 @@ class link {
 		void propagate(packet* pptr);
 		void tpropagate();
 		packet* currentPkt; //CURRENT packet being transmitted on the link
-
-	private:
 		node* src = nullptr;
 		node* dest = nullptr;
+
+	private:
 
 		int maxThroughput = -1; 
 

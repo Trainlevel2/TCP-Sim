@@ -1,19 +1,13 @@
 The following need to be checked!
 
-router.h	packet* recievePacket(packet* pptr,link* lptr);
-router.cpp	packet* recievePacket(link* lptr){ return lptr->currentPkt; }
-		both should be changed to recEive
+router.h	packet* receivePacket(packet* pptr,link* lptr);
+router.cpp	packet* receivePacket(link* lptr){ return lptr->currentPkt; }
 
 flow.h		void receiveAck(packet p);
 flow.cpp	void flow::receiveAck(packet* p) 
 
 link.h		link(int maxT, node* src, node* dest);
 link.cpp	link::link(int maxT, int buff, node* source, node* destination){
-
-link.cpp	void link::display(){
-		-> not in link.h
-link.h		void toString();
-		-> not in link.cpp
 
 packet.h	packet(int dat, node* src, node* dst);
 packet.cpp	packet::packet(int dat, node* source, node* destination) {

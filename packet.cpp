@@ -6,10 +6,10 @@
 #include <string>
 using namespace std;
 #include "packet.h"
-#include "node.h"
+#include "host.h"
 
 // The packet constructor initializes the packet with set information of data and destination. 
-packet::packet(int dat, node* source, node* destination) {
+packet::packet(int dat, host* source, host* destination) {
 	data = dat;
 	src = source;
 	dest = destination;
@@ -23,8 +23,8 @@ string packet::toString() {
 	string s = "";
 	s += "Packet display:";
 	s += "\ndata: \t" + data;
-	s += "\ndestination: \t" + dest->toString();
-	s += "\nsource: \t" + src->toString();
+	s += "\ndestination: \t" + dest->name;
+	s += "\nsource: \t" + src->name;
 	s += "\n";
 	//s += "timestamp: \t"; s += timestamp; s += endl;
 	return s;

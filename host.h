@@ -8,21 +8,21 @@ using namespace std;
 class link;
 class packet;
 
-class host{
+class host : public node{
 	
 	public:
 		int ip_addr;
 
-		host(int ip, link* link_ptr);
-			
-		packet* receivePacket();	  
+		host(string name, int ip);
+		void receivePacket(link* l);	  
 		queue<packet*>* getQueue(); 
 			
 		void pushPacket(packet* pptr);
 		void transmitPacket();
+		void addLink(link* l);
+		string name;
 
 	private:
-	
 		link* link_ptr;
 		queue<packet*> outQueue;
 		vector<packet*> qVec;
@@ -30,4 +30,4 @@ class host{
 	
 };
 
-#endif //_HOST_H
+#endif _HOST_H

@@ -7,11 +7,12 @@
 
 #include <vector>
 #include <queue>
+#include "host.h"
 #include "node.h"
 #include "packet.h"
 #include "link.h"
 using namespace std;
-
+class node;
 
 class router: public node {
 	private:
@@ -27,15 +28,17 @@ class router: public node {
 
 
 	public:
-		int ip_addr;
+		string name;
 		int maxSize; //of output packet queue
-		router(int ip, vector<link*>* link_vector);
+		router(string name);
+
+		void addLink(link* l);
 		
 		//get the output queue which corresponds to a connected link.
 		queue<packet*>* getQueue(link* lptr);
 
 		//get the packet present on a connected link.
-		packet* recievePacket(link* lptr);
+		void receivePacket(link* lptr);
 
 		//use routing table to determine packet's outbound link
 		link* chooseLink();

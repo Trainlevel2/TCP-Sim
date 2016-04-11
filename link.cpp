@@ -5,6 +5,8 @@
 #include <iostream>
 #include <cstdio>
 #include <string>
+#include <sstream>
+#include <iostream>
 using namespace std;
 #include "link.h"
 #include "node.h"
@@ -23,13 +25,19 @@ link::link(int maxT, int id, node* source, node* destination){
 }
 
 void link::propagate(packet* pptr){
+	cout << "PROPAGATING PACKET, LINK: " << this->id << endl;
 	currentPkt = pptr;
-	pushEvent("LINK_0_TRANSMIT_PACKET", maxThroughput / pptr->data);
+	stringstream ss;
+	ss << this->id;
+	pushEvent("LINK_" + ss.str() + "_TRANSMIT_PACKET", maxThroughput / pptr->data);
 	//q.push(pptr, maxThroughput/pptr->data);
 	//buffsiz = buff;
 }
 
 void link::tpropagate() {
+	//TODO: INCREMENT TIME
+	cout << "T-Propagating packet, LInk: " << this->id << endl;
+	dest->receivePacket(this);
 	return;
 }
 /*
