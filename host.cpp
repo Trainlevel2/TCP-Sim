@@ -11,7 +11,7 @@ using namespace std;
 #include <queue>
 #include <new>
 extern vector<packet> packetVector;
-
+extern void popTimeout(int timeoutIndex);
 
 // The packet constructor initializes the packet with set information of data and destination. 
 host::host( string name, int ip){
@@ -22,50 +22,35 @@ host::host( string name, int ip){
 //Receives packet
 void host::receivePacket(link* l){
 	//return link_ptr->currentPkt;
-	packet* p = link_ptr->currentPkt;
-	link_ptr->currentPkt = NULL;
+	packet* p = &packetVector[link_ptr->pnum];
+	int tnum = link_ptr->pnum;
+	link_ptr->pnum = NULL;
 	if (p->data > 0) {
-		cout << "RECEIVED DATA, SENDING ACK" << endl;
-		host* sendTo = p->src;
-		packet pSend(-1, this, sendTo);
+		//cout << "RECEIVED DATA, SENDING ACK" << endl;
+		packet pSend(0, p->num, this, p->src);
 		pSend.f = p->f;
 		packetVector.push_back(pSend);
-		link_ptr->propagate(&packetVector[packetVector.size() - 1]);
+		link_ptr->qp.push(packetVector.size() - 1);
+		link_ptr->qn.push(this);
+		link_ptr->propagate();
+		//link_ptr->propagate(&packetVector[packetVector.size() - 1]);
 	}
 	else {
-		cout << "RECEIVED ACK" << endl;
-		p->f->receiveAck(p);
+		//cout << "RECEIVED ACK" << endl;
+		int pnum = p->num;
+		p->f->receiveAck(tnum);
 		//Delete associated timeout
-		popTimeout(0); //the 0 is a stand-in for the timeout index, since there will only be one timeout at a time for now
+		popTimeout(pnum); //the 0 is a stand-in for the timeout index, since there will only be one timeout at a time for now
 	}
-}
-
-queue<packet*>* host::getQueue(){
-	return &outQueue;
 }
 
 void host::addLink(link* link_ptr) {
 	this->link_ptr = link_ptr;
 }
 
-//handles timeouts by resending the packet
-void host::timeout(packet* pptr){
-	pushPacket(packet* pptr);
-}
-
 //Sends packet and creates timeout event
-void host::pushPacket(packet* pptr){
-	getQueue()->push(pptr);
-	transmitPacket();
-	
-	//create a timeout event 
-	//TODO: MARK CAN YOU CHECK THIS PLZ? AND DELETE THIS COMMENT IF IT'S GOOD. THX -DARWIN
-	ss << this->ip_addr;
-	pushEvent("HOST_" + ss.str() + "_TIMEOUT_" + 0); //the 0 is a stand-in for the packetVector index, since there will only be one packet at a time now anyways
-}
-
-void host::transmitPacket(){
-	packet* p = getQueue()->front();
-	getQueue()->pop();
-	link_ptr->propagate(p);
+void host::pushPacket(int pnum){
+	link_ptr->qn.push(this);
+	link_ptr->qp.push(pnum);
+	link_ptr->propagate();
 }

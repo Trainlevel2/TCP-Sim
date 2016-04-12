@@ -37,11 +37,15 @@ class link {
 		//propagation of current packet
 		//this function should modify the current packet value
 		//after propagation delay
-		void propagate(packet* pptr);
+		void propagate();
+		void forcepropagate();
 		void tpropagate();
-		packet* currentPkt; //CURRENT packet being transmitted on the link
+		int pnum; //CURRENT packet being transmitted on the link
 		node* src = nullptr;
 		node* dest = nullptr;
+
+		queue<int> qp;
+		queue<node*> qn;
 
 	private:
 

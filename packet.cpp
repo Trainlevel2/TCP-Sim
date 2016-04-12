@@ -9,10 +9,11 @@ using namespace std;
 #include "host.h"
 
 // The packet constructor initializes the packet with set information of data and destination. 
-packet::packet(int dat, host* source, host* destination) {
+packet::packet(int dat, int num, host* source, host* destination) {
 	data = dat;
 	src = source;
 	dest = destination;
+	this->num = num;
 	//TODO: time system
 	//timestamp = getTime();	//HOW DO I GET THE TIME OF THE SIMULATION???
 }
