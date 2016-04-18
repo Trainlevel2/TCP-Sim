@@ -4,6 +4,7 @@
 #include <sstream>
 #include <fstream>
 #include <queue> //for std::priority_queue
+#include <functional>
 using namespace std;
 #include "link.h"
 #include "host.h"
@@ -14,7 +15,7 @@ void pushEvent(string e, int elapseTime);
 void popEvent();
 
 //GLOBAL VARIABLES for time management
-std::priority_queue<string> q;
+std::priority_queue<string, vector<string>, std::greater<string> > q;
 int time = 0;
 string eventlog = "";
 vector<link> linkVector;
@@ -96,12 +97,12 @@ void createLink(string linkName, string nodeA, string nodeB, int a, int b, int c
 void createFlow(string flowName, string hostA, string hostB, int a, int b){
 	//implement later
 	cout << "FLOW: " << flowName << " FROM " << hostA << " TO " << hostB << ", PARAMETER " << a << " " << b << endl;
-	flow l(findHost(hostA), findHost(hostB), a);
+	flow l(findHost(hostA), findHost(hostB), a, flowVector.size());
 	flowVector.push_back(l);
 	stringstream ss;
 	ss << flowVector.size() - 1;
 	string event = "FLOW_" + ss.str() + "_START";
-	pushEvent(event, b);
+	pushEvent(event, 0);
 }
 
 // Run through and record data on the Network
@@ -120,10 +121,14 @@ void pushEvent(string e, int elapseTime){
 	int executeTime = time + elapseTime;
 	stringstream ss;
 	ss << executeTime;
-	string event = ss.str() + ",";
+	int max_int_len = 8;
+	string event = string(max_int_len - ss.str().size(),'0') + ss.str() + ",";
+	ss.str("");
 	ss << currentTime;
-	event += ss.str() + "," + e; //csv for simplicity
+	event += string(max_int_len - ss.str().size(), '0') + ss.str() + "," + e; //csv for simplicity
 	q.push(event);
+
+	//cout << "NEW EVENT\t" << e << "\tCURTIME: " << currentTime << "\tDONE: " << executeTime << endl;
 }
 
 //Pops an event from the event queue and executes the appropriate command, as contained in e and assuming correct format of e
@@ -134,18 +139,19 @@ void popEvent(){
 		return;
 	}
 	string event = q.top();
+	//cout << "POP\t\t" << event << endl;
 	q.pop();
 	
 	//Extract the time at which the message is executed. This becomes the current time in the time manager.
 	int find = event.find(",");
-	string timeNow = event.substr(0,find); //time after event is done
-	istringstream iss(timeNow);
+	string stimeNow = event.substr(0,find); //time after event is done
+	istringstream iss(stimeNow);
 	int timeNow; iss>>timeNow;
-	if(timeNow > time){
+	if(timeNow >= time){
 		time = timeNow;
 	}
 	else{
-		cout << "ERROR: current event time ends before current time!" << endl;
+		cout << "ERROR: current event time (" << timeNow << ") ends before current time (" << time <<")!" << endl;
 	}
 	
 	//Extract the original event message from the expanded event message
@@ -179,12 +185,9 @@ void popEvent(){
 		if (function == "START") {
 			flowVector[index].startFlow();
 		}
-	}
-	else if(objectType == "HOST"){
-		int index = stoi(objectIndex);
-		if(functionn == "TIMEOUT"){
-			packet* pptr = &packetVector[stoi(arg)];
-			hostVector[index].timeout(pptr);
+		else if (functionn == "TIMEOUT") {
+			int pptr = stoi(arg);
+			flowVector[index].timeoutAck(pptr);
 		}
 	}
 	eventlog += "\n" + event; //add the event to the log
@@ -193,13 +196,39 @@ void popEvent(){
 void popTimeout(int timeoutIndex){
 	//TODO: implement this
 	//how do you look through a priority_queue to find the timeout? STL priority queue doesn't seem to let us find stuff :(
-	
-	//can we do something like the following?
-	for(int i = 0; i < q.size(); i++){
-		if(q[i].find("TIMEOUT_0" != string::npos){ //found the timeout!
-			//DELETE Q[I]!
-			q.pop(i); //this isn't a valid function... how to emulate this?
+	queue<string> qq;
+	while (q.size() > 0) {
+		string event = q.top();
+		q.pop();
+		
+		//Extract the original event message from the expanded event message
+		int find = event.find_last_of(","); //right after the last comma lies the original event message
+		string e = event.substr(find + 1);
+
+		//Extract the original event message's meaning
+		find = e.find("_");
+		string objectType = e.substr(0, find);
+
+		e = e.substr(find + 1); //gets the rest of the message
+		find = e.find("_");
+		string objectIndex = e.substr(0, find);
+		string function = e.substr(find + 1);
+
+		find = function.find("_"); //in case a function has 1 argument (only for timeouts right now)
+		string functionn = function.substr(0, find);
+		string arg = function.substr(find + 1);
+		istringstream iss(arg);
+		int intarg; iss >> intarg;
+
+		if (!(objectType == "FLOW" && functionn == "TIMEOUT" && intarg ==timeoutIndex)) {
+			qq.push(event);
 		}
+		
+	}
+	while (qq.size() > 0) {
+		string event = qq.front();
+		q.push(event);
+		qq.pop();
 	}
 }
 
@@ -265,6 +294,7 @@ int main(int argc, char *argv[])
 			}
 		}
 	}
+	cout << endl;
 	SimulateNetwork();
 	//cin.ignore();
 	//printNetwork();

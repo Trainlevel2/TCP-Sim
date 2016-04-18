@@ -13,3 +13,8 @@ packet.h	packet(int dat, node* src, node* dst);
 packet.cpp	packet::packet(int dat, node* source, node* destination) {
 		->dat, source, destination versus data, src, dest
 
+4/18/16
+Darwin Huang: Output graphs
+Sehr Ahmed: Adapt routers match hosts
+Eric Mendoza-Conner: Implement TCP [implement congestion avoidance (linear), fast retransmit, change triple ACK to cwnd = 1)
+Kirk Cameron: Routing Tables

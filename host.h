@@ -14,19 +14,14 @@ class host : public node{
 		int ip_addr;
 
 		host(string name, int ip);
-		void receivePacket(link* l);	  
-		queue<packet*>* getQueue(); 
+		void receivePacket(link* l);
 			
-		void pushPacket(packet* pptr);
-		void transmitPacket();
+		void pushPacket(int pnum);
 		void addLink(link* l);
 		string name;
 
 	private:
 		link* link_ptr;
-		queue<packet*> outQueue;
-		vector<packet*> qVec;
-
 	
 };
 

@@ -15,7 +15,7 @@ class packet {
 
 		// The packet constructor initializes the packet with set information of data and destination. 
 		// Must also find the time...
-		packet(int dat, host* src, host* dst);
+		packet(int dat, int num, host* src, host* dst);
 
 		// Displays the packet for testing purposes
 		string toString();
@@ -24,7 +24,7 @@ class packet {
 		host* src = nullptr; // Packet birthplace
 		host* dest = nullptr; // Destiny determines that the packet must go here to rest
 		flow* f = nullptr;
-
+		int num;
 };
 
 #endif //_PACKET_H

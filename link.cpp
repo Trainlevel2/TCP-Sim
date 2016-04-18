@@ -11,6 +11,7 @@ using namespace std;
 #include "link.h"
 #include "node.h"
 extern void pushEvent(string e, int elapseTime);
+extern vector<packet> packetVector;
 
 // The packet constructor initializes the packet with set information of data and destination. 
 link::link(int maxT, int id, node* source, node* destination){
@@ -24,39 +25,46 @@ link::link(int maxT, int id, node* source, node* destination){
 	//buffsiz = buff;
 }
 
-void link::propagate(packet* pptr){
-	cout << "PROPAGATING PACKET, LINK: " << this->id << endl;
-	currentPkt = pptr;
+void link::propagate(){
+	node* nn = qn.front();
+	packet* pp = &packetVector[qp.front()];
+	//cout << "Queuing Packet\tLink: " << this->id << "\tPacket: " << pp->num << endl;
+	pnum = qp.front();
 	stringstream ss;
 	ss << this->id;
-	pushEvent("LINK_" + ss.str() + "_TRANSMIT_PACKET", maxThroughput / pptr->data);
-	//q.push(pptr, maxThroughput/pptr->data);
-	//buffsiz = buff;
+	if (qn.front() != src) {
+		node* s = src;
+		src = qn.front();
+		dest = s;
+	}
+	if(qp.size() == 1)
+		pushEvent("LINK_" + ss.str() + "_TRANSMIT_PACKET", 1000 * packetVector[qp.front()].data / maxThroughput);
+}
+
+void link::forcepropagate() {
+	node* nn = qn.front();
+	packet* pp = &packetVector[qp.front()];
+	//cout << "Queuing Packet\tLink: " << this->id << "\tPacket: " << pp->num << endl;
+	pnum = qp.front();
+	stringstream ss;
+	ss << this->id;
+	if (qn.front() != src) {
+		node* s = src;
+		src = qn.front();
+		dest = s;
+	}
+	pushEvent("LINK_" + ss.str() + "_TRANSMIT_PACKET", 1000 * packetVector[qp.front()].data / maxThroughput);
 }
 
 void link::tpropagate() {
-	//TODO: INCREMENT TIME
-	cout << "T-Propagating packet, LInk: " << this->id << endl;
+	//cout << "T-Propagating packet\tLink: " << this->id << "\tPacket: " << packetVector[pnum].num << endl;
 	dest->receivePacket(this);
+	qn.pop();
+	qp.pop();
+	if(qp.size() > 0)
+		forcepropagate();
 	return;
 }
-/*
-	packet* link::popPacket(){
-		buffer.pop_back();
-		return buffer.front();
-	}
-
-	int link::pushPacket(packet* pkt){
-		//TODO: FIX- the buffer is based on the size of the packets, not # of packets
-		if (buffer.size()<buffsiz) {
-			buffer.push_back(pkt);
-		}
-		else if (buffer.size()==buffsiz) {
-			delete pkt;
-		}
-		return 0;
-	}
-*/
 
 // Displays the packet for testing purposes
 string link::toString() {

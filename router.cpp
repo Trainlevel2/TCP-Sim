@@ -63,7 +63,7 @@ void router::transmitPacket(link* lptr){
 	
 	//better:
 	//makes lptr's current pkt = Q->front() AFTER propagation delay
-	lptr->propagate(Q->front()); 
+//	lptr->propagate(Q->front()); 
 	Q->pop();
 }
 
