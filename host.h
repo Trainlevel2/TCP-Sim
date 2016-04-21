@@ -25,4 +25,4 @@ class host : public node{
 	
 };
 
-#endif _HOST_H
+#endif // _HOST_H
