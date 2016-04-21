@@ -23,7 +23,8 @@ class router: public node {
 				queue<packet*> outQQ;
 				link* lptr;
 		};
-
+		
+		link* link_ptr;
 		vector<outQueue> qVec;
 
 
