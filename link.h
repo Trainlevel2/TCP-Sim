@@ -44,7 +44,11 @@ class link {
 		node* src = nullptr;
 		node* dest = nullptr;
 
+		//qp is a queue of the packets in the link buffer.
+		//get the packet at the top by using packetVector[qp.front()]
 		queue<int> qp;
+		//qn is a queue of the source nodes corresponding to the packets in the packet queue.
+		//every time a packet is pushed or removed, so is a node
 		queue<node*> qn;
 
 	private:
