@@ -23,6 +23,10 @@ void flow::startFlow() {
 	searchMax(lastSent);
 }
 
+int flow::getCwnd(){
+	return lastSent;
+}
+
 void flow::searchMax(int size) {
 	//cout << "SENDING PACKET FROM " << source->name << " TO " << dest->name << ", SIZE " << size << endl;
 	packetnum++;

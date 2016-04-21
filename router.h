@@ -48,6 +48,7 @@ class router: public node {
 		//returns 0 if successful,
 		//returns 1 on packet loss.
 		int pushPacket(packet* pptr, link* lptr);
+		//void pushPacket(int pnum)
 
 		//transmit packet to a certain outbound link.
 		void transmitPacket(link* lptr);
