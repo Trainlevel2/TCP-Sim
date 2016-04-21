@@ -3,6 +3,7 @@ using namespace std;
 #include "node.h"
 #include "link.h"
 #include "packet.h"
+#include "router.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -34,6 +35,7 @@ void router::addLink(link* l) {
 //get the packet present on a connected link.
 void router::receivePacket(link* lptr) {
 	//return lptr->currentPkt;
+	/*
 	packet* p = &packetVector[link_ptr->pnum];
 	int tnum = link_ptr->pnum;
 	link_ptr->pnum = NULL;
@@ -54,6 +56,7 @@ void router::receivePacket(link* lptr) {
 		//Delete associated timeout
 		popTimeout(pnum); //the 0 is a stand-in for the timeout index, since there will only be one timeout at a time for now
 	}
+	*/
 	
 }
 
