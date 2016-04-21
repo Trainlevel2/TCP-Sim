@@ -1,8 +1,13 @@
-//ECE303 Project
-//Original Author: Kirk Cameron
-
 using namespace std;
-#include "router.h"
+#include "host.h"
+#include "node.h"
+#include "link.h"
+#include "packet.h"
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <locale> 
+#include <cstdlib>
 #include <queue>
 #include <new>
 extern vector<packet> packetVector;
