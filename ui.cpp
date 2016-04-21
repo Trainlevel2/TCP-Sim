@@ -195,7 +195,7 @@ void popEvent(){
 	eventlog += "\n" + event; //add the event to the log
 	//log all flow cwnd's
 	for(int i = 0; i < (int)flowVector.size(); i++){
-		cwndLog += "\n" + t;
+		cwndLog += "\n" + t/1000;
 		cwndLog += ",";
 		cwndLog += i + "," + flowVector[i].getCwnd();
 	}
