@@ -10,7 +10,7 @@ using namespace std;
 #include "host.h"
 #include "router.h"
 #include "flow.h"
-#define WINDOWS 1 //1=true, 0=false
+#define WINDOWS 0 //1=true, 0=false
 
 void pushEvent(string e, int elapseTime);
 void popEvent();

@@ -35,7 +35,6 @@ class flow {
 		int id;
 		int getCwnd();
 		void timeoutAck(int pnum);
-		int getCwnd();
 	private:
 		const int P_TIMEOUT = 1000;
 		int packetnum = 0;
