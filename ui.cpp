@@ -16,7 +16,7 @@ void popEvent();
 
 //GLOBAL VARIABLES for time management
 std::priority_queue<string, vector<string>, std::greater<string> > q;
-int time = 0;
+int t = 0;
 string eventlog = "";
 vector<link> linkVector;
 vector<host> hostVector;
@@ -114,11 +114,11 @@ void SimulateNetwork(){
 }
 
 //Expects an event in the form of a string with standardized format, as well as time to elapse for the event
-//Adds the "added time" and "time to execute" onto the start of string for use as the comparable to order events
+//Adds the "added time" and "to execute" onto the start of string for use as the comparable to order events
 //An example of a working format for e is LINK_0_SEND_PACKET or HOST_1_RECEIVE_PACKET
 void pushEvent(string e, int elapseTime){
-	int currentTime = time;
-	int executeTime = time + elapseTime;
+	int currentTime = t;
+	int executeTime = t + elapseTime;
 	stringstream ss;
 	ss << executeTime;
 	int max_int_len = 8;
@@ -147,11 +147,11 @@ void popEvent(){
 	string stimeNow = event.substr(0,find); //time after event is done
 	istringstream iss(stimeNow);
 	int timeNow; iss>>timeNow;
-	if(timeNow >= time){
-		time = timeNow;
+	if(timeNow >= t){
+		t = timeNow;
 	}
 	else{
-		cout << "ERROR: current event time (" << timeNow << ") ends before current time (" << time <<")!" << endl;
+		cout << "ERROR: current event time (" << timeNow << ") ends before current time (" << t <<")!" << endl;
 	}
 	
 	//Extract the original event message from the expanded event message
@@ -239,7 +239,11 @@ int main(int argc, char *argv[])
 	ifstream read;
 	//cout<<"Input the filename: ";
 	//cin>>file;
+
+	//for windows
 	file = ".\\TestCases\\testcase0.txt";
+	//for linux
+	file = "./TestCases/testcase0.txt";
 	read.open(file.c_str());
 	while(!read.eof())
 	{
