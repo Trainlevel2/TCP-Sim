@@ -25,14 +25,14 @@ vector<flow> flowVector;
 vector<packet> packetVector;
 
 router* findRouter(string rname) {
-	for (int i = 0; i < routerVector.size(); i++)
+	for (int i = 0; i < (int)routerVector.size(); i++)
 		if (routerVector[i].name == rname)
 			return &routerVector[i];
 	return NULL;
 }
 
 host* findHost(string hname) {
-	for (int i = 0; i < hostVector.size(); i++)
+	for (int i = 0; i < (int)hostVector.size(); i++)
 		if (hostVector[i].name == hname)
 			return &hostVector[i];
 	return NULL;
@@ -42,17 +42,17 @@ host* findHost(string hname) {
 void printNetwork()
 {
 	cout << "HOSTS" << endl;
-	for (int i = 0; i < hostVector.size(); i++) {
+	for (int i = 0; i < (int)hostVector.size(); i++) {
 		cout << hostVector[i].name << ", " << hostVector[i].ip_addr << endl;
 	}
 
 	cout << "ROUTERS" << endl;
-	for (int i = 0; i < routerVector.size(); i++) {
+	for (int i = 0; i < (int)routerVector.size(); i++) {
 		cout << routerVector[i].name << endl;
 	}
 
 	cout << "LINKS" << endl;
-	for (int i = 0; i < linkVector.size(); i++) {
+	for (int i = 0; i < (int)linkVector.size(); i++) {
 		cout << linkVector[i].id << ", " << ((host*)linkVector[i].src)->name << ", " << ((host*)linkVector[i].dest)->name << endl;
 	}
 }
@@ -61,7 +61,7 @@ void printNetwork()
 void createHost(string hostName){
 	//implement later
 	cout << "HOST: " << hostName << endl;
-	host h(hostName, hostVector.size());
+	host h(hostName, (int)hostVector.size());
 	hostVector.push_back(h);
 }
 
@@ -86,21 +86,21 @@ void createLink(string linkName, string nodeA, string nodeB, int a, int b, int c
 	if (!nB)
 		nB = findRouter(nodeB);
 
-	link l(a, linkVector.size(), nA, nB);
+	link l(a, (int)linkVector.size(), nA, nB);
 	linkVector.push_back(l);
 
-	nA->addLink(&linkVector[linkVector.size() - 1]);
-	nB->addLink(&linkVector[linkVector.size() - 1]);
+	nA->addLink(&linkVector[(int)linkVector.size() - 1]);
+	nB->addLink(&linkVector[(int)linkVector.size() - 1]);
 }
 
 // Create flows
 void createFlow(string flowName, string hostA, string hostB, int a, int b){
 	//implement later
 	cout << "FLOW: " << flowName << " FROM " << hostA << " TO " << hostB << ", PARAMETER " << a << " " << b << endl;
-	flow l(findHost(hostA), findHost(hostB), a, flowVector.size());
+	flow l(findHost(hostA), findHost(hostB), a, (int)flowVector.size());
 	flowVector.push_back(l);
 	stringstream ss;
-	ss << flowVector.size() - 1;
+	ss << (int)flowVector.size() - 1;
 	string event = "FLOW_" + ss.str() + "_START";
 	pushEvent(event, 0);
 }
@@ -300,6 +300,7 @@ int main(int argc, char *argv[])
 	}
 	cout << endl;
 	SimulateNetwork();
+	cout<<eventlog<<endl;
 	//cin.ignore();
 	//printNetwork();
 	cin.ignore();
