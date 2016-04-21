@@ -18,6 +18,7 @@ void popEvent();
 std::priority_queue<string, vector<string>, std::greater<string> > q;
 int t = 0;
 string eventlog = "";
+string cwndLog = "time (s) , flow index , cwnd";
 vector<link> linkVector;
 vector<host> hostVector;
 vector<router> routerVector;
@@ -191,6 +192,11 @@ void popEvent(){
 		}
 	}
 	eventlog += "\n" + event; //add the event to the log
+	//log all flow cwnd's
+	for(int i = 0; i < flowVector.size(); i++){
+		cwndLog += "\n" + t + "," + i + "," + flowVector.at(i).getCwnd() + "\n";
+	}
+	
 }
 
 void popTimeout(int timeoutIndex){
@@ -301,6 +307,7 @@ int main(int argc, char *argv[])
 	cout << endl;
 	SimulateNetwork();
 	cout<<eventlog<<endl;
+	cout << cwndLog << endl;
 	//cin.ignore();
 	//printNetwork();
 	cin.ignore();
