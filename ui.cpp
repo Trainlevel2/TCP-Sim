@@ -241,7 +241,7 @@ int main(int argc, char *argv[])
 	//cin>>file;
 
 	//for windows
-	file = ".\\TestCases\\testcase0.txt";
+	//file = ".\\TestCases\\testcase0.txt";
 	//for linux
 	file = "./TestCases/testcase0.txt";
 	read.open(file.c_str());
