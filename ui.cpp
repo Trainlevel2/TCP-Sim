@@ -10,6 +10,7 @@ using namespace std;
 #include "host.h"
 #include "router.h"
 #include "flow.h"
+#define WINDOWS 1 //1=true, 0=false
 
 void pushEvent(string e, int elapseTime);
 void popEvent();
@@ -193,8 +194,10 @@ void popEvent(){
 	}
 	eventlog += "\n" + event; //add the event to the log
 	//log all flow cwnd's
-	for(int i = 0; i < flowVector.size(); i++){
-		cwndLog += "\n" + t + "," + i + "," + flowVector.at(i).getCwnd() + "\n";
+	for(int i = 0; i < (int)flowVector.size(); i++){
+		cwndLog += "\n" + t;
+		cwndLog += ",";
+		cwndLog += i + "," + flowVector[i].getCwnd();
 	}
 	
 }
@@ -246,10 +249,11 @@ int main(int argc, char *argv[])
 	//cout<<"Input the filename: ";
 	//cin>>file;
 
-	//for windows
-	//file = ".\\TestCases\\testcase0.txt";
-	//for linux
-	file = "./TestCases/testcase0.txt";
+	if(WINDOWS){
+		file = ".\\TestCases\\testcase0.txt";	
+	}else{
+		file = "./TestCases/testcase0.txt";	
+	}
 	read.open(file.c_str());
 	while(!read.eof())
 	{

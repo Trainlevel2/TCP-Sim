@@ -33,6 +33,7 @@ class flow {
 		void startFlow();
 		void receiveAck(int pnum);
 		int id;
+		int getCwnd();
 		void timeoutAck(int pnum);
 	private:
 		const int P_TIMEOUT = 1000;
