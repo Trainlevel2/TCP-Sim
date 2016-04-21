@@ -5,6 +5,9 @@ using namespace std;
 #include "router.h"
 #include <queue>
 #include <new>
+extern vector<packet> packetVector;
+extern void popTimeout(int timeoutIndex);
+
 //constructor 
 router::router(string name){
 	this->name = name;
