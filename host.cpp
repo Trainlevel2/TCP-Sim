@@ -1,0 +1,61 @@
+using namespace std;
+#include "host.h"
+#include "node.h"
+#include "link.h"
+#include "packet.h"
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <locale> 
+#include <cstdlib>
+#include <queue>
+#include <new>
+extern vector<packet> packetVector;
+extern void popTimeout(int timeoutIndex);
+
+// The packet constructor initializes the packet with set information of data and destination. 
+host::host( string name, int ip,int br){
+	ip_addr = ip;
+	this->name = name;
+	this->br = br;
+}
+
+//Receives packet
+void host::receivePacket(link* l){
+	//return link_ptr->currentPkt;
+	packet* p = &packetVector[link_ptr->pnum];
+	int tnum = link_ptr->pnum;
+	link_ptr->pnum = NULL;
+
+	if (p->data > 0) {
+		//cout << "RECEIVED DATA, SENDING ACK" << endl;
+		packet pSend(0, p->num, this, p->src);
+		pSend.f = p->f;
+
+
+
+		packetVector.push_back(pSend);
+		link_ptr->qp.push(packetVector.size() - 1);
+		link_ptr->qn.push(this);
+		link_ptr->propagate();
+		//link_ptr->propagate(&packetVector[packetVector.size() - 1]);
+	}
+	else {
+		//cout << "RECEIVED ACK" << endl;
+		int pnum = p->num;
+		p->f->receiveAck(tnum);
+		//Delete associated timeout
+		popTimeout(pnum); //the 0 is a stand-in for the timeout index, since there will only be one timeout at a time for now
+	}
+}
+
+void host::addLink(link* link_ptr) {
+	this->link_ptr = link_ptr;
+}
+
+//Sends packet and creates timeout event
+void host::pushPacket(int pnum){
+	link_ptr->qn.push(this);
+	link_ptr->qp.push(pnum);
+	link_ptr->propagate();
+}
