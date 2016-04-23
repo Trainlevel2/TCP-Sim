@@ -12,12 +12,12 @@ class host : public node{
 	
 	public:
 		
+		
 
-		host(string name, int ip,int br);
+		host(string name, int ip);
 		void receivePacket(link* l);
-			
-		void pushPacket(int pnum);
-		void addLink(link* l);
+		//void pushPacket(int pnum);
+		void addLink(int lnum);
 		
 
 	private:

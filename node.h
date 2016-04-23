@@ -11,8 +11,9 @@
 class node {
 
 	public:
-		int br; //bitrate
+		int br; //transmission bitrate....Separate from propagation!
 		string name;
+		int ip;
 		//no constructor, since only subclasses constructors are called
 		//specify host ip
 		//node(int ip);
@@ -22,7 +23,7 @@ class node {
 		
 		virtual void addLink(link* l) {};
 		
-		void pushPack(link* lptr);
+		int pushPacket(packet* pptr, link* lptr);
 
 		//which link are we sending through?
 		//which packet are we sending?

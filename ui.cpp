@@ -68,10 +68,10 @@ void createHost(string hostName){
 }
 
 // Add a router
-void createRouter(string routerName){
-	//implement later
+void createRouter(string routerName,string[host]){
+	
 	cout << "ROUTER: " << routerName << endl;
-	router r(routerName);
+	router r(routerName, (int)routerVector.size());
 	routerVector.push_back(r);
 }
 
@@ -88,11 +88,13 @@ void createLink(string linkName, string nodeA, string nodeB, int a, int b, int c
 	if (!nB)
 		nB = findRouter(nodeB);
 
+	//pushing link id's instead
+
 	link l(a, (int)linkVector.size(), nA, nB);
 	linkVector.push_back(l);
 
-	nA->addLink(&linkVector[(int)linkVector.size() - 1]);
-	nB->addLink(&linkVector[(int)linkVector.size() - 1]);
+	nA->addLink(l.id);
+	nB->addLink(l.id);
 }
 
 // Create flows
@@ -177,7 +179,15 @@ void popEvent(){
 	
 	//Execute the event in the event e that was initially input into pushEvent
 	
-	//link.ttransmit()
+	//TRANSMIT_PACKET should result in 1 item being popped off the link's transmission queue
+	//TRANSMIT_PACKET should push a PROPAGATE_PACKET onto the event queue.
+
+
+
+
+	//PROPAGATE_PACKET should result in the link propagating the latest data popped off the the transmission queue.
+
+
 	if(objectType == "LINK"){
 		int index = stoi(objectIndex);
 		if (function == "PROPAGATE_PACKET"){

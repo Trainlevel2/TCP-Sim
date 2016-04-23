@@ -11,14 +11,12 @@ using namespace std;
 #include <queue>
 #include <new>
 extern vector<packet> packetVector;
+extern vector<link> linkVector;
 extern void popTimeout(int timeoutIndex);
 
 // The packet constructor initializes the packet with set information of data and destination. 
-host::host( string name, int ip,int br){
-	ip_addr = ip;
-	this->name = name;
-	this->br = br;
-}
+host::host(string name, int ip,int br)
+:node(string name, int ip,int br){}
 
 //Receives packet
 void host::receivePacket(link* l){
@@ -31,8 +29,6 @@ void host::receivePacket(link* l){
 		//cout << "RECEIVED DATA, SENDING ACK" << endl;
 		packet pSend(0, p->num, this, p->src);
 		pSend.f = p->f;
-
-
 
 		packetVector.push_back(pSend);
 		link_ptr->qp.push(packetVector.size() - 1);
@@ -49,13 +45,18 @@ void host::receivePacket(link* l){
 	}
 }
 
-void host::addLink(link* link_ptr) {
-	this->link_ptr = link_ptr;
+void host::addLink(int lnum) {
+	this->link_ptr = &linkVector[lnum];
 }
 
+
+
+//inherited function
+/*
 //Sends packet and creates timeout event
 void host::pushPacket(int pnum){
 	link_ptr->qn.push(this);
 	link_ptr->qp.push(pnum);
 	link_ptr->propagate();
 }
+*/

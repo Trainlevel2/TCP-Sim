@@ -15,17 +15,26 @@ using namespace std;
 //}
 
 string node::toString() {
-	stringstream ss;
-	
-//	ss << ip_addr;
-//	string outString = "IP: " + ss.str();
-//	return outString;
+stringstream ss;
+
 	return "";
 }
 
-void pushPack(link* lptr){
-	lptr->
+node::node(string name, int ip,int br){
+	ip_addr = ip;
+	this->name = name;
+}
 
 
 
+
+
+
+//general packet transmission function
+//pushes to the queue of the link
+void pushPacket(int pnum,link* link_ptr) {
+	link_ptr->qn.push(this);
+	link_ptr->qp.push(pnum);
+	link_ptr->propagate();
+	br=100;
 }

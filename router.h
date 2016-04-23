@@ -18,30 +18,38 @@ class router: public node {
 	
 	//make router inherit some behavior from host
 	//make link have a propagate packet function
+	//implement max size of 
+
+
 
 
 	public:
 
+		vector<vector<int>> rtable;
 
-		int maxSize; //of output packet queue
-		router(string name);
+		vector<int> lVector;
 
-		void addLink(link* l);
+		router(string name, int ip);
 		
-		//get the output queue which corresponds to a connected link.
-		queue<packet*>* getQueue(link* lptr);
+		void addLink(int lnum);
 
 		//get the packet present on a connected link.
-		void receivePacket(link* lptr);
+		int receivePacket(int lnum);
 
 		//use routing table to determine packet's outbound link
+		//packets forwarded using destination host address
+
+		int chooseLink(int pnum);
+
+
+		
 		link* chooseLink();
 
 		//push packet to router output queue.
 		//if the queue is full, the packet is lost.
 		//returns 0 if successful,
 		//returns 1 on packet loss.
-		int pushPacket(packet* pptr, link* lptr);
+		//int pushPacket(packet* pptr, link* lptr);
 		//void pushPacket(int pnum)
 
 		//transmit packet to a certain outbound link.

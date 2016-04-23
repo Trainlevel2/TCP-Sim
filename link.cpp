@@ -19,6 +19,7 @@ link::link(int maxT, int id, node* source, node* destination){
 	maxThroughput = maxT;
 	src = source;
 	dest = destination;
+	cost=1;
 	//char buffer[50];
 	//int n = sprintf(buffer,"%d..%d",src->ip_addr,dest->ip_addr);
 	//printf("The id of this link is [%s], which is %d characters long",buffer,n);
@@ -49,7 +50,7 @@ void link::forcepropagate() {
 	pnum = qp.front();
 	stringstream ss;
 	ss << this->id;
-	if (qn.front() != src) {
+	if (qn.front() != src) { //why swap src and dest? shouldn't these be fixed?
 		node* s = src;
 		src = qn.front();
 		dest = s;
@@ -66,6 +67,8 @@ void link::tpropagate() {
 }
 
 void link::ttransmit() {
+	//output queue delay
+
 	qn.pop();
 	qp.pop();
 	return;
