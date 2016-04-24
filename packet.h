@@ -16,14 +16,25 @@ class packet {
 
 		// The packet constructor initializes the packet with set information of data and destination. 
 		// Must also find the time...
-		packet(int dat, int num, host* src, host* dst);
+		packet(int dat, int num, node* src, node* dst); //node* should not be carried in the packet.  ideally, node ip  instead. --kirk
+		
+		class entry{
+			public:
+				int cost;
+				int ip;
+		};
+
+		vector<entry> dVec;
+		
+		bool isAck;
+		bool isRIP;
 
 		// Displays the packet for testing purposes
 		string toString();
 		int data = -1;
 		int timestamp = -1; // Time of birth for the packet
-		host* src = nullptr; // Packet birthplace
-		host* dest = nullptr; // Destiny determines that the packet must go here to rest
+		node* src = nullptr; 
+		node* dest = nullptr; 
 		flow* f = nullptr;
 		int num;
 };

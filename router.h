@@ -18,16 +18,37 @@ class router: public node {
 	
 	//make router inherit some behavior from host
 	//make link have a propagate packet function
-	//implement max size of 
+	//implement max size of
+
+	//routing table gives costs from  
 
 
 
 
 	public:
+		
+		
+		
+		class rtable{
+			public:
+				vector<int> rVector; //knowledge of entire network's routers
+				vector<vector<int>> rtable; //link costs
 
-		vector<vector<int>> rtable;
+				insert(int from,int to);
+				getDv();
+		};
 
-		vector<int> lVector;
+		
+
+		//vector<entry> map; //maps ip's to routing table indicies.
+
+		
+
+		vector<int> lVector; //connected links
+
+
+
+		int host;
 
 		router(string name, int ip);
 		

@@ -20,9 +20,10 @@ stringstream ss;
 	return "";
 }
 
-node::node(string name, int ip,int br){
-	ip_addr = ip;
+node::node(string name, int ip){
+	this->ip = ip;
 	this->name = name;
+	br=100;
 }
 
 
@@ -36,5 +37,4 @@ void pushPacket(int pnum,link* link_ptr) {
 	link_ptr->qn.push(this);
 	link_ptr->qp.push(pnum);
 	link_ptr->propagate();
-	br=100;
 }

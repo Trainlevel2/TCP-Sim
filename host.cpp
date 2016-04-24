@@ -14,9 +14,9 @@ extern vector<packet> packetVector;
 extern vector<link> linkVector;
 extern void popTimeout(int timeoutIndex);
 
-// The packet constructor initializes the packet with set information of data and destination. 
-host::host(string name, int ip,int br)
-:node(string name, int ip,int br){}
+//specify bitrate 
+host::host(string name, int ip)
+:node(string name, int ip){}
 
 //Receives packet
 void host::receivePacket(link* l){
@@ -24,12 +24,10 @@ void host::receivePacket(link* l){
 	packet* p = &packetVector[link_ptr->pnum];
 	int tnum = link_ptr->pnum;
 	link_ptr->pnum = NULL;
-
-	if (p->data > 0) {
+	if (!p->isAck) {
 		//cout << "RECEIVED DATA, SENDING ACK" << endl;
 		packet pSend(0, p->num, this, p->src);
 		pSend.f = p->f;
-
 		packetVector.push_back(pSend);
 		link_ptr->qp.push(packetVector.size() - 1);
 		link_ptr->qn.push(this);
