@@ -66,7 +66,7 @@ void router::procPacket(pnum){
 						}
 					}
 					if(found==false){
-						rtable.insert(); /***************************************/
+						rtable.insert(p->src->ip,dVec); /***************************************/
 					}
 				}
 				bool updateReq = false;
@@ -98,6 +98,31 @@ void router::procPacket(pnum){
 		//determine forward path
 	}
 }
+
+router::rtable::insert(){
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //if empty routing table, broadcast connectivity request.
 //broadcast if there is any change in a link distance vector.

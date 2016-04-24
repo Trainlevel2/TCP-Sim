@@ -34,7 +34,7 @@ class router: public node {
 				vector<int> rVector; //knowledge of entire network's routers
 				vector<vector<int>> rtable; //link costs
 
-				insert(int from,int to);
+				insert(int ip,int dVec);
 				getDv();
 		};
 
