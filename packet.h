@@ -7,6 +7,8 @@
 
 #include "host.h"  
 #include "flow.h"
+#include "router.h"
+#include "dVec.h"
 class flow;
 class host;	//why is a node declared here? -kirk
 
@@ -18,11 +20,7 @@ class packet {
 		// Must also find the time...
 		packet(int dat, int num, node* src, node* dst); //node* should not be carried in the packet.  ideally, node ip  instead. --kirk
 		
-		class entry{
-			public:
-				int cost;
-				int ip;
-		};
+		
 
 		vector<entry> dVec;
 		

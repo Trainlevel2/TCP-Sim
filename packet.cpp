@@ -8,6 +8,7 @@
 using namespace std;
 #include "packet.h"
 #include "host.h"
+#include "dVec.h"
 
 // The packet constructor initializes the packet with set information of data and destination. 
 packet::packet(int dat, int num, host* source, host* destination) {

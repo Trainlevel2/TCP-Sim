@@ -11,6 +11,7 @@
 #include "node.h"
 #include "packet.h"
 #include "link.h"
+#include "dVec.h"
 using namespace std;
 class node;
 
@@ -27,16 +28,15 @@ class router: public node {
 
 	public:
 		
-		
-		
+
 		class rtable{
 			public:
-				vector<int> rVector; //knowledge of entire network's routers
-				vector<vector<int>> rtable; //link costs
-
-				insert(int ip,int dVec);
-				getDv();
+				vector<dVec> dvv;
+				update(dVec* dv);
+				getdv();
 		};
+
+		rtable rt;
 
 		
 
