@@ -9,20 +9,13 @@ class link;
 class packet;
 
 class host : public node{
-	
 	public:
 		
-		
-
 		host(string name, int ip);
-		void receivePacket(link* l);
+		void receivePacket(link* link_ptr);
 		//void pushPacket(int pnum);
 		void addLink(int lnum);
 		
-
-	private:
-		link* link_ptr;
-	
 };
 
 #endif // _HOST_H

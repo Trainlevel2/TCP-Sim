@@ -21,22 +21,32 @@ int t = 0;
 string eventlog = "";
 string cwndLog = "time (s) , flow index , cwnd";
 vector<link> linkVector;
-vector<host> hostVector;
-vector<router> routerVector;
+//vector<host> hostVector;
+//vector<router> routerVector;
+vector<node> nodeVector;
 vector<flow> flowVector;
 vector<packet> packetVector;
-
+/*
 router* findRouter(string rname) {
-	for (int i = 0; i < (int)routerVector.size(); i++)
-		if (routerVector[i].name == rname)
-			return &routerVector[i];
+	for (int i = 0; i < (int)nodeVector.size(); i++)
+		if (nodeVector[i].name == rname)
+			return &nodeVector[i];
 	return NULL;
 }
 
 host* findHost(string hname) {
-	for (int i = 0; i < (int)hostVector.size(); i++)
-		if (hostVector[i].name == hname)
-			return &hostVector[i];
+	for (int i = 0; i < (int)nodeVector.size(); i++)
+		if (nodeVector[i].name == hname)
+			return &nodeVector[i];
+	return NULL;
+}
+*/
+
+
+node* findNode(string nname) {
+	for (int i = 0; i < (int)nodeVector.size(); i++)
+		if (nodeVector[i].name == nname)
+			return &nodeVector[i];
 	return NULL;
 }
 
@@ -44,13 +54,13 @@ host* findHost(string hname) {
 void printNetwork()
 {
 	cout << "HOSTS" << endl;
-	for (int i = 0; i < (int)hostVector.size(); i++) {
-		cout << hostVector[i].name << ", " << hostVector[i].ip_addr << endl;
+	for (int i = 0; i < (int)nodeVector.size(); i++) {
+		cout << nodeVector[i].name << ", " << nodeVector[i].ip << endl;
 	}
 
 	cout << "ROUTERS" << endl;
-	for (int i = 0; i < (int)routerVector.size(); i++) {
-		cout << routerVector[i].name << endl;
+	for (int i = 0; i < (int)nodeVector.size(); i++) {
+		cout << nodeVector[i].name << endl;
 	}
 
 	cout << "LINKS" << endl;
@@ -61,32 +71,49 @@ void printNetwork()
 
 // Add a host
 void createHost(string hostName){
-	//implement later
 	cout << "HOST: " << hostName << endl;
-	host h(hostName, (int)hostVector.size());
-	hostVector.push_back(h);
+	host h(hostName, (int)nodeVector.size());
+	nodeVector.push_back(h);
 }
 
+
 // Add a router
-void createRouter(string routerName,string[host]){
-	
+void createRouter(string routerName){
 	cout << "ROUTER: " << routerName << endl;
-	router r(routerName, (int)routerVector.size());
-	routerVector.push_back(r);
+	router r(routerName, (int)nodeVector.size());
+	nodeVector.push_back(r);
 }
+
 
 // Add a link from a given host/router to a new Router
 void createLink(string linkName, string nodeA, string nodeB, int a, int b, int c){
 	//implement later
 	cout << "LINK: " << linkName << " FROM " << nodeA << " TO " << nodeB << ", PARAMETER " << a << endl;
 	node* nA;
+	node* nB;
+
+	nA = findNode(nodeA);
+	nB = findNode(nodeB);
+
+	if(!nA){
+		cerr<<"could not find "<<nodeA<<endl; 
+		exit(1);
+	}else if(!nB){
+		cerr<<"could not find "<<nodeB<<endl; 
+		exit(1);
+	}
+
+	/*
 	nA = findHost(nodeA);
 	if (!nA)
 		nA = findRouter(nodeA);
-	node* nB;
+	
 	nB = findHost(nodeB);
 	if (!nB)
 		nB = findRouter(nodeB);
+	*/
+	
+	
 
 	//pushing link id's instead
 
@@ -101,7 +128,7 @@ void createLink(string linkName, string nodeA, string nodeB, int a, int b, int c
 void createFlow(string flowName, string hostA, string hostB, int a, int b){
 	//implement later
 	cout << "FLOW: " << flowName << " FROM " << hostA << " TO " << hostB << ", PARAMETER " << a << " " << b << endl;
-	flow l(findHost(hostA), findHost(hostB), a, (int)flowVector.size());
+	flow l((host*)findNode(hostA), (host*)findNode(hostB), a, (int)flowVector.size());
 	flowVector.push_back(l);
 	stringstream ss;
 	ss << (int)flowVector.size() - 1;
@@ -190,12 +217,9 @@ void popEvent(){
 
 	if(objectType == "LINK"){
 		int index = stoi(objectIndex);
-		if (function == "PROPAGATE_PACKET"){
+		if (function == "TRANSMIT_PACKET"){
 			//linkVector[index].recievePacket();	
-			linkVector[index].tpropagate(); 
-		}
-		else if(function=="TRANSMIT_PACKET"){
-			linkVector[index].ttransmit();
+			linkVector[index].tpropagate();
 		}
 	}
 	else if (objectType == "FLOW") {

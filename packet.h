@@ -21,8 +21,7 @@ class packet {
 		packet(int dat, int num, node* src, node* dst); //node* should not be carried in the packet.  ideally, node ip  instead. --kirk
 		
 		
-
-		vector<entry> dVec;
+		dVec dv;
 		
 		bool isAck;
 		bool isRIP;

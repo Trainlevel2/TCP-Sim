@@ -16,36 +16,47 @@ extern void popTimeout(int timeoutIndex);
 
 //specify bitrate 
 host::host(string name, int ip)
-:node(string name, int ip){}
+:node(string name, int ip){
+	link_id=-1;
+}
 
 //Receives packet
-void host::receivePacket(link* l){
+void host::receivePacket(link* link_ptr){
+	if(link_id != -1){
+		link* link_ptr = &linkVector[lnum];
+		packet* p = &packetVector[link_ptr->pnum];
+		int tnum = link_ptr->pnum;
+		link_ptr->pnum = NULL;
+		if (!p->isAck) {
+			//cout << "RECEIVED DATA, SENDING ACK" << endl;
+			packet pSend(0, p->num, this, p->src);
+			pSend.f = p->f;
+			packetVector.push_back(pSend);
+			link_ptr->qp.push(packetVector.size() - 1);
+			link_ptr->qn.push(this);
+			link_ptr->propagate();
+			//link_ptr->propagate(&packetVector[packetVector.size() - 1]);
+		}
+		else {
+			//cout << "RECEIVED ACK" << endl;
+			int pnum = p->num;
+			p->f->receiveAck(tnum);
+			//Delete associated timeout
+			popTimeout(pnum); //the 0 is a stand-in for the timeout index, since there will only be one timeout at a time for now
+		}
+	}
+	else{
+		cerr<<"No link added to host "<< this->name <<", cannot receive packet!"<<endl;
+		exit(1);
+	}
 	//return link_ptr->currentPkt;
-	packet* p = &packetVector[link_ptr->pnum];
-	int tnum = link_ptr->pnum;
-	link_ptr->pnum = NULL;
-	if (!p->isAck) {
-		//cout << "RECEIVED DATA, SENDING ACK" << endl;
-		packet pSend(0, p->num, this, p->src);
-		pSend.f = p->f;
-		packetVector.push_back(pSend);
-		link_ptr->qp.push(packetVector.size() - 1);
-		link_ptr->qn.push(this);
-		link_ptr->propagate();
-		//link_ptr->propagate(&packetVector[packetVector.size() - 1]);
-	}
-	else {
-		//cout << "RECEIVED ACK" << endl;
-		int pnum = p->num;
-		p->f->receiveAck(tnum);
-		//Delete associated timeout
-		popTimeout(pnum); //the 0 is a stand-in for the timeout index, since there will only be one timeout at a time for now
-	}
+	
 }
 
 void host::addLink(int lnum) {
-	this->link_ptr = &linkVector[lnum];
+	this->link_id = lnum;
 }
+
 
 
 

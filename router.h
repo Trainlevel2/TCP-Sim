@@ -23,58 +23,49 @@ class router: public node {
 
 	//routing table gives costs from  
 
-
-
-
 	public:
 		
-
 		class rtable{
 			public:
 				vector<dVec> dvv;
-				update(dVec* dv);
-				getdv();
+				int update(dVec* dv);
+				dVec* getdv(int ip);
+				void add(int ip);
+				void bford();
+
+
 		};
 
 		rtable rt;
 
-		
-
 		//vector<entry> map; //maps ip's to routing table indicies.
 
+		class field{
+			int link_id;
+			int type; //What's on the other end? 0 = host, 1 = router.
+			int ip; 
+		};
+
+		vector<field> lVector; //connected link info
 		
 
-		vector<int> lVector; //connected links
-
-
-
-		int host;
-
+		int host_ip;
+		
 		router(string name, int ip);
 		
 		void addLink(int lnum);
 
 		//get the packet present on a connected link.
-		int receivePacket(int lnum);
+		void receivePacket(link* link_ptr);
 
 		//use routing table to determine packet's outbound link
 		//packets forwarded using destination host address
 
 		int chooseLink(int pnum);
 
+		void broadcast();
+		int scanLinks();
 
-		
-		link* chooseLink();
-
-		//push packet to router output queue.
-		//if the queue is full, the packet is lost.
-		//returns 0 if successful,
-		//returns 1 on packet loss.
-		//int pushPacket(packet* pptr, link* lptr);
-		//void pushPacket(int pnum)
-
-		//transmit packet to a certain outbound link.
-		void transmitPacket(link* lptr);
 
 };
 

@@ -30,7 +30,7 @@ link::link(int maxT, int id, node* source, node* destination){
 void link::propagate(){
 	node* nn = qn.front();
 	packet* pp = &packetVector[qp.front()];
-	cout << "Queuing Packet\tLink: " << this->id << "\tPacket: " << pp->num << endl;
+	//cout << "Queuing Packet\tLink: " << this->id << "\tPacket: " << pp->num << endl;
 	pnum = qp.front();
 	stringstream ss;
 	ss << this->id;
@@ -50,7 +50,7 @@ void link::forcepropagate() {
 	pnum = qp.front();
 	stringstream ss;
 	ss << this->id;
-	if (qn.front() != src) { //why swap src and dest? shouldn't these be fixed?
+	if (qn.front() != src) {
 		node* s = src;
 		src = qn.front();
 		dest = s;
@@ -61,18 +61,21 @@ void link::forcepropagate() {
 void link::tpropagate() {
 	//cout << "T-Propagating packet\tLink: " << this->id << "\tPacket: " << packetVector[pnum].num << endl;
 	dest->receivePacket(this);
+	qn.pop();
+	qp.pop();
 	if(qp.size() > 0)
 		forcepropagate();
 	return;
 }
 
+/*
 void link::ttransmit() {
 	//output queue delay
-
 	qn.pop();
 	qp.pop();
 	return;
 }
+*/
 
 
 

@@ -14,27 +14,30 @@ using namespace std;
 //	return;
 //}
 
-string node::toString() {
-stringstream ss;
-
-	return "";
-}
-
 node::node(string name, int ip){
 	this->ip = ip;
 	this->name = name;
 	br=100;
 }
 
-
-
-
-
-
 //general packet transmission function
 //pushes to the queue of the link
-void pushPacket(int pnum,link* link_ptr) {
+void node::pushPacket(int pnum,link* link_ptr) {
 	link_ptr->qn.push(this);
 	link_ptr->qp.push(pnum);
 	link_ptr->propagate();
 }
+
+
+string node::toString() {
+stringstream ss;
+	return "";
+}
+
+
+
+
+
+
+
+
