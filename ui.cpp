@@ -19,12 +19,20 @@ void popEvent();
 std::priority_queue<string, vector<string>, std::greater<string> > q;
 int t = 0;
 string eventlog = "";
-string cwndLog = "time (s) , flow index , cwnd";
 vector<link> linkVector;
 vector<host> hostVector;
 vector<router> routerVector;
 vector<flow> flowVector;
 vector<packet> packetVector;
+
+//logs for graphing
+string linkRateLog = "end time (ms), start time (ms), action"; //TODO: convert to get rate
+string bufferLog = "time(s), buffer occupancy"; //TODO: how?
+string packetLossLog = "time(s), loss"; //TODO: how?
+string flowRateLog = "time (s), flow index, flow rate (Mb/s)"; //TODO: how?
+string cwndLog = "time (s) , flow index , cwnd";
+string packetDelayLog = "time(s), packetDelay"; //TODO: how?
+
 
 router* findRouter(string rname) {
 	for (int i = 0; i < (int)routerVector.size(); i++)
@@ -193,13 +201,13 @@ void popEvent(){
 		}
 	}
 	eventlog += "\n" + event; //add the event to the log
+	linkRateLog += "\n" + event;
 	//log all flow cwnd's
 	for(int i = 0; i < (int)flowVector.size(); i++){
 		cwndLog += "\n" + t/1000;
 		cwndLog += ",";
 		cwndLog += i + "," + flowVector[i].getCwnd();
 	}
-	
 }
 
 void popTimeout(int timeoutIndex){
