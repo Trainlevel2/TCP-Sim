@@ -18,6 +18,7 @@ void popEvent();
 //GLOBAL VARIABLES for time management
 std::priority_queue<string, vector<string>, std::greater<string> > q;
 int t = 0;
+
 string eventlog = "";
 vector<link> linkVector;
 vector<host> hostVector;
@@ -26,12 +27,12 @@ vector<flow> flowVector;
 vector<packet> packetVector;
 
 //logs for graphing
-string linkRateLog = "end time (ms), start time (ms), action"; //TODO: convert to get rate
-string bufferLog = "time(s), link index, buffer occupancy";
-string packetLossLog = "time(s), loss"; //TODO: how?
-string flowRateLog = "time (s), flow index, flow rate (Mb/s)"; //TODO: how?
-string cwndLog = "time (s) , flow index , cwnd";
-string packetDelayLog = "time(s), packetDelay"; //TODO: how?
+string linkRateLog = "linkRateLog \nend time (ms), start time (ms), packet sent event";
+string bufferLog = "bufferLog \ntime(s), link index, buffer occupancy";
+string packetLossLog = "packetLossLog \nend time(ms), start time(ms), loss event";
+string flowRateLog = "flowRateLog \ntime (s), flow index, flow rate (Mb/s)"; //TODO: how?
+string cwndLog = "cwndLog \ntime (s) , flow index , cwnd";
+string packetDelayLog = "packetDelayLog\n time(s), packetDelay"; //TODO: how?
 
 
 router* findRouter(string rname) {
@@ -183,15 +184,14 @@ void popEvent(){
 	
 	
 	//Execute the event in the event e that was initially input into pushEvent
+	int index = stoi(objectIndex);
 	if(objectType == "LINK"){
-		int index = stoi(objectIndex);
 		if (function == "TRANSMIT_PACKET"){
 			//linkVector[index].recievePacket();	
 			linkVector[index].tpropagate();
 		}
 	}
 	else if (objectType == "FLOW") {
-		int index = stoi(objectIndex);
 		if (function == "START") {
 			flowVector[index].startFlow();
 		}
@@ -200,8 +200,16 @@ void popEvent(){
 			flowVector[index].timeoutAck(pptr);
 		}
 	}
+	
+	//LOGS:
+	
 	eventlog += "\n" + event; //add the event to the log
-	linkRateLog += "\n" + event;
+	if(objectType == "LINK"){
+		linkRateLog += "\n" + event;
+	}
+	if(objectType == "FLOW"){
+		packetLossLog += "\n" + event;
+	}
 	//log all flow cwnd's
 	for(int i = 0; i < (int)flowVector.size(); i++){
 		stringstream ss;
@@ -330,7 +338,12 @@ int main(int argc, char *argv[])
 	cout << endl;
 	SimulateNetwork();
 	cout<<eventlog<<endl;
+	cout << linkRateLog <<endl;
+	cout << bufferLog << endl;
+	cout << packetLossLog << endl;
+	cout << flowRateLog << endl;
 	cout << cwndLog << endl;
+	cout << packetDelayLog << endl;
 	//cin.ignore();
 	//printNetwork();
 	cin.ignore();
