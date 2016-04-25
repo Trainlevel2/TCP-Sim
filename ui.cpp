@@ -204,9 +204,15 @@ void popEvent(){
 	linkRateLog += "\n" + event;
 	//log all flow cwnd's
 	for(int i = 0; i < (int)flowVector.size(); i++){
-		cwndLog += "\n" + t/1000;
-		cwndLog += ",";
-		cwndLog += i + "," + flowVector[i].getCwnd();
+		stringstream ss;
+		ss << t / 1000;
+		cwndLog += "\n" + ss.str();
+		ss.str("");
+		ss << i;
+		cwndLog += "," + ss.str();
+		ss.str("");
+		ss << flowVector[i].getCwnd();
+		cwndLog += "," + ss.str();
 	}
 	for(int i = 0; i < (int)linkVector.size(); i++){
 		bufferLog += "\n" + t/1000;
