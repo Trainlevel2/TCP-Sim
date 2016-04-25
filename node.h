@@ -1,19 +1,20 @@
 #ifndef _NODE_H
 #define _NODE_H
 
-#include <string>
-#include "packet.h"
-#include "link.h"
-
+//fwd declared dependencies
 class link;
 class packet;
 
-class node {
-	private:
-		int link_id; //left -1 for routers.
+//included dependencies
+#include <string>
 
+
+class node {
 	public:
 		int br; //transmission bitrate....Separate from propagation!
+		
+		node(string name, int ip);
+		
 		string name;
 		int ip;
 

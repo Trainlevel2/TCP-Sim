@@ -5,12 +5,15 @@
 #ifndef _PACKET_H
 #define _PACKET_H
 
-#include "host.h"  
-#include "flow.h"
-#include "router.h"
-#include "dVec.h"
+//fwd declared dependencies
+class node;
 class flow;
-class host;	//why is a node declared here? -kirk
+
+
+//included dependencies
+#include <string>
+#include "dVec.h"
+
 
 class packet {
 
@@ -19,7 +22,6 @@ class packet {
 		// The packet constructor initializes the packet with set information of data and destination. 
 		// Must also find the time...
 		packet(int dat, int num, node* src, node* dst); //node* should not be carried in the packet.  ideally, node ip  instead. --kirk
-		
 		
 		dVec dv;
 		

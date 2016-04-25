@@ -11,10 +11,10 @@ using namespace std;
 #include "dVec.h"
 
 // The packet constructor initializes the packet with set information of data and destination. 
-packet::packet(int dat, int num, host* source, host* destination) {
-	data = dat;
-	src = source;
-	dest = destination;
+packet::packet(int data, int num, node* src, node* dest) {
+	this->data = data;
+	this->src = src;
+	this->dest = dest;
 	this->num = num;
 	//TODO: time system
 	//timestamp = getTime();	//HOW DO I GET THE TIME OF THE SIMULATION???

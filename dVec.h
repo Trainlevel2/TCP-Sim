@@ -10,6 +10,8 @@
 #ifndef _DVEC_H
 #define _DVEC_H
 
+#include <vector>
+
 class dVec{
 	public:	
 		class entry{

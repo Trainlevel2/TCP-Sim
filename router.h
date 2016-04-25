@@ -5,15 +5,25 @@
 #ifndef _ROUTER_H
 #define _ROUTER_H
 
+
+//fwd declared dependencies
+class link;
+
+
+//included dependencies
 #include <vector>
 #include <queue>
-#include "host.h"
 #include "node.h"
-#include "packet.h"
-#include "link.h"
 #include "dVec.h"
+//#include "packet.h"
+//#include "link.h"
+//#include "host.h"
+
+
+
+
 using namespace std;
-class node;
+
 
 class router: public node {
 	
@@ -31,8 +41,8 @@ class router: public node {
 				int update(dVec* dv);
 				dVec* getdv(int ip);
 				void add(int ip);
+				bool isPop(); //is table populated
 				void bford();
-
 
 		};
 
@@ -41,13 +51,16 @@ class router: public node {
 		//vector<entry> map; //maps ip's to routing table indicies.
 
 		class field{
+		public:
 			int link_id;
 			int type; //What's on the other end? 0 = host, 1 = router.
 			int ip; 
 		};
 
+		bool discovered;
+
 		vector<field> lVector; //connected link info
-		
+		bool fulltable; //no maxints
 
 		int host_ip;
 		

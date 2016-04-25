@@ -3,7 +3,9 @@
 using namespace std;
 #include "flow.h"
 #include "host.h"
+#include "link.h"
 extern vector<packet> packetVector;
+extern vector<link> linkVector;
 extern void pushEvent(string e, int elapseTime);
 
 // The packet constructor initializes the packet with set information of data and destination. 
@@ -34,7 +36,7 @@ void flow::searchMax(int size) {
 	packet p(size, packetnum, source, dest);
 	p.f = this;
 	packetVector.push_back(p);
-	source->pushPacket(packetVector.size()-1,source->link_ptr);
+	source->pushPacket(packetVector.size()-1,&linkVector[source->link_id]);
 	state = 1;
 
 	stringstream ss;
