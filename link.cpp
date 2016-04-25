@@ -66,6 +66,10 @@ void link::tpropagate() {
 	return;
 }
 
+int link::getBufferSize(){
+	return qp.size();
+}
+
 // Displays the packet for testing purposes
 string link::toString() {
 	string s = "";

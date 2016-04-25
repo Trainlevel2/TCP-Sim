@@ -27,7 +27,7 @@ vector<packet> packetVector;
 
 //logs for graphing
 string linkRateLog = "end time (ms), start time (ms), action"; //TODO: convert to get rate
-string bufferLog = "time(s), buffer occupancy"; //TODO: how?
+string bufferLog = "time(s), link index, buffer occupancy";
 string packetLossLog = "time(s), loss"; //TODO: how?
 string flowRateLog = "time (s), flow index, flow rate (Mb/s)"; //TODO: how?
 string cwndLog = "time (s) , flow index , cwnd";
@@ -207,6 +207,11 @@ void popEvent(){
 		cwndLog += "\n" + t/1000;
 		cwndLog += ",";
 		cwndLog += i + "," + flowVector[i].getCwnd();
+	}
+	for(int i = 0; i < (int)linkVector.size(); i++){
+		bufferLog += "\n" + t/1000;
+		bufferLog += ",";
+		bufferLog += i + "," + linkVector[i].getBufferSize().
 	}
 }
 

@@ -37,6 +37,7 @@ class link {
 		//propagation of current packet
 		//this function should modify the current packet value
 		//after propagation delay
+		int getBufferSize();
 		void propagate();
 		void forcepropagate();
 		void tpropagate();
