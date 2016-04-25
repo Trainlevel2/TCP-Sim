@@ -98,7 +98,7 @@ bool router::discoveryComplete(){
 }
 
 
-link* chooseLink(packet* p){
+link* router::chooseLink(packet* p){
 	//int inf = std::numeric_limits<int>::max();
 
 	//pick least-cost next step, given current packet destination
@@ -125,6 +125,26 @@ link* chooseLink(packet* p){
 	return min_link;
 }
 
+void router::bford(int ip){
+	
+	for(int i=0;i<rt.dvv.size();i++){
+		if(rt.dvv[i].ip==ip){
+
+			//set costs in routing table row accordingly.
+			for(int j=0;j<rt.dvv[i].e.size();j++){
+				
+
+
+
+
+				rt.setcost(ip,dvv[i].e[j].ip,cost)
+			}
+
+		}
+	}
+}
+
+
 void router::rtable::addip(int ip){
 	//int inf = std::numeric_limits<int>::max();
 	dVec ndv;
@@ -141,9 +161,7 @@ void router::rtable::addip(int ip){
 	}
 }
 
-void router::rtable::bford(int ip){
-	
-}
+
 
 //return -1 on failure
 //return cost on success
