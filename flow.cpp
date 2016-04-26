@@ -22,6 +22,9 @@ void flow::startFlow() {
 	lastSent = 10;
 	slowStartState = 1;
 	ssthresh = 160;
+
+	source->init();
+	if()
 	searchMax(lastSent);
 }
 

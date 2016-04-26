@@ -19,6 +19,20 @@ extern vector<packet> packetVector;
 extern vector<node> nodeVector;
 extern void popTimeout(int timeoutIndex);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 router::router(string name, int ip)
 :node::node(name,ip){
 	host_ip=-1;
@@ -39,21 +53,20 @@ void router::addLink(int id) {
 	lVector.push_back(f);
 }
 
+
+
+
 //get, packet on connected link. start processing.
 void router::receivePacket(link* link_ptr) {
 	packet* p = &packetVector[link_ptr->pnum];
 	int tnum = pnum;
 	link_ptr->pnum = -1;
-	if(p->isRIP){
-		if(!p->dv.e.empty()){
-			if(rt.update(&(p->dv))==1){
-				broadcast(1);
-			}
-		}		
-		else{
+	if (STATE==0){ 		//0 = unknown neighbors, empty routing table.
+		if(p->isRIP){
 			cout<<"CONNECTION packet recieved by router "<<this->name<<" ,replying"<<endl;
-			if(!discovered){
-				for(int i=0;i<(int)lVector.size();i++){
+			//update lVector info
+			for(int i=0;i<(int)lVector.size();i++){
+				if(lVector[i].link_id == link_ptr->id){
 					if(lVector[i].link_id == link_ptr->id){
 						if(p->src->name[0] == 'R'){
 							lVector[i].type = 1;
@@ -63,27 +76,84 @@ void router::receivePacket(link* link_ptr) {
 							lVector[i].type = 0;
 							lVector[i].ip = p->src->ip;
 						}
-					} 
-				}
-				if(discoveryComplete()){
-					discovered = true;
+					}
 				}
 			}
-			int size= 1;
-			int num= -1;
-			packet p(size, num, this, this);
-			p.isRIP = true;
-			//p.dVec = rt.getdv(this->ip);
-			packetVector.push_back(p);
-			pushPacket(packetVector.size()-1,link_ptr); //router shouldn't knw what link the packet came in on.
+			//broadcast connectionReq on ALL links
+			broadcast();
+			STATE=1;
+		}else{
+			//we can't forward
 		}
 	}
-	else{
-		link* l = chooseLink(p);
-		if(l){
-			pushPacket(tnum,l);
-		}else{
-			cout<<"chooseLink failure at"<<this->name<<endl;
+	else if(STATE==1){ 	//1 = broadcast sent, waiting on replies.
+		//update lVector info, based on packet sent.
+		if(p->isRIP){
+			for(int i=0;i<(int)lVector.size();i++){
+				if(lVector[i].link_id == link_ptr->id){
+					if(p->src->name[0] == 'R'){
+						lVector[i].type = 1;
+						lVector[i].ip = p->src->ip;
+					}
+					else if(p->src->name[0] == 'H'){
+						lVector[i].type = 0;
+						lVector[i].ip = p->src->ip;
+					}
+				}
+			}
+		}
+		else{
+			//we can't forward
+		}
+		
+		if(discoveryComplete()){
+			STATE=2;
+		}
+		//make distance vector from lVector
+		//generate preliminary routing table
+		rt.init();
+	}
+	else if(STATE==2){ 	//2 = setting up routing table.
+		if(p->isRIP){
+			if(!p->dv.e.empty()){
+				cout<<"DVEC packet recieved by router "<<this->name<<" ,replying"<<endl;
+				int n1 = rt.update(&(p->dv));
+				if(n==1){		//broadcast dvec sent to us.
+					sendDVec(p->dv.ip);
+				}else if(n==2){	//broadcast dvec sent to us AND our dvec.
+					sendDVec(p->dv.ip);
+					sendDVec(this->ip);
+				}
+			}
+		}
+		else{
+			//we still can't forward
+		}
+		if(rt.isComplete()){
+			STATE++;
+
+		}
+	}
+	else if (STATE==3){
+		if(p->isRIP){
+			if(!p->dv.e.empty()){
+				cout<<"DVEC packet recieved by router "<<this->name<<" ,replying"<<endl;
+				int n2 = rt.update(&(p->dv));
+				if(n==1){		//broadcast dvec sent to us.
+					sendDVec(p->dv.ip);
+				}else if(n==2){	//broadcast dvec sent to us AND our dvec.
+					sendDVec(p->dv.ip);
+					sendDVec(this->ip);
+				}
+			}
+		}
+		else{
+			link* l = chooseLink(p);
+			if(l){
+				pushPacket(tnum,l);
+			}else{
+				cout<<"chooseLink failure at"<<this->name<<endl;
+			}
 		}
 	}
 }
@@ -125,23 +195,34 @@ link* router::chooseLink(packet* p){
 	return min_link;
 }
 
-void router::bford(int ip){
-	
-	for(int i=0;i<rt.dvv.size();i++){
-		if(rt.dvv[i].ip==ip){
 
-			//set costs in routing table row accordingly.
-			for(int j=0;j<rt.dvv[i].e.size();j++){
-				
-
-
-
-
-				rt.setcost(ip,dvv[i].e[j].ip,cost)
-			}
-
+//return true if dvec for ip_from needs to be broadcasted
+//return false if no braodcast required
+bool router::rtable::bford(int ip_from){
+	vector<int>* cvec = new vector<int>;
+	int ip_to;
+	int bcast=false;
+	for(int i=0;i<dvv.size();i++){
+		if (!cvec.empty()){
+			cvec->erase(cvec->begin(),cvec->end());
 		}
+		ip_to = dvv[i].ip;
+		for(int j=0;j<dvv.size();j++){
+			int cost = getcost(ip_from,dvv[j].ip) + getcost(dvv[j].ip,ip_to);
+			cvec->push_back();	
+		}
+		int m=INF;
+		for(int j=0;j<cvec->size();j++){
+			if((*cvec)[j]<m){
+				m = (*cvec)[j];
+			}
+		}
+		if (getcost(ip_from,ip_to)!=m){
+			rt.setcost(ip_from,ip_to,m);
+			bcast=true;
+		}	
 	}
+	return bcast;
 }
 
 
@@ -217,7 +298,8 @@ int router::rtable::setcost(int ip_from,int ip_to,int cost){
 	}
 
 }
-bool router::rtable::isPop(){
+
+bool router::rtable::isComplete(){
 	for(int i=0;i<dvv.size();i++){
 		for(int j=0;j<dvv.size();j++){
 			if(INF==getcost(dvv[i].ip,dvv[j].ip)){
@@ -229,13 +311,14 @@ bool router::rtable::isPop(){
 }
 
 //update given distance vector.
-//return 1 if broadcast is needed (this rtable contains an ip that RIP source doesn't)
+//return 1 if we need to broadcast the dvec sent to us.
+//return 2 if we need to broadcast the dvec sent to us AND our distance vector(updated by bellman ford).
 //return 0 if no broadcast is needed
+
 int router::rtable::update(dVec* dv){
 	//int inf = std::numeric_limits<int>::max();
 	vector<int> toAdd;
 	int bcast=0;
-
 	//make sure that dv and rtable have the same set of IPs
 	vector<int> common;
 	for(int i=0;i<dvv.size();i++){
@@ -248,10 +331,17 @@ int router::rtable::update(dVec* dv){
 	if((dvv.size()==dv->e.size())&&(common.size()==dvv.size())){
 		//they have the same elements
 		for(int i=0;i<dv->e.size();i++){
-			setcost(dv->ip,dv->e[i].ip,dv->e[i].cost);
+			if(getcost(dv->ip,dv->e[i].ip) != dv->e[i].cost){
+				if(bcast==0){
+					bcast=1;
+				}
+				setcost(dv->ip,dv->e[i].ip,dv->e[i].cost);
+			}
 		}
-		if (isPop()){
-			bford();
+		if (isComplete()){
+			if(bford(dv->ip)){
+				bcast = 2;
+			}
 		}
 	}else{
 		for(int i=0;i<common.size();i++){
@@ -292,35 +382,56 @@ dVec* router::rtable::getdv(int ip){
 //broadcast if there is any change in a link distance vector.
 //0 discovery
 //1 dVec update 
-void router::broadcast(int mode){
-	if (mode==0){
-		for(int i=0;i<lVector.size();i++){
-			if(lVector[i].type != 2){
-				link* link_ptr = &linkVector[lVector[i].link_id];
-				int size= 1;
-				int num= -1;
-				packet p(size, num, this, this);
-				p.isRIP = true;
-				//p.dVec = rt.getdv(this->ip);
-				packetVector.push_back(p);
-				pushPacket(packetVector.size()-1,link_ptr);
-			}
-		}
-	}else if(mode==1){
-		for(int i=0;i<lVector.size();i++){
-			if(lVector[i].type != 2){
-				link* link_ptr = &linkVector[lVector[i].link_id];
-				int size= 1;
-				int num= -1;
-				packet p(size, num, this, this);
-				p.isRIP = true;
-				p.dVec = rt.getdv(this->ip);
-				packetVector.push_back(p);
-				pushPacket(packetVector.size()-1,link_ptr);
-			}
+
+
+
+
+
+
+void router::sendDVec(int ip_from){
+	for(int i=0;i<lVector.size();i++){
+		if(lVector[i].type != 2){
+			link* link_ptr = &linkVector[lVector[i].link_id];
+			int size= 1;
+			int num= -1;
+			packet p(size, num, this, this);
+			p.isRIP = true;
+			p.dVec = rt.getdv(ip_from);
+			packetVector.push_back(p);
+			pushPacket(packetVector.size()-1,link_ptr);
 		}
 	}
-	
+}
+
+void router::broadcast(){
+	for(int i=0;i<lVector.size();i++){
+		if(lVector[i].type != 2){
+			link* link_ptr = &linkVector[lVector[i].link_id];
+			int size= 1;
+			int num= -1; //connectionReq packet
+			packet p(size, num, this, this);
+			p.isRIP = true;
+			//p.dVec = rt.getdv(this->ip);
+			packetVector.push_back(p);
+			pushPacket(packetVector.size()-1,link_ptr);
+		}
+	}	
+}
+
+//if there's are hosts connected 2u, broadcast cleartosend.
+void router::clearToSend(){
+	for(int i=0;i<(int)lVector.size();i++){
+		if(lVector[i].type==0){
+			link* link_ptr = &linkVector[lVector[i].link_id];
+			int size= 1;
+			int num= -2; //clearToSend packet
+			packet p(size, num, this, this);
+			p.isRIP = true;
+			//p.dVec = rt.getdv(this->ip);
+			packetVector.push_back(p);
+			pushPacket(packetVector.size()-1,link_ptr);		
+		}
+	}
 }
 
 //scan links and update routing table accordingly.
@@ -328,25 +439,24 @@ void router::broadcast(int mode){
 
 
 
-//assumes LinkVector is updated.
-int router::scanLinks(){
+//assumes LinkVector is fully updated.
+void router::rtable::init(){
+	if(dvv.empty()){
 	dVec* dv = new dVec();
-	dv->ip = this->ip;
-	int bcast=0;
+	dv->ip = ip;
 	for(int i=0;i<lVector.size();i++){
-		if(lVector[i].type == 1){
+		if(lVector[i].type == 1){ //router
 			link* link_ptr = &linkVector[lVector[i].link_id];
-			entry e;
-			e.cost = link_ptr->cost;
-			e.ip = lVector[i].ip;
-			dv.e.push_back(e);
+			entry ent; 
+			ent.cost = link_ptr->cost;
+			ent.ip = lVector[i].ip;
+			dv.e.push_back(ent);
 		}
-		else if(lVector[i].type == 0){
-			//host
-		}else if(lVector[i].type == -1){
-			bcast = 1;
-		}else if(lVector[i].type == 2){
-			//self
+		else if(lVector[i].type == 0){ //host
+			//don't add
+		}else if(lVector[i].type == -1){ //unknown
+			//shouldn't occur
+		}else if(lVector[i].type == 2){ //self
 			entry s;
 			s.ip = this->ip;
 			s.cost = 0;
@@ -354,7 +464,8 @@ int router::scanLinks(){
 		}
 	}
 	rt.update(dv);
-
 	delete dv;
-	return bcast;
+	}else{
+		cout<<"aint empty not updating"<<endl;
+	}
 }

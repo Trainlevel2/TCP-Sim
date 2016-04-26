@@ -43,7 +43,6 @@ class router: public node {
 				void add(int ip);
 				bool isPop(); //is table populated
 				void bford();
-
 		};
 
 		rtable rt;
@@ -57,12 +56,16 @@ class router: public node {
 			int ip; 
 		};
 
-		bool discovered;
+
+
+		//0 = unknown neighbors, empty routing table.
+		//1 = broadcast sent, waiting on replies.
+		//2 = neighbors known. setting up routing table.
+		//3 = routing table done. listening for dvec updates.
+		int STATE; 
 
 		vector<field> lVector; //connected link info
 		bool fulltable; //no maxints
-
-		int host_ip;
 		
 		router(string name, int ip);
 		

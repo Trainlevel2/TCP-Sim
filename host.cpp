@@ -20,7 +20,29 @@ extern void popTimeout(int timeoutIndex);
 host::host(string name, int ip)
 :node::node(name,ip){
 	link_id=-1;
+	STATE=0;
+	defaultGateway=-1;
 }
+
+host::init(){
+	if(STATE==0){
+		link* link_ptr = &linkVector[link_id];
+		int size= 1;
+		int num= -1; //connectionReq packet
+		packet p(size, num, this, this);
+		p.isRIP = true;
+		packetVector.push_back(p);
+		pushPacket(packetVector.size()-1,link_ptr);		
+		STATE++;	
+	}
+	else{
+		cout<< this->name <<" not in zero-state, can't initize"<<endl;
+	}
+}
+
+
+
+
 
 //Receives packet
 void host::receivePacket(link* link_ptr){
@@ -28,6 +50,45 @@ void host::receivePacket(link* link_ptr){
 	packet* p = &packetVector[link_ptr->pnum];
 	int tnum = link_ptr->pnum;
 	link_ptr->pnum = -1;
+
+
+	//if there are no flows going out of a host.
+	//	
+	if(STATE==0){ //0 = Initial state, no connectionReq packets yet sent
+		if(p->isRIP){
+			
+		}
+
+	}else if(STATE==1){//1 = listening for a RIP connectionReq REPLY 
+		
+
+
+
+	}else if(STATE==2){//2 = listening for a RIP clearToSend 
+	
+
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	int snum;
 	if (!p->isRIP){
 		if (!p->isAck) {
@@ -62,8 +123,12 @@ void host::addLink(int lnum) {
 	this->link_id = lnum;
 }
 
-void node::pushPacket(int pnum,link* link_ptr) {
-	link_ptr->qn.push(this);
-	link_ptr->qp.push(pnum);
-	link_ptr->propagate();
-}
+void host::broadcast(){
+	link* link_ptr = &linkVector[link_id];
+	int size= 1;
+	int num= -1;
+	packet p(size, num, this, this);
+	p.isRIP = true;
+	packetVector.push_back(p);
+	pushPacket(packetVector.size()-1,link_ptr);
+} 

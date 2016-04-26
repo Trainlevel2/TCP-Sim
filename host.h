@@ -24,6 +24,14 @@ class host : public node{
 		void receivePacket(link* link_ptr);
 		//void pushPacket(int pnum);
 		void addLink(int lnum);
+
+
+		//0 = Initial state
+		//1 = listening for a RIP connectionReq REPLY 
+		//2 = listening for a RIP clearToSend REPLY
+		//3 = clear to send.
+		int STATE;
+		int defaultGateway;
 		
 };
 

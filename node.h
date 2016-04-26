@@ -23,6 +23,8 @@ class node {
 		//virtual void addLink(link* l) {};
 		virtual void addLink(int lnum);
 
+		virtual void broadcast();
+
 		void pushPacket(int pnum,link* link_ptr);
 
 		//which link are we sending through?
