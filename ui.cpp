@@ -258,10 +258,10 @@ void popEvent(){
 		ss << i;
 		flowRateLog += "," + ss.str();
 		if(flowStopTimeVector[i] > t){ //flow is transmitting
-			flowRateLog += "," + "1.00(placeholder)"; //1.00 Mbps is the placeholder flow rate when transmitting
+			flowRateLog += string(",") + "1.00(placeholder)"; //1.00 Mbps is the placeholder flow rate when transmitting
 		}
 		else{ //flow is not transmitting
-			flowRateLog += "," + "0.00";
+			flowRateLog += string(",") + "0.00";
 		}		
 	}
 	/*
