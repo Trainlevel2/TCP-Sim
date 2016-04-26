@@ -142,7 +142,7 @@ void rtable::print(){
 			cout<<"{"<<dvv[i].e[j].ip<<","<<dvv[i].e[j].cost<<"}";
 			
 		}
-		cout << " hosts: " << endl;
+		cout << endl << " hosts: " << endl;
 		for (int j = 0; j < (int)dvv[i].h.size(); j++) {
 			cout << dvv[i].h[j] << ", ";
 		}
@@ -290,9 +290,9 @@ dVec* rtable::getDv(int ip){
 			dv.h.push_back(nh);
 			}
 			*/
-			
+			break;
 		}
-		break;
+		
 	}
 }
 

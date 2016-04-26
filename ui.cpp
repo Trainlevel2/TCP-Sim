@@ -390,11 +390,11 @@ int main(int argc, char *argv[])
 	cin.ignore();
 	SimulateNetwork();
 	cout << linkRateLog <<endl;
-	cout << bufferLog << endl;
-	cout << packetLossLog << endl;
-	cout << flowRateLog << endl;
-	cout << cwndLog << endl;
-	cout << packetDelayLog << endl;
+	//cout << bufferLog << endl;
+	//cout << packetLossLog << endl;
+	//cout << flowRateLog << endl;
+	//cout << cwndLog << endl;
+	//cout << packetDelayLog << endl;
 	//cin.ignore();
 	//printNetwork();
 	cin.ignore();

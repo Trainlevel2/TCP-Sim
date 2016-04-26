@@ -77,6 +77,7 @@ void router::addLink(int id) {
 
 void router::printLinks(){
 	cout<<this->name<<" lvector: "<<endl;
+	cout << "{link_id, type, ip}" << endl;
 	for(int i=0;i<lVector.size();i++){
 		cout<<"{"<<lVector[i].link_id<<","<<lVector[i].type<<","<<lVector[i].ip<<"},"<<endl;
 	}
@@ -97,6 +98,7 @@ void router::rtHardCode(){
 		}
 		else if ((linkVector[i].dest->name[0] == 'R') && (linkVector[i].src->name[0] == 'R')) {
 			rt.addCost(linkVector[i].src->ip, linkVector[i].dest->ip, linkVector[i].cost);
+			rt.addCost(linkVector[i].dest->ip, linkVector[i].src->ip, linkVector[i].cost);
 		}
 	}
 	//rt.addCost(ip, ip, 0);
@@ -242,7 +244,7 @@ link* router::chooseLink(packet* p){
 		for(int j=0;j<(int)rt.dvv[i].h.size();j++){
 			if(rt.dvv[i].h[j] == p->dest->ip){
 				//therefore we want to get to rt.dvv[i].ip
-				for(int j=0;(int)lVector.size();j++){
+				for(int j=0; j < (int)lVector.size();j++){
 					if(lVector[j].type == 1){
 						int step_cost = rt.getCost(this->ip,lVector[j].ip) + rt.getCost(lVector[j].ip,rt.dvv[i].ip);
 						if(step_cost<min_step){
