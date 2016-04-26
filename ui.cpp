@@ -24,16 +24,16 @@ vector<link> linkVector;
 vector<host> hostVector;
 vector<router> routerVector;
 vector<flow> flowVector;
+vector<int> flowStopTimeVector;
 vector<packet> packetVector;
 
 //logs for graphing
-string linkRateLog = "linkRateLog \nend time (ms), start time (ms), packet sent event";
+string linkRateLog = "linkRateLog \nend time (ms), start time (ms), packet sent event"; //TODO: THIS DOESN'T ACTUALLY WORK LOL. NEED PROPOGATION DELAY
 string bufferLog = "bufferLog \ntime(s), link index, buffer occupancy";
 string packetLossLog = "packetLossLog \nend time(ms), start time(ms), loss event";
-string flowRateLog = "flowRateLog \ntime (s), flow index, flow rate (Mb/s)"; //TODO: how?
+string flowRateLog = "flowRateLog \ntime (s), flow index, flow rate (Mb/s)"; //TODO: THIS DOESN'T ACTUALLY WORK LOL. NEED TO REDO IT.
 string cwndLog = "cwndLog \ntime (s) , flow index , cwnd";
-string packetDelayLog = "packetDelayLog\n time(s), packetDelay"; //TODO: how?
-
+string packetDelayLog = "packetDelayLog \ntime(s), packetDelay"; //TODO: how?
 
 router* findRouter(string rname) {
 	for (int i = 0; i < (int)routerVector.size(); i++)
@@ -110,6 +110,7 @@ void createFlow(string flowName, string hostA, string hostB, int a, int b){
 	cout << "FLOW: " << flowName << " FROM " << hostA << " TO " << hostB << ", PARAMETER " << a << " " << b << endl;
 	flow l(findHost(hostA), findHost(hostB), a, (int)flowVector.size());
 	flowVector.push_back(l);
+	flowStopTimeVector.push_back(0);
 	stringstream ss;
 	ss << (int)flowVector.size() - 1;
 	string event = "FLOW_" + ss.str() + "_START";
@@ -138,8 +139,17 @@ void pushEvent(string e, int elapseTime){
 	ss << currentTime;
 	event += string(max_int_len - ss.str().size(), '0') + ss.str() + "," + e; //csv for simplicity
 	q.push(event);
+	
+	//if flow, update when the flow is going to be done sending
+	int whereTheFlowAt = e.find("FLOW_");
+	if(whereTheFlowAt > 0){ //this is a flow event (-1 if it isn't)
+		int find = e.find("_",whereTheFlowAt+5); //5 is the length of "FLOW_"
+		string a = e.substr(whereTheFlowAt+5, find-whereTheFlowAt-5);
+		int flowIndex = stoi(a);
+		
+		flowStopTimeVector[flowIndex] = executeTime;
+	}
 
-	//cout << "NEW EVENT\t" << e << "\tCURTIME: " << currentTime << "\tDONE: " << executeTime << endl;
 }
 
 //Pops an event from the event queue and executes the appropriate command, as contained in e and assuming correct format of e
@@ -210,8 +220,8 @@ void popEvent(){
 	if(objectType == "FLOW"){
 		packetLossLog += "\n" + event;
 	}
-	//log all flow cwnd's
-	for(int i = 0; i < (int)flowVector.size(); i++){
+	for(int i = 0; i < (int)flowVector.size(); i++){	
+		//log all flow cwnd's
 		stringstream ss;
 		ss << t / 1000;
 		cwndLog += "\n" + ss.str();
@@ -221,6 +231,20 @@ void popEvent(){
 		ss.str("");
 		ss << flowVector[i].getCwnd();
 		cwndLog += "," + ss.str();
+		
+		//log flow rates
+		ss.str("");
+		ss << t/1000;
+		flowRateLog += "\n" + ss.str();
+		ss.str("");
+		ss << i;
+		flowRateLog += "," + ss.str();
+		if(flowStopTimeVector[i] > t){ //flow is transmitting
+			flowRateLog += "," + "1.00(placeholder)"; //1.00 Mbps is the placeholder flow rate when transmitting
+		}
+		else{ //flow is not transmitting
+			flowRateLog += "," + "0.00";
+		}		
 	}
 	for(int i = 0; i < (int)linkVector.size(); i++){
 		bufferLog += "\n" + t/1000;
@@ -337,7 +361,6 @@ int main(int argc, char *argv[])
 	}
 	cout << endl;
 	SimulateNetwork();
-	cout<<eventlog<<endl;
 	cout << linkRateLog <<endl;
 	cout << bufferLog << endl;
 	cout << packetLossLog << endl;
