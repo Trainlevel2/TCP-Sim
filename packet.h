@@ -1,9 +1,9 @@
-
 //ECE303 Project
 //Original Author: Darwin Huang
 
 #ifndef _PACKET_H
 #define _PACKET_H
+
 
 //fwd declared dependencies
 class node;
@@ -14,14 +14,13 @@ class flow;
 #include <string>
 #include "dVec.h"
 
-
 class packet {
 
 	public:
 
 		// The packet constructor initializes the packet with set information of data and destination. 
 		// Must also find the time...
-		packet(int dat, int num, node* src, node* dst); //node* should not be carried in the packet.  ideally, node ip  instead. --kirk
+		packet(int data, int num, node* src, node* dst); //node* should not be carried in the packet.  ideally, node ip  instead. --kirk
 		
 		dVec dv;
 		
@@ -32,6 +31,7 @@ class packet {
 		string toString();
 		int data = -1;
 		int timestamp = -1; // Time of birth for the packet
+
 		node* src = nullptr; 
 		node* dest = nullptr; 
 		flow* f = nullptr;

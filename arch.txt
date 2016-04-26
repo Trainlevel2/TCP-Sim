@@ -1,0 +1,66 @@
+Router
+	Functions:
+		Router - constructor
+		getLinks - retrieves all links connected to the router
+		chooseLink - decide which link to send a given packet to given a routing algorithm. 
+			At first, we will test the network by using a random routing algorithm. 
+			Afterwards, this routing algorithm will be implemented via the routing table.
+		receivePacket - receive packet, and modify routing table and packet header information accordingly.
+	Data Structures:
+		list<Link> links - list of links that a router is connected to (we plan to use the included list class in C++)
+		queue<packet> buffer - a queue of packets in the router, erased when at full capacity, 
+			that processes packets in the order in which they arrive (we plan to use the provided queue class in C++)
+		routing table - a structure similar to a hash table that will determine the routing algorithm
+
+Host (extends Router)
+	Functions:
+		All functions found in Router.
+		Host - the constructor creates the Host object, and initializes all data shown in “Data Structures.”
+		makePacket - uses input data (data, path), as well as environmental data (time) to create a new packet to be sent.
+		getTimeStamp - get the timestamp of a packet, or the amount of time it took for a packet to reach its destination.
+	Data Structures:
+		All data structures found in Router.
+Packet
+	Functions:
+		Packet- the constructor creates the Packet object, and initializes all data shown in “Data Structures”.
+	Data Structures:
+		data - the contents of the packet. May be random information, or specific information as appropriate.
+		header - contains three things:
+		int timestamp - when the packet was first sent.
+		Router* destination - where the packet is headed.
+		Router* source - the source host name.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+node
+	Functions:
+		
+		node - constructs node
+		
+		getLinks - retrieves all links connected to the router
+		
+		chooseLink - decide which link to send a given packet to given a routing algorithm. At first, we will test the network by using a random routing algorithm. Afterwards, this routing algorithm will be implemented via the routing table.
+		
+		receivePacket - receive packet, and modify routing table and packet header information accordingly.
+		
+	Data Structures:
+
+
+
+
+	Router
+		Functions:
+			Router - the constructor creates the Router object, and initializes all data shown in “Data Structures”
+			getLinks - retrieves all links connected to the router
+			chooseLink - decide which link to send a given packet to given a routing algorithm. At first, we will test the network by using a random routing algorithm. Afterwards, this routing algorithm will be implemented via the routing table.
+			receivePacket - receive packet, and modify routing table and packet header information accordingly.
+		Data Structures:
+
+			list<link> links - list of links that a router is connected to 
+			
+			queue<packet> buffer - a queue of packets in the router, erased when at full capacity, that processes packets in the order in which they arrive 
+			
+			routing table - a structure similar to a hash table that will determine the routing algorithm
+
+
+

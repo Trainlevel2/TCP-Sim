@@ -4,6 +4,7 @@ using namespace std;
 #include "flow.h"
 #include "host.h"
 #include "link.h"
+
 extern vector<packet> packetVector;
 extern vector<link> linkVector;
 extern void pushEvent(string e, int elapseTime);
@@ -23,8 +24,10 @@ void flow::startFlow() {
 	slowStartState = 1;
 	ssthresh = 160;
 
-	source->init();
-	if()
+	if(source->STATE != 3){
+		source->init();
+	}
+
 	searchMax(lastSent);
 }
 
@@ -32,16 +35,20 @@ int flow::getCwnd(){
 	return lastSent;
 }
 
+
 //searchMax should send 'size' packets as oppsed to a big packet of size 'size'.
+
 void flow::searchMax(int size) {
-	//cout << "SENDING PACKET FROM " << source->name << " TO " << dest->name << ", SIZE " << size << endl;
+	cout << "SENDING PACKET FROM " << source->name << " TO " << dest->name << ", SIZE " << size << endl;
 	packetnum++;
 	packet p(size, packetnum, source, dest);
 	p.f = this;
+	p.isRIP = false;
+	p.isAck = false;
+	
 	packetVector.push_back(p);
 	source->pushPacket(packetVector.size()-1,&linkVector[source->link_id]);
 	state = 1;
-
 	stringstream ss;
 	ss << this->id;
 	string pevent = "FLOW_" + ss.str();

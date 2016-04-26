@@ -18,49 +18,54 @@ void popEvent();
 //GLOBAL VARIABLES for time management
 std::priority_queue<string, vector<string>, std::greater<string> > q;
 int t = 0;
+
+
+
 string eventlog = "";
-string cwndLog = "time (s) , flow index , cwnd";
 vector<link> linkVector;
-//vector<host> hostVector;
-//vector<router> routerVector;
-vector<node> nodeVector;
 vector<flow> flowVector;
 vector<packet> packetVector;
-/*
+vector<host> hostVector;
+vector<router> routerVector;
+
+//logs for graphing
+string linkRateLog = "linkRateLog \nend time (ms), start time (ms), packet sent event";
+string bufferLog = "bufferLog \ntime(s), link index, buffer occupancy";
+string packetLossLog = "packetLossLog \nend time(ms), start time(ms), loss event";
+string flowRateLog = "flowRateLog \ntime (s), flow index, flow rate (Mb/s)"; //TODO: how?
+string cwndLog = "cwndLog \ntime (s) , flow index , cwnd";
+string packetDelayLog = "packetDelayLog\n time(s), packetDelay"; //TODO: how?
+
 router* findRouter(string rname) {
-	for (int i = 0; i < (int)nodeVector.size(); i++)
-		if (nodeVector[i].name == rname)
-			return &nodeVector[i];
+	for (int i = 0; i < (int)routerVector.size(); i++)
+		if (routerVector[i].name == rname)
+			return &routerVector[i];
 	return NULL;
 }
 
 host* findHost(string hname) {
-	for (int i = 0; i < (int)nodeVector.size(); i++)
-		if (nodeVector[i].name == hname)
-			return &nodeVector[i];
+	for (int i = 0; i < (int)hostVector.size(); i++)
+		if (hostVector[i].name == hname)
+			return &hostVector[i];
 	return NULL;
 }
-*/
 
-
-node* findNode(string nname) {
-	for (int i = 0; i < (int)nodeVector.size(); i++)
-		if (nodeVector[i].name == nname)
-			return &nodeVector[i];
-	return NULL;
-}
 
 // Display an ASCII View of how the network should look
 void printNetwork()
 {
 	cout << "HOSTS" << endl;
-	for (int i = 0; i < (int)nodeVector.size(); i++) {
-		cout << nodeVector[i].name << ", " << nodeVector[i].ip << endl;
+	for (int i = 0; i < (int)hostVector.size(); i++) {
+		if (hostVector[i].name[0]=='H'){
+			cout << hostVector[i].name << ", " << hostVector[i].ip << endl;
+		}
 	}
 
 	cout << "ROUTERS" << endl;
-	for (int i = 0; i < (int)nodeVector.size(); i++) {
-		cout << nodeVector[i].name << endl;
+	for (int i = 0; i < (int)routerVector.size(); i++) {
+		if (routerVector[i].name[0]=='R'){
+			cout << routerVector[i].name << ", " << routerVector[i].ip << endl;
+		}
 	}
 
 	cout << "LINKS" << endl;
@@ -71,17 +76,18 @@ void printNetwork()
 
 // Add a host
 void createHost(string hostName){
+	//implement later
 	cout << "HOST: " << hostName << endl;
-	host h(hostName, (int)nodeVector.size());
-	nodeVector.push_back(h);
+	host h(hostName, (int)hostVector.size());
+	hostVector.push_back(h);
 }
-
 
 // Add a router
 void createRouter(string routerName){
+	//implement later
 	cout << "ROUTER: " << routerName << endl;
-	router r(routerName, (int)nodeVector.size());
-	nodeVector.push_back(r);
+	router r(routerName, (int)routerVector.size());
+	routerVector.push_back(r);
 }
 
 
@@ -90,36 +96,16 @@ void createLink(string linkName, string nodeA, string nodeB, int a, int b, int c
 	//implement later
 	cout << "LINK: " << linkName << " FROM " << nodeA << " TO " << nodeB << ", PARAMETER " << a << endl;
 	node* nA;
-	node* nB;
-
-	nA = findNode(nodeA);
-	nB = findNode(nodeB);
-
-	if(!nA){
-		cerr<<"could not find "<<nodeA<<endl; 
-		exit(1);
-	}else if(!nB){
-		cerr<<"could not find "<<nodeB<<endl; 
-		exit(1);
-	}
-
-	/*
 	nA = findHost(nodeA);
 	if (!nA)
 		nA = findRouter(nodeA);
-	
+	node* nB;
 	nB = findHost(nodeB);
 	if (!nB)
 		nB = findRouter(nodeB);
-	*/
-	
-	
-
-	//pushing link id's instead
 
 	link l(a, (int)linkVector.size(), nA, nB);
 	linkVector.push_back(l);
-
 	nA->addLink(l.id);
 	nB->addLink(l.id);
 }
@@ -128,12 +114,11 @@ void createLink(string linkName, string nodeA, string nodeB, int a, int b, int c
 void createFlow(string flowName, string hostA, string hostB, int a, int b){
 	//implement later
 	cout << "FLOW: " << flowName << " FROM " << hostA << " TO " << hostB << ", PARAMETER " << a << " " << b << endl;
-	flow l((host*)findNode(hostA), (host*)findNode(hostB), a, (int)flowVector.size());
+	flow l(findHost(hostA), findHost(hostB), a, (int)flowVector.size());
 	flowVector.push_back(l);
 	stringstream ss;
 	ss << (int)flowVector.size() - 1;
 	string event = "FLOW_" + ss.str() + "_START";
-	
 	pushEvent(event, 0);
 }
 
@@ -205,6 +190,7 @@ void popEvent(){
 	
 	
 	//Execute the event in the event e that was initially input into pushEvent
+
 	
 	//TRANSMIT_PACKET should result in 1 item being popped off the link's transmission queue
 	//TRANSMIT_PACKET should push a PROPAGATE_PACKET onto the event queue.
@@ -214,16 +200,14 @@ void popEvent(){
 
 	//PROPAGATE_PACKET should result in the link propagating the latest data popped off the the transmission queue.
 
-
+	int index = stoi(objectIndex);
 	if(objectType == "LINK"){
-		int index = stoi(objectIndex);
 		if (function == "TRANSMIT_PACKET"){
 			//linkVector[index].recievePacket();	
 			linkVector[index].tpropagate();
 		}
 	}
 	else if (objectType == "FLOW") {
-		int index = stoi(objectIndex);
 		if (function == "START") {
 			flowVector[index].startFlow();
 		}
@@ -232,13 +216,34 @@ void popEvent(){
 			flowVector[index].timeoutAck(pptr);
 		}
 	}
+	//LOGS:
+	
 	eventlog += "\n" + event; //add the event to the log
+	if(objectType == "LINK"){
+		linkRateLog += "\n" + event;
+	}
+	if(objectType == "FLOW"){
+		packetLossLog += "\n" + event;
+	}
 	//log all flow cwnd's
 	for(int i = 0; i < (int)flowVector.size(); i++){
-		cwndLog += "\n" + t/1000;
-		cwndLog += ",";
-		cwndLog += i + "," + flowVector[i].getCwnd();
+		stringstream ss;
+		ss << t / 1000;
+		cwndLog += "\n" + ss.str();
+		ss.str("");
+		ss << i;
+		cwndLog += "," + ss.str();
+		ss.str("");
+		ss << flowVector[i].getCwnd();
+		cwndLog += "," + ss.str();
 	}
+	/*
+	for(int i = 0; i < (int)linkVector.size(); i++){
+		bufferLog += "\n" + t/1000;
+		bufferLog += ",";
+		bufferLog += i + "," + linkVector[i].getBufferSize().
+	}
+	*/
 	
 }
 
@@ -292,7 +297,7 @@ int main(int argc, char *argv[])
 	if(WINDOWS){
 		file = ".\\TestCases\\testcase0.txt";	
 	}else{
-		file = "./TestCases/testcase0.txt";	
+		file = "./TestCases/testcase3.txt";	
 	}
 	read.open(file.c_str());
 	while(!read.eof())
@@ -312,6 +317,7 @@ int main(int argc, char *argv[])
 			}
 		}
 		else if(ln=="Routers:"&&!read.eof()){
+			cout<<"routerline detected"<<endl;
 			getline(read,ln);
 			istringstream iss(ln);
 			int numRout; iss>>numRout;
@@ -322,6 +328,7 @@ int main(int argc, char *argv[])
 			}
 		}
 		else if(ln=="Links:"&&!read.eof()){
+			cout<<"linkline detected"<<endl;
 			getline(read,ln);
 			istringstream iss(ln);
 			int numLink; iss>>numLink;
@@ -330,6 +337,7 @@ int main(int argc, char *argv[])
 				string h1; iss>>h1;
 				string h2; iss>>h2;
 				int a; int b; int c; iss>>a; iss>>b; iss>>c;
+				cout<<"calling createLink"<<endl;
 				createLink(temp,h1,h2,a,b,c);
 				// cout<<"Added Link"<<endl;
 			}
@@ -351,7 +359,12 @@ int main(int argc, char *argv[])
 	cout << endl;
 	SimulateNetwork();
 	cout<<eventlog<<endl;
+	cout << linkRateLog <<endl;
+	cout << bufferLog << endl;
+	cout << packetLossLog << endl;
+	cout << flowRateLog << endl;
 	cout << cwndLog << endl;
+	cout << packetDelayLog << endl;
 	//cin.ignore();
 	//printNetwork();
 	cin.ignore();

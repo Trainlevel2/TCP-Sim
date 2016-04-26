@@ -21,6 +21,7 @@ class dVec{
 		};
 		vector<entry> e; 
 		int ip;
+		vector<int> h;
 };
 
 #endif //_DVEC_H

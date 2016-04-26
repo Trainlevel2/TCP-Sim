@@ -21,9 +21,9 @@ class node {
 		virtual void receivePacket(link* link_ptr) {};
 		
 		//virtual void addLink(link* l) {};
-		virtual void addLink(int lnum);
+		virtual void addLink(int lnum) {};
 
-		virtual void broadcast();
+		virtual void broadcast() {};
 
 		void pushPacket(int pnum,link* link_ptr);
 
@@ -38,3 +38,4 @@ class node {
 };
 
 #endif // _NODE_H
+

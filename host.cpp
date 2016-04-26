@@ -3,7 +3,6 @@ using namespace std;
 #include "node.h"
 #include "link.h"
 #include "packet.h"
-
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -16,15 +15,32 @@ extern vector<packet> packetVector;
 extern vector<link> linkVector;
 extern void popTimeout(int timeoutIndex);
 
+/*
+	//specify bitrate 
+	host::host(string name, int ip)
+	:node::node(name,ip){
+		link_id=-1;
+		STATE=0;
+		//defaultGateway=-1;
+
+	}
+*/
 //specify bitrate 
 host::host(string name, int ip)
 :node::node(name,ip){
 	link_id=-1;
-	STATE=0;
-	defaultGateway=-1;
+	STATE=3;
+	//defaultGateway=-1;
+
 }
 
-host::init(){
+
+
+
+
+
+
+void host::init(){
 	if(STATE==0){
 		link* link_ptr = &linkVector[link_id];
 		int size= 1;
@@ -40,20 +56,19 @@ host::init(){
 	}
 }
 
-
-
-
-
+/*
 //Receives packet
 void host::receivePacket(link* link_ptr){
-	link* link_ptr = &linkVector[link_id];
+	//link* link_ptr = &linkVector[link_id];
 	packet* p = &packetVector[link_ptr->pnum];
 	int tnum = link_ptr->pnum;
 	link_ptr->pnum = -1;
 
 
 	//if there are no flows going out of a host.
-	//	
+	//
+
+	
 	if(STATE==0){ //0 = Initial state, no connectionReq packets yet sent
 		if(p->isRIP){
 			
@@ -69,36 +84,55 @@ void host::receivePacket(link* link_ptr){
 
 	}
 
+		
+}
+*/
 
 
 
+//Receives packet
+void host::receivePacket(link* link_ptr){
+	//link* link_ptr = &linkVector[link_id];
+	packet* p = &packetVector[link_ptr->pnum];
+	int tnum = link_ptr->pnum;
+	link_ptr->pnum = -1;
+
+
+	//if there are no flows going out of a host.
+	//
+
+	/*
+	if(STATE==0){ //0 = Initial state, no connectionReq packets yet sent
+		if(p->isRIP){
+			
+		}
+
+	}else if(STATE==1){//1 = listening for a RIP connectionReq REPLY 
+		
 
 
 
+	}else if(STATE==2){//2 = listening for a RIP clearToSend 
+	
 
+	}
 
-
-
-
-
-
-
-
-
-
-
-
+	*/	
+	
 
 	int snum;
 	if (!p->isRIP){
 		if (!p->isAck) {
-		cout <<this->name<< " RECEIVED DATA, SENDING ACK" << endl;
-		packet pSend(0, p->num, this, p->src);
-		pSend.f = p->f;
-		pSend.isAck = true;
-		packetVector.push_back(pSend);
-		snum = packetVector.size() - 1;
-		pushPacket(snum,link_ptr);
+			cout <<this->name<< " RECEIVED DATA, SENDING ACK" << endl;
+			packet pSend(0, p->num, this, p->src);
+			pSend.f = p->f;
+			pSend.isAck = true;
+			
+			packetVector.push_back(pSend);
+	
+			snum = packetVector.size() - 1;
+		
+			pushPacket(snum,link_ptr);
 		}
 		else {
 			cout <<this->name<< " RECEIVED ACK" << endl;
@@ -131,4 +165,4 @@ void host::broadcast(){
 	p.isRIP = true;
 	packetVector.push_back(p);
 	pushPacket(packetVector.size()-1,link_ptr);
-} 
+}

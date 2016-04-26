@@ -1,0 +1,39 @@
+priority_queue<event> q; //sorted by time
+//each event has a time associated with it, and events occur at the hosts.
+
+array<link> link;
+array<router> router;
+
+router.receive(packet p, inlink l){
+	if(p.data){
+		if(router.rtable.contains(p.to)
+			router.send(p, router.rtable[p.to]);
+		else{
+			packet rp;
+			rp.routing = true;
+			router.send(rp, router.getNextLink);
+		}
+	}
+	else if(p.hostAck){
+		router.rtable.add(p.host, l, #timestamp#);
+		if(router.data.host == p.host){
+			router.send(router.data.packet, router.rtable[router.data.packet.to]);
+		}
+		else{
+			router.send(p, getLinkFromPacketID(p.id));
+		}
+	}
+	else if(p.routing){
+		if(router.received(p.id)){
+			router.sendDupAck(p, l);
+		}
+		else{
+			router.sendRecAck(p, l);
+			router.send(p, router.getNextLink);
+		}
+	}
+}
+host.receive(packet p, inlink l){
+	packet ack = createAck(p);
+	host.send(ack, l);
+}

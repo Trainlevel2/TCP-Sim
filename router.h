@@ -5,7 +5,6 @@
 #ifndef _ROUTER_H
 #define _ROUTER_H
 
-
 //fwd declared dependencies
 class link;
 
@@ -14,7 +13,7 @@ class link;
 #include <vector>
 #include <queue>
 #include "node.h"
-#include "dVec.h"
+#include "rtable.h"
 //#include "packet.h"
 //#include "link.h"
 //#include "host.h"
@@ -35,24 +34,23 @@ class router: public node {
 
 	public:
 		
-		class rtable{
-			public:
-				vector<dVec> dvv;
-				int update(dVec* dv);
-				dVec* getdv(int ip);
-				void add(int ip);
-				bool isPop(); //is table populated
-				void bford();
-		};
+		
 
+		//int discovered;
 		rtable rt;
-
+		//int host_ip;
 		//vector<entry> map; //maps ip's to routing table indicies.
 
 		class field{
 		public:
 			int link_id;
-			int type; //What's on the other end? 0 = host, 1 = router.
+			
+			//-1 = unknown
+			//0 = host, 
+			//1 = router
+			//2 = self
+			int type; //What's on the other end? 
+			
 			int ip; 
 		};
 
@@ -63,26 +61,20 @@ class router: public node {
 		//2 = neighbors known. setting up routing table.
 		//3 = routing table done. listening for dvec updates.
 		int STATE; 
-
+		void testing();
 		vector<field> lVector; //connected link info
 		bool fulltable; //no maxints
-		
+		void printLinks();
 		router(string name, int ip);
-		
-		void addLink(int lnum);
-
-		//get the packet present on a connected link.
+		void rtHardCode();
+		void addLink(int id);
 		void receivePacket(link* link_ptr);
-
-		//use routing table to determine packet's outbound link
-		//packets forwarded using destination host address
-
-		int chooseLink(int pnum);
-
+		bool discoveryComplete();
+		link* chooseLink(packet* p);
+		void sendDVec(int ip_from);
 		void broadcast();
-		int scanLinks();
-
-
+		void clearToSend();
+		void rtInit();
 };
 
 #endif //_ROUTER_H

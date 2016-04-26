@@ -1,0 +1,11 @@
+Hosts:
+2 H1 H2
+
+Routers:
+1 R1
+
+Links:
+2 L1 H1 R1 10 10 64 L2 H2 R1 10 10 64 
+
+Flows:
+1 F1 H1 H2 20 1

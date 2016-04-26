@@ -1,8 +1,8 @@
 CC = g++
 CFLAGS = -c -Wall -std=gnu++11
 
-ui.exe: ui.o flow.o host.o link.o node.o packet.o router.o
-	$(CC) ui.o flow.o host.o link.o node.o packet.o router.o -o ui.exe
+ui.exe: ui.o flow.o host.o link.o node.o packet.o router.o rtable.o
+	$(CC) ui.o flow.o host.o link.o node.o packet.o router.o rtable.o -o ui.exe
 
 ui.o: ui.cpp 
 	$(CC) $(CFLAGS) ui.cpp
@@ -25,8 +25,11 @@ packet.o: packet.cpp packet.h
 router.o: router.cpp router.h
 	$(CC) $(CFLAGS) router.cpp
 
+rtable.o: rtable.cpp rtable.h
+	$(CC) $(CFLAGS) rtable.cpp
+
 debug:
-	$(CC) -g -o ui.cpp flow.cpp host.cpp router.cpp link.cpp node.cpp packet.cpp
+	$(CC) -Wall -std=gnu++11 -g -o ui.cpp flow.cpp host.cpp router.cpp rtable.cpp link.cpp node.cpp packet.cpp
 
 clean:
 	rm -f *.exe *.o *.stackdump *~

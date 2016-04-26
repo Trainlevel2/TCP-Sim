@@ -10,7 +10,6 @@
 using namespace std;
 #include "link.h"
 #include "node.h"
-
 extern void pushEvent(string e, int elapseTime);
 extern vector<packet> packetVector;
 
@@ -28,8 +27,8 @@ link::link(int maxT, int id, node* source, node* destination){
 }
 
 void link::propagate(){
-	node* nn = qn.front();
-	packet* pp = &packetVector[qp.front()];
+	//node* nn = qn.front();
+	//packet* pp = &packetVector[qp.front()];
 	//cout << "Queuing Packet\tLink: " << this->id << "\tPacket: " << pp->num << endl;
 	pnum = qp.front();
 	stringstream ss;
@@ -44,8 +43,8 @@ void link::propagate(){
 }
 
 void link::forcepropagate() {
-	node* nn = qn.front();
-	packet* pp = &packetVector[qp.front()];
+	//node* nn = qn.front();
+	//packet* pp = &packetVector[qp.front()];
 	//cout << "Queuing Packet\tLink: " << this->id << "\tPacket: " << pp->num << endl;
 	pnum = qp.front();
 	stringstream ss;
@@ -68,16 +67,9 @@ void link::tpropagate() {
 	return;
 }
 
-/*
-void link::ttransmit() {
-	//output queue delay
-	qn.pop();
-	qp.pop();
-	return;
+int link::getBufferSize(){
+	return qp.size();
 }
-*/
-
-
 
 // Displays the packet for testing purposes
 string link::toString() {

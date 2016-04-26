@@ -4,7 +4,7 @@ using namespace std;
 #include "host.h"
 #include "node.h"
 #include "link.h"
-
+#include <iostream>
 // The packet constructor initializes the packet with set information of data and destination. 
 //node::node(int ip) {
 //	ip_addr = ip;
@@ -33,10 +33,6 @@ string node::toString() {
 stringstream ss;
 	return "";
 }
-
-
-
-
 
 
 
