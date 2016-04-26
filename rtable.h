@@ -15,7 +15,7 @@ class rtable{
 		int getCost(int ip_from,int ip_to);
 		bool isComplete();
 		int update(dVec* dv);
-		void getDv(int ip,dVec& dv);
+		dVec* getDv(int ip);
 		int addCost(int ip_from,int ip_to,int cost);
 		void addHost(int ip,int host_ip);
 		void print();

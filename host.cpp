@@ -28,6 +28,7 @@ extern void popTimeout(int timeoutIndex);
 //specify bitrate 
 host::host(string name, int ip)
 :node::node(name,ip){
+	this->ip = ip;
 	link_id=-1;
 	STATE=3;
 	//defaultGateway=-1;

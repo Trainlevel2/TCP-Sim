@@ -8,8 +8,9 @@ using namespace std;
 #include <queue>
 #include <new>
 #include <limits>
+#include <cstdint>
 #include "rtable.h"
-#define INF std::numeric_limits<int>::max()
+#define INF LONG_MAX
 
 bool rtable::bford(int ip_from){
 	vector<int>* cvec = new vector<int>;
@@ -122,14 +123,15 @@ bool rtable::containsIp(int ip){
 int rtable::addCost(int ip_from,int ip_to,int cost){
 	cout<<this->rname<<"adding Cost from "<<ip_from<<" to "<<ip_to<<endl;
 	if(!containsIp(ip_from)){
-		cout<<"does not contain"<<ip_from<<endl;
+		cout<<"does not contain "<<ip_from<<endl;
 		addip(ip_from);
 	}
 	if (!containsIp(ip_to)){
-		cout<<"does not contain"<<ip_to<<endl;
+		cout<<"does not contain "<<ip_to<<endl;
 		addip(ip_to);
 	}
 	setCost(ip_from,ip_to,cost);
+	return 0;
 }
 
 void rtable::print(){
@@ -138,6 +140,11 @@ void rtable::print(){
 		cout<<dvv[i].ip<<" :";
 		for(int j=0;j<(int)dvv[i].e.size();j++){
 			cout<<"{"<<dvv[i].e[j].ip<<","<<dvv[i].e[j].cost<<"}";
+			
+		}
+		cout << " hosts: " << endl;
+		for (int j = 0; j < (int)dvv[i].h.size(); j++) {
+			cout << dvv[i].h[j] << ", ";
 		}
 		cout<<endl;
 	}
@@ -171,16 +178,19 @@ void rtable::addip(int ip){
 
 
 void rtable::addHost(int ip,int host_ip){
-	dVec dv;
-	getDv(ip,dv);
+	if (!containsIp(ip)) {
+		cout << "does not contain " << ip << endl;
+		addip(ip);
+	}	
+	dVec* dv = getDv(ip);
 	bool found=false;
-	for(int i=0;i<dv.h.size();i++){
-		if (dv.h[i]==host_ip){
+	for(int i=0;i<dv->h.size();i++){
+		if (dv->h[i]==host_ip){
 			found=true;
 		}
 	}
 	if (!found){
-		dv.h.push_back(host_ip);		
+		dv->h.push_back(host_ip);		
 	}
 }
 
@@ -234,9 +244,8 @@ int rtable::update(dVec* dv){
 
 	vector<int> tB2,tA2;
 
-	dVec mdv;
-	getDv(dv->ip,mdv);
-	compare(mdv.h,dv->h,tB2,tA2);
+	dVec* mdv = getDv(dv->ip);
+	compare(mdv->h,dv->h,tB2,tA2);
 
 	if((tB2.empty())&&(tA2.empty())){
 		//they are the same, do nothing
@@ -265,19 +274,23 @@ int rtable::update(dVec* dv){
 	return bcast;
 }
 
-void rtable::getDv(int ip,dVec& dv){
+dVec* rtable::getDv(int ip){
 	for(int i=0;i<(int)dvv.size();i++){
-		if(dvv[i].ip == dv.ip){
+		if(dvv[i].ip == ip){
+			return &dvv[i];
+			/*
 			for(int j=0;j<(int)dvv[i].e.size();j++){
-				dVec::entry ent;
-				ent.cost = dvv[i].e[j].cost;
-				ent.ip = dvv[i].e[j].ip;
-				dv.e.push_back(ent);
+			dVec::entry ent;
+			ent.cost = dvv[i].e[j].cost;
+			ent.ip = dvv[i].e[j].ip;
+			dv.e.push_back(ent);
 			}
 			for(int j=0;j<(int)dvv[i].h.size();j++){
-				int nh = dvv[i].h[j];
-				dv.h.push_back(nh);
+			int nh = dvv[i].h[j];
+			dv.h.push_back(nh);
 			}
+			*/
+			
 		}
 		break;
 	}

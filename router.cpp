@@ -23,6 +23,7 @@ extern void popTimeout(int timeoutIndex);
 
 router::router(string name, int ip)
 :node::node(name,ip){
+	this->ip = 1000 + ip;
 	//host_ip=-1;		
 	field f;
 	f.link_id = -1;	//whatever
@@ -32,7 +33,7 @@ router::router(string name, int ip)
 	//discovered = false;
 	rt.rname = this->name;
 	//test code
-	rtHardCode();
+	//rtHardCode();
 
 
 }
@@ -52,22 +53,22 @@ void router::addLink(int id) {
 	field f;
 	f.link_id = id;
 	link* link_ptr = &linkVector[id];
-	if (link_ptr->src->ip == this->ip){
+	if (link_ptr->src->name == this->name){
 		f.ip = link_ptr->dest->ip;
 		if(link_ptr->dest->name[0] == 'H'){
-			f.type = 1;
+			f.type = 0;
 		}
 		else if(link_ptr->dest->name[0] == 'R'){
-			f.type = 0;
+			f.type = 1;
 		}	
 	}
-	else if(link_ptr->dest->ip == this->ip){
+	else if(link_ptr->dest->name == this->name){
 		f.ip = link_ptr->src->ip;
 		if(link_ptr->src->name[0] == 'H'){
-			f.type = 1;
+			f.type = 0;
 		}
 		else if(link_ptr->src->name[0] == 'R'){
-			f.type = 0;
+			f.type = 1;
 		}	
 	}
 	lVector.push_back(f);
@@ -86,14 +87,19 @@ void router::printLinks(){
 void router::rtHardCode(){
 
 	for(int i=0;i<(int)linkVector.size();i++){
-		rt.addCost(linkVector[i].src->ip,linkVector[i].dest->ip,linkVector[i].cost);
 		if((linkVector[i].src->name[0]=='H')&&(linkVector[i].dest->name[0]=='R')){
 			rt.addHost(linkVector[i].dest->ip,linkVector[i].src->ip);
+			cout << "added host " << linkVector[i].src->name << endl;
 		}
 		else if((linkVector[i].dest->name[0]=='H')&&(linkVector[i].src->name[0]=='R')){
 			rt.addHost(linkVector[i].src->ip,linkVector[i].dest->ip);
+			cout << "added host " << linkVector[i].dest->name << endl;
+		}
+		else if ((linkVector[i].dest->name[0] == 'R') && (linkVector[i].src->name[0] == 'R')) {
+			rt.addCost(linkVector[i].src->ip, linkVector[i].dest->ip, linkVector[i].cost);
 		}
 	}
+	//rt.addCost(ip, ip, 0);
 	STATE=3;
 
 	cout<<"after hardcoding"<<endl;
@@ -259,7 +265,7 @@ void router::sendDVec(int ip_from){
 			int num= -1;
 			packet p(size, num, this, this);
 			p.isRIP = true;
-			rt.getDv(ip_from,p.dv);
+			dVec* dv = rt.getDv(ip_from);
 			packetVector.push_back(p);
 			pushPacket(packetVector.size()-1,link_ptr);
 		}

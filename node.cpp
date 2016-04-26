@@ -15,7 +15,7 @@ using namespace std;
 //}
 
 node::node(string name, int ip){
-	this->ip = ip;
+	//this->ip = ip;
 	this->name = name;
 	br=100;
 }

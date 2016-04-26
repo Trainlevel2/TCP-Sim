@@ -324,7 +324,7 @@ int main(int argc, char *argv[])
 	if(WINDOWS){
 		file = ".\\TestCases\\testcase0.txt";	
 	}else{
-		file = "./TestCases/testcase3.txt";	
+		file = "./TestCases/testcase4.txt";	
 	}
 	read.open(file.c_str());
 	while(!read.eof())
@@ -384,6 +384,10 @@ int main(int argc, char *argv[])
 		}
 	}
 	cout << endl;
+	for (int i = 0; i < routerVector.size(); i++) {
+		routerVector[i].rtHardCode();
+	}
+	cin.ignore();
 	SimulateNetwork();
 	cout << linkRateLog <<endl;
 	cout << bufferLog << endl;
