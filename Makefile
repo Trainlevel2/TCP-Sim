@@ -1,0 +1,39 @@
+CC = g++
+CFLAGS = -c -Wall -std=gnu++11
+
+ui.exe: ui.o flow.o host.o link.o node.o packet.o router.o
+	$(CC) ui.o flow.o host.o link.o node.o packet.o router.o -o ui.exe
+
+ui.o: ui.cpp 
+	$(CC) $(CFLAGS) ui.cpp
+
+flow.o: flow.cpp flow.h
+	$(CC) $(CFLAGS) flow.cpp
+
+host.o: host.cpp host.h
+	$(CC) $(CFLAGS) host.cpp
+
+link.o: link.cpp link.h
+	$(CC) $(CFLAGS) link.cpp
+
+node.o: node.cpp node.h
+	$(CC) $(CFLAGS) node.cpp
+
+packet.o: packet.cpp packet.h
+	$(CC) $(CFLAGS) packet.cpp
+
+router.o: router.cpp router.h
+	$(CC) $(CFLAGS) router.cpp
+
+
+debug:
+	$(CC) -g -o ui.cpp flow.cpp host.cpp router.cpp link.cpp node.cpp packet.cpp
+
+clean:
+	rm -f *.exe *.o *.stackdump *~
+
+backup:
+	test -d backups || mkdir backups
+	cp *.cpp backups
+	cp *.h backups
+	cp Makefile backups

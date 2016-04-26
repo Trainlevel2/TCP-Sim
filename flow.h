@@ -27,10 +27,13 @@ class flow {
 		int data;
 		int state; //0=start, 1=searchMax
 		int lastSent;
+		int slowStartState;
+		int ssthresh;
 		flow(host* source, host* dest, int data, int id);
 		void startFlow();
 		void receiveAck(int pnum);
 		int id;
+		int getCwnd();
 		void timeoutAck(int pnum);
 	private:
 		const int P_TIMEOUT = 1000;

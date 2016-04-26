@@ -18,7 +18,13 @@ flow::flow(host* source, host* dest, int data, int id) {
 void flow::startFlow() {
 	cout << "FLOW START" << endl;
 	lastSent = 10;
+	slowStartState = 1;
+	ssthresh = 160;
 	searchMax(lastSent);
+}
+
+int flow::getCwnd(){
+	return lastSent;
 }
 
 void flow::searchMax(int size) {
@@ -42,13 +48,17 @@ void flow::searchMax(int size) {
 void flow::receiveAck(int pnum) {
 	packet* p = &packetVector[pnum];
 	if (data == 0 || p->num < packetnum) {
-		//cout << "RECEIVED DUPLICATE ACK\tData: " << lastSent << "\tSource: " << p->src->name << "\tDest: " << p->dest->name << endl;
 		return;
 	}
 	else {
 		cout << "RECEIVED ACK\tData: " << lastSent << "\tSource: " << p->src->name << "\tDest: " << p->dest->name << endl;
 		data -= lastSent;
-		lastSent = lastSent * 3 / 2;
+		if(lastSent>=ssthresh)
+			slowStartState=0;
+		if(slowStartState==1)
+			lastSent = lastSent * 2;
+		else
+			lastSent++;
 		lastSent = min(lastSent, data);
 		searchMax(lastSent);
 	}
@@ -57,6 +67,9 @@ void flow::receiveAck(int pnum) {
 void flow::timeoutAck(int pnum) {
 	//packet* p = &packetVector[pnum];
 	cout << "TIMED OUT" << endl;
-	lastSent /= 2;
+	//change cwnd to 1
+	lastSent = 1;
+	slowStartState = 1;
+	ssthresh/=2;
 	searchMax(lastSent);
 }
