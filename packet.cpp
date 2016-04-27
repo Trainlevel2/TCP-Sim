@@ -16,6 +16,8 @@ packet::packet(int data, int num, node* src, node* dest) {
 	this->src = src;
 	this->dest = dest;
 	this->num = num;
+	this->isAck = false;
+	this->isRIP = false;
 	//TODO: time system
 	//timestamp = getTime();	//HOW DO I GET THE TIME OF THE SIMULATION???
 }

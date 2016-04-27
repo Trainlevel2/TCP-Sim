@@ -128,7 +128,7 @@ void host::receivePacket(link* link_ptr){
 			packet pSend(0, p->num, this, p->src);
 			pSend.f = p->f;
 			pSend.isAck = true;
-			pSend.isRIP = false;
+			//pSend.isRIP = false;
 			
 			packetVector.push_back(pSend);
 	
