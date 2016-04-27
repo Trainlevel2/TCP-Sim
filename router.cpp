@@ -212,7 +212,9 @@ void router::receivePacket(link* link_ptr) {
 			}
 		}
 		else{
+			cout<<"data packet recieved on "<< this->name <<" choosing link"<<endl;
 			link* l = chooseLink(p);
+			cout<<"link "<<l->id<<" chosen"<<endl;
 			if(l){
 				pushPacket(tnum,l);
 			}else{

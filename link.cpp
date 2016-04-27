@@ -58,7 +58,7 @@ void link::forcepropagate() {
 }
 
 void link::tpropagate() {
-	//cout << "T-Propagating packet\tLink: " << this->id << "\tPacket: " << packetVector[pnum].num << endl;
+	cout << "T-Propagating packet\tLink: " << this->id << "\tPacket: " << packetVector[pnum].num << endl;
 	dest->receivePacket(this);
 	qn.pop();
 	qp.pop();

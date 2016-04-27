@@ -19,13 +19,13 @@ link.o: link.cpp link.h
 node.o: node.cpp node.h
 	$(CC) $(CFLAGS) node.cpp
 
-packet.o: packet.cpp packet.h
+packet.o: packet.cpp packet.h dVec.h
 	$(CC) $(CFLAGS) packet.cpp
 
 router.o: router.cpp router.h
 	$(CC) $(CFLAGS) router.cpp
 
-rtable.o: rtable.cpp rtable.h
+rtable.o: rtable.cpp rtable.h dVec.h 
 	$(CC) $(CFLAGS) rtable.cpp
 
 debug:
