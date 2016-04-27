@@ -344,7 +344,7 @@ int main(int argc, char *argv[])
 			}
 		}
 		else if(ln=="Routers:"&&!read.eof()){
-			cout<<"routerline detected"<<endl;
+			//cout<<"routerline detected"<<endl;
 			getline(read,ln);
 			istringstream iss(ln);
 			int numRout; iss>>numRout;
@@ -355,7 +355,7 @@ int main(int argc, char *argv[])
 			}
 		}
 		else if(ln=="Links:"&&!read.eof()){
-			cout<<"linkline detected"<<endl;
+			//cout<<"linkline detected"<<endl;
 			getline(read,ln);
 			istringstream iss(ln);
 			int numLink; iss>>numLink;
@@ -364,7 +364,7 @@ int main(int argc, char *argv[])
 				string h1; iss>>h1;
 				string h2; iss>>h2;
 				int a; int b; int c; iss>>a; iss>>b; iss>>c;
-				cout<<"calling createLink"<<endl;
+				//cout<<"calling createLink"<<endl;
 				createLink(temp,h1,h2,a,b,c);
 				// cout<<"Added Link"<<endl;
 			}

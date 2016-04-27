@@ -91,15 +91,23 @@ void router::rtHardCode(){
 		if((linkVector[i].src->name[0]=='H')&&(linkVector[i].dest->name[0]=='R')){
 			rt.addHost(linkVector[i].dest->ip,linkVector[i].src->ip);
 			cout << "added host " << linkVector[i].src->name << endl;
+			rt.print();
 		}
 		else if((linkVector[i].dest->name[0]=='H')&&(linkVector[i].src->name[0]=='R')){
 			rt.addHost(linkVector[i].src->ip,linkVector[i].dest->ip);
 			cout << "added host " << linkVector[i].dest->name << endl;
+			rt.print();
+			cout << "getCost from "<<1000<<" to "<<1002<<" demo: " <<rt.getCost(1000,1002)<< endl;
+
 		}
 		else if ((linkVector[i].dest->name[0] == 'R') && (linkVector[i].src->name[0] == 'R')) {
 			rt.addCost(linkVector[i].src->ip, linkVector[i].dest->ip, linkVector[i].cost);
 			rt.addCost(linkVector[i].dest->ip, linkVector[i].src->ip, linkVector[i].cost);
+			rt.print();
 		}
+	}
+	for (int i = 0; i < (int)rt.dvv.size(); i++) {
+		rt.bford(rt.dvv[i].ip);
 	}
 	//rt.addCost(ip, ip, 0);
 	STATE=3;
@@ -244,11 +252,15 @@ link* router::chooseLink(packet* p){
 		for(int j=0;j<(int)rt.dvv[i].h.size();j++){
 			if(rt.dvv[i].h[j] == p->dest->ip){
 				//therefore we want to get to rt.dvv[i].ip
-				for(int j=0; j < (int)lVector.size();j++){
-					if(lVector[j].type == 1){
-						int step_cost = rt.getCost(this->ip,lVector[j].ip) + rt.getCost(lVector[j].ip,rt.dvv[i].ip);
+				for(int k=0; k < (int)lVector.size();k++){
+					if(lVector[k].type == 1){
+						int step_cost = rt.getCost(this->ip,lVector[k].ip) + rt.getCost(lVector[k].ip,rt.dvv[i].ip);
+						if (step_cost < 0) {
+							step_cost = INF;
+						}
 						if(step_cost<min_step){
-							min_link= &linkVector[lVector[j].link_id];
+							min_link= &linkVector[lVector[k].link_id];
+							min_step = step_cost;
 						}
 					}
 				}

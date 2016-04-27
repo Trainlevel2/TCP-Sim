@@ -131,7 +131,7 @@ void host::receivePacket(link* link_ptr){
 			
 			packetVector.push_back(pSend);
 	
-			snum = packetVector.size() - 1;
+			snum = (int)packetVector.size() - 1;
 		
 			pushPacket(snum,link_ptr);
 		}

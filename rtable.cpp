@@ -9,20 +9,29 @@ using namespace std;
 #include <new>
 #include <limits>
 #include <cstdint>
+#include <climits>
 #include "rtable.h"
-#define INF LONG_MAX
+#define INF INT_MAX
 
 bool rtable::bford(int ip_from){
 	vector<int>* cvec = new vector<int>;
 	int ip_to;
 	int bcast=false;
+	//loop through distance vector
 	for(int i=0;i<(int)dvv.size();i++){
 		if (!cvec->empty()){
 			cvec->erase(cvec->begin(),cvec->end());
 		}
 		ip_to = dvv[i].ip;
+		//cout << "cvec "<<ip_from<<","<<ip_to<<" reset" << endl;
+		//loop through distance vector
 		for(int j=0;j<(int)dvv.size();j++){
+			
 			int cost = getCost(ip_from,dvv[j].ip) + getCost(dvv[j].ip,ip_to);
+			if (cost < 0) {
+				cost = INF; 
+			}
+			//cout << "pushing back to cvec: " << cost << endl;
 			cvec->push_back(cost);	
 		}
 		int m=INF;
@@ -32,10 +41,12 @@ bool rtable::bford(int ip_from){
 			}
 		}
 		if (getCost(ip_from,ip_to)!=m){
+			//cout << "bford setcost to " << m << endl;
 			setCost(ip_from,ip_to,m);
 			bcast=true;
 		}	
 	}
+	delete cvec;
 	return bcast;
 }
 
@@ -121,7 +132,7 @@ bool rtable::containsIp(int ip){
 
 
 int rtable::addCost(int ip_from,int ip_to,int cost){
-	cout<<this->rname<<"adding Cost from "<<ip_from<<" to "<<ip_to<<endl;
+	cout<<this->rname<<"adding Cost "<< cost <<" from "<<ip_from<<" to "<<ip_to<<endl;
 	if(!containsIp(ip_from)){
 		cout<<"does not contain "<<ip_from<<endl;
 		addip(ip_from);
@@ -135,19 +146,20 @@ int rtable::addCost(int ip_from,int ip_to,int cost){
 }
 
 void rtable::print(){
-	cout<<this->rname<<" ROUTING TABLE"<<endl;
+	cout << endl << this->rname << " ROUTING TABLE" << endl;
 	for(int i=0;i<(int)dvv.size();i++){
 		cout<<dvv[i].ip<<" :";
 		for(int j=0;j<(int)dvv[i].e.size();j++){
 			cout<<"{"<<dvv[i].e[j].ip<<","<<dvv[i].e[j].cost<<"}";
 			
 		}
-		cout << endl << " hosts: " << endl;
+		cout << endl << " hosts: ";
 		for (int j = 0; j < (int)dvv[i].h.size(); j++) {
 			cout << dvv[i].h[j] << ", ";
 		}
-		cout<<endl;
+		cout << endl;
 	}
+	cout << endl;
 }
 
 
@@ -166,10 +178,18 @@ void rtable::addip(int ip){
 	dvv.push_back(ndv);
 	//grow all of the rows in the table to the proper length: length+1.
 	for(int i=0;i<(int)dvv.size();i++){
-		dVec::entry e;
-		e.cost=0; //cost from self to self
-		e.ip = ip; 
-		dvv[i].e.push_back(e);
+		if (dvv[i].ip == ip) {
+			dVec::entry e;
+			e.cost = 0; //cost from ip to self.
+			e.ip = ip;
+			dvv[i].e.push_back(e);
+		}
+		else {
+			dVec::entry e;
+			e.cost = INF; //cost from ip to others.
+			e.ip = ip;
+			dvv[i].e.push_back(e);
+		}
 	}
 }
 
@@ -318,6 +338,7 @@ int rtable::setCost(int ip_from,int ip_to,int cost){
 			for(int j=0;j<(int)dvv[i].e.size();j++){
 				if(ip_to == dvv[i].e[j].ip){
 					f2=true;
+					cout << ip_from << " to " << ip_to << " cost update: " << cost << endl;
 					dvv[i].e[j].cost = cost;
 					return 0;
 				}

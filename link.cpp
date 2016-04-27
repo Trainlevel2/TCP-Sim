@@ -62,8 +62,10 @@ void link::tpropagate() {
 	dest->receivePacket(this);
 	qn.pop();
 	qp.pop();
-	if(qp.size() > 0)
+	if (qp.size() > 0) {
+		//cout << "link " << this->id << " force propagate" << endl;
 		forcepropagate();
+	}
 	return;
 }
 
