@@ -123,7 +123,7 @@ void createFlow(string flowName, string hostA, string hostB, int a, int b){
 	stringstream ss;
 	ss << (int)flowVector.size() - 1;
 	string event = "FLOW_" + ss.str() + "_START";
-	pushEvent(event, 0);
+	pushEvent(event, b);
 }
 
 // Run through and record data on the Network

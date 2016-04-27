@@ -60,6 +60,8 @@ void flow::searchMax(int size) {
 
 void flow::receiveAck(int pnum) {
 	packet* p = &packetVector[pnum];
+	if(data == 0)
+		cout << "FLOW END" << endl;
 	if (data == 0 || p->num < packetnum) {
 		return;
 	}
