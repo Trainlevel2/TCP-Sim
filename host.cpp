@@ -39,8 +39,8 @@ host::host(string name, int ip)
 void host::pushPacket(int pnum,link* link_ptr) {
 	packet* p = &packetVector[pnum];
 	if(p->f != nullptr){
-		if(this->STATE != 2){
-		this->init();
+		if(this->STATE == 0){
+			this->init();
 		}else{
 			link_ptr->qn.push(this);
 	link_ptr->qp.push(pnum);

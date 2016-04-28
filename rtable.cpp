@@ -205,6 +205,9 @@ int rtable::update(dVec* dv){
 		bcast = 1;
 	}
 	else{
+
+		print();
+
 		vector<int> tA; //to Add
 		vector<int> tB; //to Broadcast
 
@@ -224,7 +227,7 @@ int rtable::update(dVec* dv){
 
 		
 		if((tB.empty())&&(tA.empty())){
-			cout<<"distance vector is identical! nbd"<<endl;
+			cout<<"new router ip's not found"<<endl;
 			for(int i=0;i<(int)dv->e.size();i++){
 				//copy right over.
 				if(getCost(dv->ip,dv->e[i].ip) != dv->e[i].cost){
@@ -237,7 +240,7 @@ int rtable::update(dVec* dv){
 		}
 		else{
 			if (!tA.empty()){
-				cout<<"costs to add found"<<endl;
+				cout<<"routers to add found"<<endl;
 				for(int i=0;i<(int)tA.size();i++){
 					for(int j=0;j<(int)dv->e.size();j++){
 						if (dv->e[j].ip == tA[i]){
@@ -250,39 +253,58 @@ int rtable::update(dVec* dv){
 				cout<<"need to Broadcast knowledge of routers"<<endl;
 				
 			}
-			bcast=1;
+			bcast=1; //just propagate the thing we received
 		}
 
+		
+		print();
+		cout<<endl;
 
-		vector<int> tB2,tA2;
+		dv->print();
+		cout<<endl;
 
+		
 		dVec* mdv = getDv(dv->ip);
-		compare(mdv->h,dv->h,tB2,tA2);
 
-		if((tB2.empty())&&(tA2.empty())){
-			//they are the same, do nothing
+		if(mdv->h.empty()){
+			for(int i=0;i<dv->h.size();i++){
+				mdv->h.push_back(dv->h[i]);	
+			}
 		}
 		else{
-			if (!tA2.empty()){
-				cout<<"hosts to add found"<<endl;
-				for(int i=0;i<(int)tA2.size();i++){
-					for(int j=0;j<(int)dv->h.size();j++){
-						if(dv->h[j]==tA2[i]){
-							addHost(dv->ip,dv->h[j]);
+
+			vector<int> tB2,tA2;
+			compare(mdv->h,dv->h,tB2,tA2);
+			if((tB2.empty())&&(tA2.empty())){
+				//they are the same, do nothing
+			}
+			else{
+				if (!tA2.empty()){
+					cout<<"hosts to add found"<<endl;
+					for(int i=0;i<(int)tA2.size();i++){
+						for(int j=0;j<(int)dv->h.size();j++){
+							if(dv->h[j]==tA2[i]){
+								addHost(dv->ip,dv->h[j]);
+							}
 						}
 					}
 				}
+				if (!tB2.empty()){
+					cout<<"need to broadcast knowledge of hosts"<<endl;
+				}
+				bcast=1;
 			}
-			if (!tB2.empty()){
-				cout<<"need to broadcast knowledge of hosts"<<endl;
-			}
-			bcast=1;
+		
 		}
-		if (isComplete()){
+		
+		
+
+		
+		//if (isComplete()){
 			if(bford(dv->ip)){
-				bcast = 2;
+				bcast = 2; //send our dVec
 			}
-		}
+		//}
 		delete comp;
 		delete comp2;
 
