@@ -49,35 +49,6 @@ void router::addLink(int id) {
 		f.isCTS = false;
 		lVector.push_back(f);
 }
-/*
-void router::addLink(int id) {
-	cout<<"adding link to router"<<endl;
-	field f;
-	f.link_id = id;
-	link* link_ptr = &linkVector[id];
-	if (link_ptr->src->name == this->name){
-		f.ip = link_ptr->dest->ip;
-		if(link_ptr->dest->name[0] == 'H'){
-			f.type = 0;
-		}
-		else if(link_ptr->dest->name[0] == 'R'){
-			f.type = 1;
-		}	
-	}
-	else if(link_ptr->dest->name == this->name){
-		f.ip = link_ptr->src->ip;
-		if(link_ptr->src->name[0] == 'H'){
-			f.type = 0;
-		}
-		else if(link_ptr->src->name[0] == 'R'){
-			f.type = 1;
-		}	
-	}
-	lVector.push_back(f);
-	printLinks();
-}
-
-*/
 
 void router::printLinks(){
 	cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" lvector: "<<endl;
@@ -87,73 +58,9 @@ void router::printLinks(){
 	}
 }
 
-/*
-//for all links in the network. addCost.
-void router::rtHardCode(){
 
-	for(int i=0;i<(int)linkVector.size();i++){
-		if((linkVector[i].src->name[0]=='H')&&(linkVector[i].dest->name[0]=='R')){
-			rt.addHost(linkVector[i].dest->ip,linkVector[i].src->ip);
-			cout << "added host " << linkVector[i].src->name << endl;
-			rt.print();
-		}
-		else if((linkVector[i].dest->name[0]=='H')&&(linkVector[i].src->name[0]=='R')){
-			rt.addHost(linkVector[i].src->ip,linkVector[i].dest->ip);
-			cout << "added host " << linkVector[i].dest->name << endl;
-			rt.print();
-			cout << "getCost from "<<1000<<" to "<<1002<<" demo: " <<rt.getCost(1000,1002)<< endl;
-
-		}
-		else if ((linkVector[i].dest->name[0] == 'R') && (linkVector[i].src->name[0] == 'R')) {
-			rt.addCost(linkVector[i].src->ip, linkVector[i].dest->ip, linkVector[i].cost);
-			rt.addCost(linkVector[i].dest->ip, linkVector[i].src->ip, linkVector[i].cost);
-			rt.print();
-		}
-	}
-	for (int i = 0; i < (int)rt.dvv.size(); i++) {
-		rt.bford(rt.dvv[i].ip);
-	}
-	//rt.addCost(ip, ip, 0);
-	STATE=3;
-
-	cout<<"after hardcoding"<<endl;
-	rt.print();
-	cin.ignore();
-}
-
-*/
-
-
-
-
-
-
-
-/*
-	Router States:
-
-	0 = Links Unknown
-	Initial state.
-	
-	If a router in this state receives a CRO, it sets its lVector, 
-	sets STATE to discoveryComplete, and replies on that link with a CR1 packet.
-
-	If a router in this state receives a CR1, it sets its lVector,
-	and sets STATE to discoveryComplete.
-	
-	If a router in this state receives a RIP, it will reply with a CR0.
-
-	if the state changes to 1, run an initialization of the routing table.
-
-	
-
-	1 = Links Known
-
-
-
-*/
-
-void router::inform(int n,packet* p,link* link_ptr){
+void router::inform(int n,int ip,link* link_ptr){
+	cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" informing "<< n <<endl;
 	if((n==1)||(n==2)){
 		//if its new
 		//broadcast the dvec sent to us on ALL LInks
@@ -163,7 +70,7 @@ void router::inform(int n,packet* p,link* link_ptr){
 				cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating new dVec"<<endl;
 				packet pSend(0, 0, this, this);
 				pSend.isRIP = true;
-				pSend.dv = *(rt.getDv(p->src->ip));
+				pSend.dv = *(rt.getDv(ip));
 				packetVector.push_back(pSend);
 				pushPacket((int)packetVector.size() - 1,link_ptr);	
 			}
@@ -172,7 +79,7 @@ void router::inform(int n,packet* p,link* link_ptr){
 			for(int i=0;i<lVector.size();i++){
 				cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating modified dVec"<<endl;
 				link* myLink_ptr = &linkVector[lVector[i].link_id];
-				packet pSend(0, p->num, this, p->src);
+				packet pSend(0, 0, this, this);
 				pSend.isRIP = true;
 				pSend.dv = *(rt.getDv(this->ip));
 				packetVector.push_back(pSend);
@@ -185,7 +92,7 @@ void router::inform(int n,packet* p,link* link_ptr){
 			cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating CTS"<<endl;
 			if(lVector[i].type==1){
 				link* myLink_ptr = &linkVector[lVector[i].link_id];
-				packet pSend(0, p->num, this, p->src);
+				packet pSend(0, 0, this, this);
 				pSend.isCTS = true;
 				packetVector.push_back(pSend);
 				pushPacket((int)packetVector.size() - 1,myLink_ptr);	
@@ -197,7 +104,7 @@ void router::inform(int n,packet* p,link* link_ptr){
 			cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" is ready to send: propagating CTS to its HOSTS"<<endl;
 			if(lVector[i].type==0){
 				link* myLink_ptr = &linkVector[lVector[i].link_id];
-				packet pSend(0, p->num, this, p->src);
+				packet pSend(0, 0, this, this);
 				pSend.isCTS = true;
 				packetVector.push_back(pSend);
 				cout<<"informing host connected that "<<this->ip<<" is clearToSend"<<endl;
@@ -260,15 +167,38 @@ void router::receivePacket(link* link_ptr) {
 				rtInit();
 				rt.print();
 				cin.ignore();
-				int k=0;
-				while(!RIPbuf.empty()){
-					int n = rt.update(&RIPbuf.front());
-					RIPbuf.pop();
-					if (n>k){
-						k = n;
-					}
+				
+				if(RIPbuf.empty()){
+					cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" empty RIPbuf:"<<endl;
+					
+					int m = rt.update(&(p->dv));
+					inform(m,p->src->ip,link_ptr);
 				}
-				inform(k,p,link_ptr);
+				else{
+					cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" nonEmpty RIPbuf:"<<endl;
+				
+					int k=0;
+					while(!RIPbuf.empty()){
+						int n = rt.update(&RIPbuf.front());
+						//get ip from RIPbuf
+						int ipRet = RIPbuf.front().ip;
+						RIPbuf.pop();
+						if (n>k){
+							k = n;
+						}
+						//IDEALLY: inform less
+						//inform all routers
+						//treat lVector[]
+						for(int i=0;i<lVector.size();i++){
+							link* lptr = &linkVector[lVector[i].link_id];
+							if(lVector[i].type == 1){
+								inform(k,ipRet,lptr);
+							}
+						}
+					}
+					
+				}				
+				STATE++;
 			}
 		}
 		else if (p->isRIP){
@@ -277,7 +207,7 @@ void router::receivePacket(link* link_ptr) {
 	}
 	else if(STATE==1){ //building routing table
 		if(p->isRIP){
-			inform(rt.update(&(p->dv)),p,link_ptr);
+			inform(rt.update(&(p->dv)),p->src->ip,link_ptr);
 		}
 		else if(p->isCR){
 			//we sent to a router that wasn't ready for RIP yet
@@ -295,12 +225,12 @@ void router::receivePacket(link* link_ptr) {
 			cout<<"final routing table:"<<endl;
 			rt.print();
 			STATE=2;
-			inform(3,p,link_ptr);
+			inform(3,p->src->ip,link_ptr);
 		}
 	}
 	else if(STATE==2){ //routing table complete
 		if(p->isRIP){
-			inform(rt.update(&(p->dv)),p,link_ptr);
+			inform(rt.update(&(p->dv)),p->src->ip,link_ptr);
 			cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" routing table updated:"<<endl;
 			rt.print();
 		}
@@ -329,7 +259,7 @@ void router::receivePacket(link* link_ptr) {
 			}
 		}
 		if(this->isCTS){
-			inform(4,p,link_ptr);
+			inform(4,p->src->ip,link_ptr);
 		}
 	}
 }

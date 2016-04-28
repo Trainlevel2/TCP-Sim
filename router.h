@@ -66,7 +66,7 @@ class router: public node {
 		void testing();
 		bool clearToSend();
 		void crResp(link* link_ptr,packet* p);
-		void inform(int n,packet* p,link* link_ptr);
+		void inform(int n,int ip,link* link_ptr);
 		vector<field> lVector; //connected link info
 		bool fulltable; //no maxints
 		void printLinks();

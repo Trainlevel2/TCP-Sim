@@ -192,83 +192,92 @@ void rtable::addHost(int ip,int host_ip){
 int rtable::update(dVec* dv){
 	//int inf = std::numeric_limits<int>::max();
 	
-	vector<int> tA; //to Add
-	vector<int> tB; //to Broadcast
-
-	vector<int>* comp = new vector<int>;
-
-	for(int i=0;i<dv->e.size();i++){
-		comp->push_back(dv->e[i].ip);
-	}
-
-	vector<int>* comp2 = new vector<int>;
-
-	for(int i=0;i<dvv.size();i++){
-		comp2->push_back(dvv[i].ip);
-	}
-
-	compare(*comp2,*comp,tB,tA);
-
-	
 	int bcast=0;
-	if((tB.empty())&&(tA.empty())){
-		cout<<"distance vector is identical! nbd"<<endl;
-		for(int i=0;i<(int)dv->e.size();i++){
-			if(getCost(dv->ip,dv->e[i].ip) != dv->e[i].cost){
-				if(bcast==0){
-					bcast=1;
-				}
-				setCost(dv->ip,dv->e[i].ip,dv->e[i].cost);
-			}
-		}
+	if(dvv.empty()){
+		dvv.push_back(*dv);
+		bcast = 1;
 	}
 	else{
-		if (!tA.empty()){
-			cout<<"things to add found"<<endl;
-			for(int i=0;i<(int)tA.size();i++){
-				for(int j=0;j<(int)dv->e.size();j++){
-					if (dv->e[j].ip == tA[i]){
-						addCost(dv->ip,dv->e[j].ip,dv->e[j].cost);
+		vector<int> tA; //to Add
+		vector<int> tB; //to Broadcast
+
+		vector<int>* comp = new vector<int>;
+
+		for(int i=0;i<dv->e.size();i++){
+			comp->push_back(dv->e[i].ip);
+		}
+
+		vector<int>* comp2 = new vector<int>;
+
+		for(int i=0;i<dvv.size();i++){
+			comp2->push_back(dvv[i].ip);
+		}
+
+		compare(*comp2,*comp,tB,tA);
+
+		
+		if((tB.empty())&&(tA.empty())){
+			cout<<"distance vector is identical! nbd"<<endl;
+			for(int i=0;i<(int)dv->e.size();i++){
+				if(getCost(dv->ip,dv->e[i].ip) != dv->e[i].cost){
+					if(bcast==0){
+						bcast=1;
+					}
+					setCost(dv->ip,dv->e[i].ip,dv->e[i].cost);
+				}
+			}
+		}
+		else{
+			if (!tA.empty()){
+				cout<<"things to add found"<<endl;
+				for(int i=0;i<(int)tA.size();i++){
+					for(int j=0;j<(int)dv->e.size();j++){
+						if (dv->e[j].ip == tA[i]){
+							addCost(dv->ip,dv->e[j].ip,dv->e[j].cost);
+						}
 					}
 				}
 			}
+			else if(!tB.empty()){
+				bcast=1;
+			}
 		}
-		else if(!tB.empty()){
-			bcast=1;
+
+
+		vector<int> tB2,tA2;
+
+		dVec* mdv = getDv(dv->ip);
+		compare(mdv->h,dv->h,tB2,tA2);
+
+		if((tB2.empty())&&(tA2.empty())){
+			//they are the same, do nothing
 		}
-	}
-
-
-	vector<int> tB2,tA2;
-
-	dVec* mdv = getDv(dv->ip);
-	compare(mdv->h,dv->h,tB2,tA2);
-
-	if((tB2.empty())&&(tA2.empty())){
-		//they are the same, do nothing
-	}
-	else{
-		if (!tA2.empty()){
-			for(int i=0;i<(int)tA2.size();i++){
-				for(int j=0;dv->h.size();j++){
-					if(dv->h[j]==tA2[i]){
-						addHost(dv->ip,dv->h[j]);
+		else{
+			if (!tA2.empty()){
+				for(int i=0;i<(int)tA2.size();i++){
+					for(int j=0;dv->h.size();j++){
+						if(dv->h[j]==tA2[i]){
+							addHost(dv->ip,dv->h[j]);
+						}
 					}
 				}
 			}
+			if (!tB2.empty()){
+				bcast=1;
+			}
 		}
-		if (!tB2.empty()){
-			bcast=1;
+		if (isComplete()){
+			if(bford(dv->ip)){
+				bcast = 2;
+			}
 		}
+		delete comp;
+		delete comp2;
+
 	}
-	if (isComplete()){
-		if(bford(dv->ip)){
-			bcast = 2;
-		}
-	}
-	delete comp;
-	delete comp2;
+
 	return bcast;
+	
 }
 
 dVec* rtable::getDv(int ip){
