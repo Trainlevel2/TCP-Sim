@@ -198,6 +198,7 @@ int rtable::update(dVec* dv){
 		cerr<<"can't update: null dvec passed into rtable::update()"<<endl;
 		exit(1);
 	}
+
 	int bcast=0;
 	if(dvv.empty()){
 		dvv.push_back(*dv);
@@ -236,7 +237,7 @@ int rtable::update(dVec* dv){
 		}
 		else{
 			if (!tA.empty()){
-				cout<<"things to add found"<<endl;
+				cout<<"costs to add found"<<endl;
 				for(int i=0;i<(int)tA.size();i++){
 					for(int j=0;j<(int)dv->e.size();j++){
 						if (dv->e[j].ip == tA[i]){
@@ -246,8 +247,10 @@ int rtable::update(dVec* dv){
 				}
 			}
 			else if(!tB.empty()){
-				bcast=1;
+				cout<<"need to Broadcast knowledge of routers"<<endl;
+				
 			}
+			bcast=1;
 		}
 
 
@@ -261,6 +264,7 @@ int rtable::update(dVec* dv){
 		}
 		else{
 			if (!tA2.empty()){
+				cout<<"hosts to add found"<<endl;
 				for(int i=0;i<(int)tA2.size();i++){
 					for(int j=0;j<(int)dv->h.size();j++){
 						if(dv->h[j]==tA2[i]){
@@ -270,8 +274,9 @@ int rtable::update(dVec* dv){
 				}
 			}
 			if (!tB2.empty()){
-				bcast=1;
+				cout<<"need to broadcast knowledge of hosts"<<endl;
 			}
+			bcast=1;
 		}
 		if (isComplete()){
 			if(bford(dv->ip)){

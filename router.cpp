@@ -59,12 +59,10 @@ void router::printLinks(){
 	}
 }
 
-
+//don't inform on dVec to the router which sent it to you!!
 void router::inform(int n,int ip,link* link_ptr){
 	cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" informing "<< n <<endl;
-	if((n==1)||(n==2)){
-		//if its new
-		//broadcast the dvec sent to us on ALL LInks
+	if((n==1)||(n==2)){ //propagate the new distance vector NOT on the link which we recieved it
 		for(int i=0;i<(int)lVector.size();i++){
 			link* myLink_ptr = &linkVector[lVector[i].link_id];
 			if ((myLink_ptr->id != link_ptr->id)&&(lVector[i].type == 1)){
@@ -76,7 +74,7 @@ void router::inform(int n,int ip,link* link_ptr){
 				pushPacket((int)packetVector.size() - 1,link_ptr);	
 			}
 		}
-		if(n==2){	
+		if(n==2){	//propagate OUR distance vector
 			for(int i=0;i<(int)lVector.size();i++){
 				cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating modified dVec"<<endl;
 				link* myLink_ptr = &linkVector[lVector[i].link_id];
@@ -177,6 +175,7 @@ void router::receivePacket(link* link_ptr) {
 					int k=0;
 					while(!RIPbuf.empty()){
 						int n = rt.update(&RIPbuf.front());
+						cout<<"inform BOI "<<n<<endl;
 						//get ip from RIPbuf
 						int ipRet = RIPbuf.front().ip;
 						RIPbuf.pop();
@@ -193,7 +192,6 @@ void router::receivePacket(link* link_ptr) {
 							}
 						}
 					}
-					
 				}				
 				STATE=1;
 				//if no routers connected to this router

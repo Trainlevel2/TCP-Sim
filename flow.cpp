@@ -21,7 +21,7 @@ flow::flow(host* source, host* dest, int data, int id) {
 //return 0 if flow startedd successfully.
 //return 1 if flow uninitialized.
 int flow::startFlow() {
-	cout << "FLOW START" << endl;
+	cout << "FLOW: "<<this->id<<" START" << endl;
 	lastSent = 10;
 	slowStartState = 1;
 	ssthresh = 160;
@@ -43,7 +43,7 @@ int flow::getCwnd(){
 //searchMax should send 'size' packets as oppsed to a big packet of size 'size'.
 
 void flow::searchMax(int size) {
-	cout << "SENDING PACKET FROM " << source->name << " TO " << dest->name << ", SIZE " << size << endl;
+	cout << "FLOW: "<<this->id<< "SENDING PACKET FROM " << source->name << " TO " << dest->name << ", SIZE " << size << endl;
 	packetnum++;
 	packet p(size, packetnum, source, dest);
 	p.f = this;
@@ -67,7 +67,7 @@ void flow::receiveAck(int pnum) {
 		return;
 	}
 	else {
-		cout << "RECEIVED ACK\tData: " << lastSent << "\tSource: " << p->src->name << "\tDest: " << p->dest->name <<"\tSrc: " << p->src->name<< endl;
+		cout << "FLOW: "<<this->id<< "RECEIVED ACK\tData: " << lastSent << "\tSource: " << p->src->name << "\tDest: " << p->dest->name <<"\tSrc: " << p->src->name<< endl;
 		data -= lastSent;
 		if(lastSent>=ssthresh)
 			slowStartState=0;
@@ -82,7 +82,7 @@ void flow::receiveAck(int pnum) {
 
 void flow::timeoutAck(int pnum) {
 	//packet* p = &packetVector[pnum];
-	cout << "TIMED OUT" << endl;
+	cout << "FLOW: "<<this->id<< " TIMED OUT" << endl;
 	cin.ignore();
 	//change cwnd to 1
 	lastSent = 1;
