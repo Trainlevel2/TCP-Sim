@@ -31,7 +31,7 @@ host::host(string name, int ip)
 :node::node(name,ip){
 	this->ip = ip;
 	link_id=-1;
-	STATE=3;
+	STATE=0;
 	defaultGateway=-1;
 
 }
@@ -44,13 +44,13 @@ host::host(string name, int ip)
 
 void host::init(){
 	if(STATE==0){
+		//send connection reqeust
 		link* link_ptr = &linkVector[link_id];
-		int size= 1;
-		int num= -1; //connectionReq packet
-		packet p(size, num, this, this);
-		p.isRIP = true;
-		packetVector.push_back(p);
-		pushPacket(packetVector.size()-1,link_ptr);		
+		packet pSend(0, 0, this, this);
+		pSend.isCR = true;
+		pSend.t = 1;
+		packetVector.push_back(pSend);
+		pushPacket((int)packetVector.size() - 1,link_ptr);		
 		STATE++;	
 	}
 	else{

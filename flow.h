@@ -30,7 +30,7 @@ class flow {
 		int slowStartState;
 		int ssthresh;
 		flow(host* source, host* dest, int data, int id);
-		void startFlow();
+		int startFlow();
 		void receiveAck(int pnum);
 		int id;
 		int getCwnd();
