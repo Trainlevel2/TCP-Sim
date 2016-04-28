@@ -83,7 +83,7 @@ void flow::receiveAck(int pnum) {
 void flow::timeoutAck(int pnum) {
 	//packet* p = &packetVector[pnum];
 	cout << "FLOW: "<<this->id<< " TIMED OUT" << endl;
-	cin.ignore();
+	//cin.ignore();
 	//change cwnd to 1
 	lastSent = 1;
 	slowStartState = 1;
