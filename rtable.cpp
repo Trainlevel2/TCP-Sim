@@ -75,29 +75,30 @@ int rtable::getCost(int ip_from,int ip_to){
 		cout<<"IP"<<ip_from<<"doesnt exist in routing table"<<endl;
 		return -1;
 	}
+	return -1;
 }
 
 //assuming no duplicate entries in each vector
 //assume AmB,BmA empty
 void rtable::compare(vector<int>& A, vector<int>& B, vector<int>& AmB, vector<int>& BmA){
 	vector<int> common;
-	for(int i=0;i<A.size();i++){
-		for(int j=0;j<B.size();j++){
+	for(int i=0;i<(int)A.size();i++){
+		for(int j=0;j<(int)B.size();j++){
 			if(A[i]==B[j]){
 				common.push_back(A[i]);
 			}
 		}
 	}
 
-	for(int i=0;i<common.size();i++){
+	for(int i=0;i<(int)common.size();i++){
 		
-		for(int j=0;j<A.size();j++){
+		for(int j=0;j<(int)A.size();j++){
 			if(common[i] != A[j]){
 				AmB.push_back(A[j]);
 			}
 		}
 
-		for(int j=0;j<B.size();j++){
+		for(int j=0;j<(int)B.size();j++){
 			if(common[i] != B[j]){
 				BmA.push_back(B[j]);
 			}
@@ -106,7 +107,7 @@ void rtable::compare(vector<int>& A, vector<int>& B, vector<int>& AmB, vector<in
 }
 
 bool rtable::containsIp(int ip){
-	for(int i=0;i<dvv.size();i++){
+	for(int i=0;i<(int)dvv.size();i++){
 		if(ip==dvv[i].ip){
 			return true;
 		}
@@ -179,8 +180,8 @@ void rtable::addHost(int ip,int host_ip){
 		addip(ip);
 	}	
 	dVec* dv = getDv(ip);
-	bool found=false;
-	for(int i=0;i<dv->h.size();i++){
+	bool found=false;	
+	for(int i=0;i<(int)dv->h.size();i++){
 		if (dv->h[i]==host_ip){
 			found=true;
 		}
@@ -208,13 +209,13 @@ int rtable::update(dVec* dv){
 
 		vector<int>* comp = new vector<int>;
 
-		for(int i=0;i<dv->e.size();i++){
+		for(int i=0;i<(int)dv->e.size();i++){
 			comp->push_back(dv->e[i].ip);
 		}
 
 		vector<int>* comp2 = new vector<int>;
 
-		for(int i=0;i<dvv.size();i++){
+		for(int i=0;i<(int)dvv.size();i++){
 			comp2->push_back(dvv[i].ip);
 		}
 
@@ -261,7 +262,7 @@ int rtable::update(dVec* dv){
 		else{
 			if (!tA2.empty()){
 				for(int i=0;i<(int)tA2.size();i++){
-					for(int j=0;dv->h.size();j++){
+					for(int j=0;j<(int)dv->h.size();j++){
 						if(dv->h[j]==tA2[i]){
 							addHost(dv->ip,dv->h[j]);
 						}
@@ -290,22 +291,9 @@ dVec* rtable::getDv(int ip){
 	for(int i=0;i<(int)dvv.size();i++){
 		if(dvv[i].ip == ip){
 			return &dvv[i];
-			/*
-			for(int j=0;j<(int)dvv[i].e.size();j++){
-			dVec::entry ent;
-			ent.cost = dvv[i].e[j].cost;
-			ent.ip = dvv[i].e[j].ip;
-			dv.e.push_back(ent);
-			}
-			for(int j=0;j<(int)dvv[i].h.size();j++){
-			int nh = dvv[i].h[j];
-			dv.h.push_back(nh);
-			}
-			*/
-			break;
 		}
-		
 	}
+	return NULL;
 }
 
 
@@ -345,5 +333,6 @@ int rtable::setCost(int ip_from,int ip_to,int cost){
 		cout<<"IP"<<ip_from<<"doesnt exist in routing table"<<endl;
 		return -1;
 	}
+	return -1;
 
 }

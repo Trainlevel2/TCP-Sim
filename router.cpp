@@ -54,7 +54,7 @@ void router::addLink(int id) {
 void router::printLinks(){
 	cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" lvector: "<<endl;
 	cout << "{link_id, type, ip}" << endl;
-	for(int i=0;i<lVector.size();i++){
+	for(int i=0;i<(int)lVector.size();i++){
 		cout<<"{"<<lVector[i].link_id<<","<<lVector[i].type<<","<<lVector[i].ip<<"},"<<endl;
 	}
 }
@@ -65,7 +65,7 @@ void router::inform(int n,int ip,link* link_ptr){
 	if((n==1)||(n==2)){
 		//if its new
 		//broadcast the dvec sent to us on ALL LInks
-		for(int i=0;i<lVector.size();i++){
+		for(int i=0;i<(int)lVector.size();i++){
 			link* myLink_ptr = &linkVector[lVector[i].link_id];
 			if ((myLink_ptr->id != link_ptr->id)&&(lVector[i].type == 1)){
 				cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating new dVec"<<endl;
@@ -77,7 +77,7 @@ void router::inform(int n,int ip,link* link_ptr){
 			}
 		}
 		if(n==2){	
-			for(int i=0;i<lVector.size();i++){
+			for(int i=0;i<(int)lVector.size();i++){
 				cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating modified dVec"<<endl;
 				link* myLink_ptr = &linkVector[lVector[i].link_id];
 				packet pSend(0, 0, this, this);
@@ -89,7 +89,7 @@ void router::inform(int n,int ip,link* link_ptr){
 		}
 	}
 	else if(n==3){
-		for(int i=0;i<lVector.size();i++){
+		for(int i=0;i<(int)lVector.size();i++){
 			cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating CTS"<<endl;
 			if(lVector[i].type==1){
 				link* myLink_ptr = &linkVector[lVector[i].link_id];
@@ -101,7 +101,7 @@ void router::inform(int n,int ip,link* link_ptr){
 		}
 	}
 	else if(n==4){
-		for(int i=0;i<lVector.size();i++){
+		for(int i=0;i<(int)lVector.size();i++){
 			cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" is ready to send: propagating CTS to its HOSTS"<<endl;
 			if(lVector[i].type==0){
 				link* myLink_ptr = &linkVector[lVector[i].link_id];
@@ -132,7 +132,7 @@ void router::crResp(link* link_ptr,packet* p){
 		lVectorUpdate(link_ptr,p);
 		printLinks();
 		cin.ignore();
-		for(int i=0;i<lVector.size();i++){
+		for(int i=0;i<(int)lVector.size();i++){
 			if(lVector[i].type != 2){
 				link* lptr = &linkVector[lVector[i].link_id];
 				if(lptr != link_ptr){
@@ -186,7 +186,7 @@ void router::receivePacket(link* link_ptr) {
 						//IDEALLY: inform less
 						//inform all routers
 						//treat lVector[]
-						for(int i=0;i<lVector.size();i++){
+						for(int i=0;i<(int)lVector.size();i++){
 							link* lptr = &linkVector[lVector[i].link_id];
 							if(lVector[i].type == 1){
 								inform(k,ipRet,lptr);
@@ -222,7 +222,7 @@ void router::receivePacket(link* link_ptr) {
 			crResp(link_ptr,p);
 		}
 		else if(p->isCTS){
-			for(int i=0;i<lVector.size();i++){
+			for(int i=0;i<(int)lVector.size();i++){
 				if(lVector[i].type == 1){
 					lVector[i].isCTS = true;
 				}
@@ -247,7 +247,7 @@ void router::receivePacket(link* link_ptr) {
 		}
 		else if(p->isCTS){
 			cout<<"clearToSend packet recieved on"<<this->name<<endl;
-			for(int i=0;i<lVector.size();i++){
+			for(int i=0;i<(int)lVector.size();i++){
 				if(lVector[i].type == 1){
 					lVector[i].isCTS = true;
 				}
@@ -273,7 +273,7 @@ void router::receivePacket(link* link_ptr) {
 }
 
 bool router::clearToSend(){
-	for(int i=0;i<lVector.size();i++){
+	for(int i=0;i<(int)lVector.size();i++){
 		if((lVector[i].type==1)&&(!lVector[i].isCTS)){
 			return false;
 		}
@@ -282,7 +282,7 @@ bool router::clearToSend(){
 }
 
 void router::lVectorUpdate(link* link_ptr,packet* p){
-	for(int i=0;i<lVector.size();i++){
+	for(int i=0;i<(int)lVector.size();i++){
 		if(lVector[i].link_id == link_ptr->id){
 			if(p->src->name[0] == 'R'){
 				lVector[i].type = 1;
@@ -373,7 +373,7 @@ link* router::chooseLink(packet* p){
 	return min_link;
 }
 
-
+/*
 void router::sendDVec(int ip_from){
 	for(int i=0;i<(int)lVector.size();i++){
 		if(lVector[i].type != 2){
@@ -388,6 +388,8 @@ void router::sendDVec(int ip_from){
 		}
 	}
 }
+
+*/
 
 //assumes LinkVector is fully updated.
 void router::rtInit(){
