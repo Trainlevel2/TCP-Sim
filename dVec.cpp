@@ -16,14 +16,14 @@ using namespace std;
 
 
 void dVec::print(){
-		cout<<dvv[i].ip<<" :";
-		for(int j=0;j<(int)dvv[i].e.size();j++){
-			cout<<"{"<<dvv[i].e[j].ip<<","<<dvv[i].e[j].cost<<"}";
+		cout<<ip<<" :";
+		for(int j=0;j<(int)e.size();j++){
+			cout<<"{"<<e[j].ip<<","<<e[j].cost<<"}";
 			
 		}
 		cout << endl << " hosts: ";
-		for (int j = 0; j < (int)dvv[i].h.size(); j++) {
-			cout << dvv[i].h[j] << ", ";
+		for (int j = 0; j < (int)h.size(); j++) {
+			cout << h[j] << ", ";
 		}
 		cout << endl;
 }
