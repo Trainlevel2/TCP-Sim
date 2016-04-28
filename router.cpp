@@ -164,8 +164,7 @@ void router::inform(int n,packet* p){
 				pSend.isRIP = true;
 				pSend.dv = *(rt.getDv(p->src->ip));
 				packetVector.push_back(pSend);
-				snum = (int)packetVector.size() - 1;
-				pushPacket(snum,link_ptr);	
+				pushPacket((int)packetVector.size() - 1,link_ptr);	
 			}
 		}
 		if(n==2){	
@@ -176,8 +175,7 @@ void router::inform(int n,packet* p){
 				pSend.isRIP = true;
 				pSend.dv = *(rt.getDv(this->ip));
 				packetVector.push_back(pSend);
-				snum = (int)packetVector.size() - 1;
-				pushPacket(snum,myLink_ptr);	
+				pushPacket((int)packetVector.size() - 1,myLink_ptr);	
 			}
 		}
 	}
@@ -189,8 +187,7 @@ void router::inform(int n,packet* p){
 				packet pSend(0, p->num, this, p->src);
 				pSend.isCTS = true;
 				packetVector.push_back(pSend);
-				snum = (int)packetVector.size() - 1;
-				pushPacket(snum,myLink_ptr);	
+				pushPacket((int)packetVector.size() - 1,myLink_ptr);	
 			}
 		}
 	}
@@ -202,9 +199,8 @@ void router::inform(int n,packet* p){
 				packet pSend(0, p->num, this, p->src);
 				pSend.isCTS = true;
 				packetVector.push_back(pSend);
-				snum = (int)packetVector.size() - 1;
 				cout<<"informing host connected that "<<this->ip<<" is clearToSend"
-				pushPacket(snum,myLink_ptr);	
+				pushPacket((int)packetVector.size() - 1,myLink_ptr);	
 			}
 		}
 	}
@@ -290,7 +286,7 @@ void router::receivePacket(link* link_ptr) {
 				isCTS = clearToSend();
 			}
 		}
-		else if((!p->isRIP)&&(!p->isCR)&&(!p->isCTS)){
+		else if(p->f != nullptr){
 			cout<<"data packet recieved on "<< this->name <<" choosing link"<<endl;
 			link* l = chooseLink(p);
 			cout<<"link "<<l->id<<" chosen"<<endl;

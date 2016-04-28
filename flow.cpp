@@ -45,9 +45,6 @@ void flow::searchMax(int size) {
 	packetnum++;
 	packet p(size, packetnum, source, dest);
 	p.f = this;
-	p.isRIP = false;
-	p.isAck = false;
-	
 	packetVector.push_back(p);
 	source->pushPacket(packetVector.size()-1,&linkVector[source->link_id]);
 	state = 1;

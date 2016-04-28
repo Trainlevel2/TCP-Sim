@@ -36,6 +36,15 @@ host::host(string name, int ip)
 
 }
 
+void host::pushPacket(int pnum,link* link_ptr) {
+	packet* p = &packetVector[pnum];
+	if(this->STATE != 2){
+		this->init();
+	}
+	link_ptr->qn.push(this);
+	link_ptr->qp.push(pnum);
+	link_ptr->propagate();
+}
 
 
 
@@ -44,8 +53,8 @@ host::host(string name, int ip)
 
 void host::init(){
 	if(STATE==0){
-		//send connection reqeust
-		link* link_ptr = &linkVector[link_id];
+		cout<<this->name<<" SENT CR0 "<<endl;
+		link* link_ptr = &linkVector[this->link_id];
 		packet pSend(0, 0, this, this);
 		pSend.isCR = true;
 		pSend.t = 1;
@@ -96,7 +105,8 @@ void host::receivePacket(link* link_ptr){
 	if (STATE==0){ //router Unknown
 		if(p->isCR){
 			if(p->t==0){
-				this->defaultGateway = p->src;
+				cout<<this->name<<" RECEIVED CR0 "<<endl;
+				this->defaultGateway = p->src->ip;
 				packet pSend(0, p->num, this, p->src);
 				pSend.isCR = true;
 				pSend.t = 1;
@@ -105,16 +115,18 @@ void host::receivePacket(link* link_ptr){
 				pushPacket(snum,link_ptr);
 				STATE=1;
 			}else if(p->t==1){
-				this->defaultGateway = p->src;
+				cout<<this->name<<" RECEIVED CR1, WAITING ON CTS "<<endl;
+				this->defaultGateway = p->src->ip;
 				STATE=1;
 			}
 		}
 	}else if(STATE==1){ //router known
 		if(p->isCTS){
+			cout<<this->name<<" RECEIVED CTS, SENDING "<<endl;
 			STATE=2;
 		}
-	}else if(STATE==2{ //clear to send
-		if((!p->isCR)&&(!p->isCTS)){
+	}else if(STATE==2){ //clear to send
+		if(p->f != nullptr){
 			if (!p->isAck) {
 				cout <<this->name<< " RECEIVED DATA, SENDING ACK" << endl;
 				packet pSend(0, p->num, this, p->src);
@@ -223,8 +235,6 @@ void host::receivePacket(link* link_ptr){
 
 	*/	
 	
-
-	int snum;
 	if (!p->isRIP){
 		if (!p->isAck) {
 			cout <<this->name<< " RECEIVED DATA, SENDING ACK" << endl;

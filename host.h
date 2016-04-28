@@ -27,7 +27,7 @@ class host : public node{
 		//void testing();
 		void init();
 
-
+		void pushPacket(int pnum,link* link_ptr);
 		int STATE;
 		/*
 			Host States:
