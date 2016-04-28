@@ -38,12 +38,19 @@ host::host(string name, int ip)
 
 void host::pushPacket(int pnum,link* link_ptr) {
 	packet* p = &packetVector[pnum];
-	if((this->STATE != 2)&&(p->f != nullptr)){
+	if(p->f != nullptr){
+		if(this->STATE != 2){
 		this->init();
-	}
-	link_ptr->qn.push(this);
+		}else{
+			link_ptr->qn.push(this);
 	link_ptr->qp.push(pnum);
 	link_ptr->propagate();
+		}
+	}else{
+		link_ptr->qn.push(this);
+	link_ptr->qp.push(pnum);
+	link_ptr->propagate();
+	}
 }
 
 void host::init(){
@@ -117,7 +124,7 @@ void host::receivePacket(link* link_ptr){
 	}else if(STATE==1){ //router known
 		if(p->isCTS){
 			cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" RECEIVED CTS, SENDING "<<endl;
-			
+
 			STATE=2;
 		}
 	}else if(STATE==2){ //clear to send
