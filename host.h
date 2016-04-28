@@ -27,12 +27,37 @@ class host : public node{
 		//void testing();
 		void init();
 
-		//0 = Initial state
-		//1 = listening for a RIP connectionReq REPLY 
-		//2 = listening for a RIP clearToSend REPLY
-		//3 = clear to send.
+
 		int STATE;
-		//int defaultGateway;
+		/*
+			Host States:
+
+			0 = Router Unknown
+			Initial state.
+
+			If flow_start is called on a host in this state, it sends a CRO packet.
+			Its WantsToSend flag is updated to 1.
+			
+			If a host in this state receives a CRO, it sets its router, sets its state to 1, and replies with a CR1 packet.
+			If a host in this state receives a CR1, it sets its router, and sets its state to 1.
+			
+
+			A host in this state will not rreceive a CTS because its router will be unknown.
+
+
+			1 = Router Known
+			
+			If a host in this state receives a CTS, it sets its state to 2.
+			If its WantsToSend flag is equal to 1, flow::start is called again on this host.
+
+
+			2 = ClearToSend.
+			Flow begins.
+
+		*/
+		
+		int defaultGateway;
+
 };
 
 #endif // _HOST_H

@@ -23,9 +23,11 @@ class packet {
 		packet(int data, int num, node* src, node* dst); //node* should not be carried in the packet.  ideally, node ip  instead. --kirk
 		
 		dVec dv;
-		
+		bool isCR;
 		bool isAck;
 		bool isRIP;
+		bool isCTS;
+		int t;
 
 		// Displays the packet for testing purposes
 		string toString();

@@ -50,12 +50,13 @@ class router: public node {
 			//1 = router
 			//2 = self
 			int type; //What's on the other end? 
-			
+			bool isCTS;
 			int ip; 
 		};
 
-
-
+		queue<dVec> RIPbuf; 
+		bool isCTS;
+		bool isDefaultRouter;
 		//0 = unknown neighbors, empty routing table.
 		//1 = broadcast sent, waiting on replies.
 		//2 = neighbors known. setting up routing table.

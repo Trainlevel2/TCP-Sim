@@ -18,17 +18,18 @@ flow::flow(host* source, host* dest, int data, int id) {
 	state = 0;
 }
 
-void flow::startFlow() {
+//return 0 if flow startedd successfully.
+//return 1 if flow uninitialized.
+int flow::startFlow() {
 	cout << "FLOW START" << endl;
 	lastSent = 10;
 	slowStartState = 1;
 	ssthresh = 160;
-
-	if(source->STATE != 3){
-		source->init();
+	if(source->STATE != 2){
+		return 1;
 	}
-
 	searchMax(lastSent);
+	return 0;
 }
 
 int flow::getCwnd(){

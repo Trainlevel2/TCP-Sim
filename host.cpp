@@ -25,13 +25,14 @@ extern void popTimeout(int timeoutIndex);
 
 	}
 */
+
 //specify bitrate 
 host::host(string name, int ip)
 :node::node(name,ip){
 	this->ip = ip;
 	link_id=-1;
 	STATE=3;
-	//defaultGateway=-1;
+	defaultGateway=-1;
 
 }
 
@@ -56,6 +57,108 @@ void host::init(){
 		cout<< this->name <<" not in zero-state, can't initize"<<endl;
 	}
 }
+
+
+/*
+	Host States:
+
+	0 = Router Unknown
+	Initial state.
+
+	If flow_start is called on a host in this state, it sends a CRO packet.
+	Its WantsToSend flag is updated to 1.
+	
+	If a host in this state receives a CRO, it sets its router, sets its state to 1, and replies with a CR1 packet.
+	If a host in this state receives a CR1, it sets its router, and sets its state to 1.
+	
+
+	A host in this state will not rreceive a CTS because its router will be unknown.
+
+
+	1 = Router Known
+	
+	If a host in this state receives a CTS, it sets its state to 2.
+	If its WantsToSend flag is equal to 1, flow::start is called again on this host.
+
+
+	2 = ClearToSend.
+	Flow begins.
+
+*/
+
+
+void host::receivePacket(link* link_ptr){
+	packet* p = &packetVector[link_ptr->pnum];
+	int tnum = link_ptr->pnum;
+	link_ptr->pnum = -1;
+	int snum=-1;
+
+	if (STATE==0){ //router Unknown
+		if(p->isCR){
+			if(p->t==0){
+				this->defaultGateway = p->src;
+				packet pSend(0, p->num, this, p->src);
+				pSend.isCR = true;
+				pSend.t = 1;
+				packetVector.push_back(pSend);
+				snum = (int)packetVector.size() - 1;
+				pushPacket(snum,link_ptr);
+				STATE=1;
+			}else if(p->t==1){
+				this->defaultGateway = p->src;
+				STATE=1;
+			}
+		}
+	}else if(STATE==1){ //router known
+		if(p->isCTS){
+			STATE=2;
+		}
+	}else if(STATE==2{ //clear to send
+		if((!p->isCR)&&(!p->isCTS)){
+			if (!p->isAck) {
+				cout <<this->name<< " RECEIVED DATA, SENDING ACK" << endl;
+				packet pSend(0, p->num, this, p->src);
+				pSend.f = p->f;
+				pSend.isAck = true;
+				packetVector.push_back(pSend);
+				snum = (int)packetVector.size() - 1;
+				pushPacket(snum,link_ptr);
+			}
+			else {
+				cout <<this->name<< " RECEIVED ACK" << endl;
+				int pnum = p->num;
+				p->f->receiveAck(tnum);
+				//Delete associated timeout
+				popTimeout(pnum); //the 0 is a stand-in for the timeout index, since there will only be one timeout at a time for now
+			}
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
 //Receives packet
