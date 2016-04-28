@@ -38,7 +38,7 @@ host::host(string name, int ip)
 
 void host::pushPacket(int pnum,link* link_ptr) {
 	packet* p = &packetVector[pnum];
-	if(this->STATE != 2){
+	if((this->STATE != 2)&&(p->f != nullptr)){
 		this->init();
 	}
 	link_ptr->qn.push(this);
@@ -46,21 +46,15 @@ void host::pushPacket(int pnum,link* link_ptr) {
 	link_ptr->propagate();
 }
 
-
-
-
-
-
 void host::init(){
 	if(STATE==0){
-		cout<<this->name<<" SENT CR0 "<<endl;
+		cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" SENT CR0 "<<endl;
 		link* link_ptr = &linkVector[this->link_id];
 		packet pSend(0, 0, this, this);
 		pSend.isCR = true;
-		pSend.t = 1;
+		pSend.t = 0;
 		packetVector.push_back(pSend);
-		pushPacket((int)packetVector.size() - 1,link_ptr);		
-		STATE++;	
+		pushPacket((int)packetVector.size() - 1,link_ptr);	
 	}
 	else{
 		cout<< this->name <<" not in zero-state, can't initize"<<endl;
@@ -105,7 +99,7 @@ void host::receivePacket(link* link_ptr){
 	if (STATE==0){ //router Unknown
 		if(p->isCR){
 			if(p->t==0){
-				cout<<this->name<<" RECEIVED CR0 "<<endl;
+				cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" RECEIVED CR0 "<<endl;
 				this->defaultGateway = p->src->ip;
 				packet pSend(0, p->num, this, p->src);
 				pSend.isCR = true;
@@ -115,14 +109,14 @@ void host::receivePacket(link* link_ptr){
 				pushPacket(snum,link_ptr);
 				STATE=1;
 			}else if(p->t==1){
-				cout<<this->name<<" RECEIVED CR1, WAITING ON CTS "<<endl;
-				this->defaultGateway = p->src->ip;
 				STATE=1;
+				cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" RECEIVED CR1, WAITING ON CTS "<<endl;
+				this->defaultGateway = p->src->ip;
 			}
 		}
 	}else if(STATE==1){ //router known
 		if(p->isCTS){
-			cout<<this->name<<" RECEIVED CTS, SENDING "<<endl;
+			cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" RECEIVED CTS, SENDING "<<endl;
 			STATE=2;
 		}
 	}else if(STATE==2){ //clear to send
@@ -146,32 +140,6 @@ void host::receivePacket(link* link_ptr){
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*
 //Receives packet
 void host::receivePacket(link* link_ptr){
@@ -205,36 +173,12 @@ void host::receivePacket(link* link_ptr){
 */
 
 
-
-//Receives packet
+/*
 void host::receivePacket(link* link_ptr){
 	//link* link_ptr = &linkVector[link_id];
 	packet* p = &packetVector[link_ptr->pnum];
 	int tnum = link_ptr->pnum;
 	link_ptr->pnum = -1;
-
-
-	//if there are no flows going out of a host.
-	//
-
-	/*
-	if(STATE==0){ //0 = Initial state, no connectionReq packets yet sent
-		if(p->isRIP){
-			
-		}
-
-	}else if(STATE==1){//1 = listening for a RIP connectionReq REPLY 
-		
-
-
-
-	}else if(STATE==2){//2 = listening for a RIP clearToSend 
-	
-
-	}
-
-	*/	
-	
 	if (!p->isRIP){
 		if (!p->isAck) {
 			cout <<this->name<< " RECEIVED DATA, SENDING ACK" << endl;
@@ -267,6 +211,11 @@ void host::receivePacket(link* link_ptr){
 		pushPacket(snum,link_ptr);
 	}
 }
+
+
+*/
+
+
 
 void host::addLink(int lnum) {
 	this->link_id = lnum;

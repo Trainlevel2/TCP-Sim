@@ -76,23 +76,6 @@ int rtable::getCost(int ip_from,int ip_to){
 	}
 }
 
-//update given distance vector.
-//return 1 if we need to broadcast the dvec sent to us.
-//return 2 if we need to broadcast the dvec sent to us AND our distance vector(updated by bellman ford).
-//return 0 if no broadcast is needed
-
-
-
-
-
-
-
-
-
-
-
-
-
 //assuming no duplicate entries in each vector
 //assume AmB,BmA empty
 void rtable::compare(vector<int>& A, vector<int>& B, vector<int>& AmB, vector<int>& BmA){
@@ -148,16 +131,7 @@ int rtable::addCost(int ip_from,int ip_to,int cost){
 void rtable::print(){
 	cout << endl << this->rname << " ROUTING TABLE" << endl;
 	for(int i=0;i<(int)dvv.size();i++){
-		cout<<dvv[i].ip<<" :";
-		for(int j=0;j<(int)dvv[i].e.size();j++){
-			cout<<"{"<<dvv[i].e[j].ip<<","<<dvv[i].e[j].cost<<"}";
-			
-		}
-		cout << endl << " hosts: ";
-		for (int j = 0; j < (int)dvv[i].h.size(); j++) {
-			cout << dvv[i].h[j] << ", ";
-		}
-		cout << endl;
+		dvv[i].print();
 	}
 	cout << endl;
 }
@@ -189,7 +163,8 @@ void rtable::addip(int ip){
 			e.cost = INF; //cost from ip to others.
 			e.ip = ip;
 			dvv[i].e.push_back(e);
-		}
+		}
+
 	}
 }
 
@@ -234,9 +209,10 @@ int rtable::update(dVec* dv){
 
 	compare(*comp2,*comp,tB,tA);
 
-	//if they have the same elements, just update.
+	
 	int bcast=0;
 	if((tB.empty())&&(tA.empty())){
+		cout<<"distance vector is identical! nbd"<<endl;
 		for(int i=0;i<(int)dv->e.size();i++){
 			if(getCost(dv->ip,dv->e[i].ip) != dv->e[i].cost){
 				if(bcast==0){
@@ -248,6 +224,7 @@ int rtable::update(dVec* dv){
 	}
 	else{
 		if (!tA.empty()){
+			cout<<"things to add found"<<endl;
 			for(int i=0;i<(int)tA.size();i++){
 				for(int j=0;j<(int)dv->e.size();j++){
 					if (dv->e[j].ip == tA[i]){

@@ -62,7 +62,11 @@ class router: public node {
 		//2 = neighbors known. setting up routing table.
 		//3 = routing table done. listening for dvec updates.
 		int STATE; 
+		void lVectorUpdate(link* link_ptr,packet* p);
 		void testing();
+		bool clearToSend();
+		void crResp(link* link_ptr,packet* p);
+		void inform(int n,packet* p,link* link_ptr);
 		vector<field> lVector; //connected link info
 		bool fulltable; //no maxints
 		void printLinks();
@@ -70,12 +74,14 @@ class router: public node {
 		void rtHardCode();
 		void addLink(int id);
 		void receivePacket(link* link_ptr);
+		
+		void sendCR(int i,link* link_ptr);
 		bool discoveryComplete();
 		link* chooseLink(packet* p);
 		void sendDVec(int ip_from);
-		void broadcast();
-		void clearToSend();
+		//void broadcast();
 		void rtInit();
+		dVec* genDv(dVec& dv);
 };
 
 #endif //_ROUTER_H
