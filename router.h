@@ -53,7 +53,7 @@ class router: public node {
 			bool isCTS;
 			int ip; 
 		};
-
+		bool routersConnected;
 		queue<dVec> RIPbuf; 
 		bool isCTS;
 		bool isDefaultRouter;

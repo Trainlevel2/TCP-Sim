@@ -52,6 +52,7 @@ bool rtable::bford(int ip_from){
 
 
 int rtable::getCost(int ip_from,int ip_to){
+	cout<<this->rname<<" getting cost from: "<< ip_from<<" to:"<<ip_to <<endl;
 	bool f1 = false;
 	for(int i=0;i<(int)dvv.size();i++){
 		if(ip_from == dvv[i].ip){
@@ -191,7 +192,11 @@ void rtable::addHost(int ip,int host_ip){
 
 int rtable::update(dVec* dv){
 	//int inf = std::numeric_limits<int>::max();
-	
+	cout<<"input dv size: "<<(int)dv->e.size()<<endl;
+	if((int)dv->e.size()==0){
+		cerr<<"can't update: null dvec passed into rtable::update()"<<endl;
+		exit(1);
+	}
 	int bcast=0;
 	if(dvv.empty()){
 		dvv.push_back(*dv);
@@ -219,6 +224,7 @@ int rtable::update(dVec* dv){
 		if((tB.empty())&&(tA.empty())){
 			cout<<"distance vector is identical! nbd"<<endl;
 			for(int i=0;i<(int)dv->e.size();i++){
+				//copy right over.
 				if(getCost(dv->ip,dv->e[i].ip) != dv->e[i].cost){
 					if(bcast==0){
 						bcast=1;
@@ -307,11 +313,11 @@ bool rtable::isComplete(){
 	for(int i=0;i<(int)dvv.size();i++){
 		for(int j=0;j<(int)dvv.size();j++){
 			if(INF==getCost(dvv[i].ip,dvv[j].ip)){
-				return true;
+				return false;
 			}
 		}
 	}
-	return false;
+	return true;
 }
 
 

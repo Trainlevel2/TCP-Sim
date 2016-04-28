@@ -117,6 +117,7 @@ void host::receivePacket(link* link_ptr){
 	}else if(STATE==1){ //router known
 		if(p->isCTS){
 			cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" RECEIVED CTS, SENDING "<<endl;
+			
 			STATE=2;
 		}
 	}else if(STATE==2){ //clear to send
