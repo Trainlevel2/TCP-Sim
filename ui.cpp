@@ -260,7 +260,8 @@ void popEvent(){
 	//FLOW AND LINK RATE CALCULATIONS
 	if(function == "TRANSMIT_PACKET"){
 		int endTime = t;
-		double packetRate = packet.dataSize / (endTime - startTime); //TODO ASK: get packet's dataSize
+		//double packetRate = packet.dataSize / (endTime - startTime); //TODO ASK: get packet's dataSize
+		double packetRate = 1024 / (endTime - startTime); //TODO ASK: get packet's dataSize
 		
 		//check for if flowRate/linkRate time dimension is large enough. If not, increase it until it is.
 		while(flowRate.at(0).size() < endTime/dt){
@@ -273,16 +274,16 @@ void popEvent(){
 		}
 		
 		if(objectType == "FLOW"){
-				for(int t = startTime/dt; t <= endTime/dt; t+=dt){ //Add packet 's rate to all time intervals, normalized by dt
-					//add packet's rate
-					flowRate.at(objectIndex,t/dt) += packetRate;
-				}
+			for(int t = startTime/dt; t <= endTime/dt; t+=dt){ //Add packet 's rate to all time intervals, normalized by dt
+				//add packet's rate
+				flowRate.at(objectIndex,t/dt) += packetRate;
+			}
 		}
 		else if(objectType == "LINK"){
 			for(int t = startTime/dt; t <= endTime/dt; t+=dt){ //Add packet 's rate to all time intervals, normalized by dt
 					//add packet's rate
 					linkRate.at(objectIndex,t/dt) += packetRate;
-				}
+			}
 		}
 	}
 	
@@ -290,7 +291,8 @@ void popEvent(){
 		//PACKETLOSSLOG
 		//example event -> FLOW_0_TIMEOUT_5
 		if(event.find("TIMEOUT") > 0){
-			packetLossLog += "\n" + objectIndex + "," + t/1000 + "," + amtPacketsLost; //TODO: get amtPacketsLost
+			//packetLossLog += "\n" + objectIndex + "," + t/1000 + "," + amtPacketsLost; //TODO: get amtPacketsLost
+			packetLossLog += "\n" + objectIndex + "," + t/1000 + "," + 5; //TODO: get amtPacketsLost
 		}
 		
 		//PACKETDELAYLOG
