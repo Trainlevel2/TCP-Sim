@@ -144,30 +144,43 @@ void rtable::addip(int ip){
 	dVec ndv;
 	ndv.ip = ip;
 	//create a new row w/ heading ip, usual length
-	for(int i=0;i<(int)dvv.size();i++){
+	if(dvv.empty()){
+		cout<<"ADDING THE FIRST IP " <<ip<<endl;
 		dVec::entry nu;
-		nu.cost = INF;
-		nu.ip = dvv[i].ip;
+		nu.cost = 0;
+		nu.ip = ip;
 		ndv.e.push_back(nu);
+		ndv.ip = ip;
+		dvv.push_back(ndv);
 	}
-	//append row
-	dvv.push_back(ndv);
-	//grow all of the rows in the table to the proper length: length+1.
-	for(int i=0;i<(int)dvv.size();i++){
-		if (dvv[i].ip == ip) {
-			dVec::entry e;
-			e.cost = 0; //cost from ip to self.
-			e.ip = ip;
-			dvv[i].e.push_back(e);
+	else{
+		for(int i=0;i<(int)dvv.size();i++){
+			dVec::entry nu;
+			nu.cost = INF;
+			nu.ip = dvv[i].ip;
+			ndv.e.push_back(nu);
 		}
-		else {
-			dVec::entry e;
-			e.cost = INF; //cost from ip to others.
-			e.ip = ip;
-			dvv[i].e.push_back(e);
-		}
+		//append row
+		dvv.push_back(ndv);
+		//grow all of the rows in the table to the proper length: length+1.
+		for(int i=0;i<(int)dvv.size();i++){
+			if (dvv[i].ip == ip) {
+				dVec::entry e;
+				e.cost = 0; //cost from ip to self.
+				e.ip = ip;
+				dvv[i].e.push_back(e);
+			}
+			else {
+				dVec::entry e;
+				e.cost = INF; //cost from ip to others.
+				e.ip = ip;
+				dvv[i].e.push_back(e);
+			}
 
+		}
 	}
+
+	
 }
 
 
@@ -193,7 +206,7 @@ void rtable::addHost(int ip,int host_ip){
 
 int rtable::update(dVec* dv){
 	//int inf = std::numeric_limits<int>::max();
-	cout<<"input dv size: "<<(int)dv->e.size()<<endl;
+	cout<<"\n\ninput dv size: "<<(int)dv->e.size()<<endl;
 	if((int)dv->e.size()==0){
 		cerr<<"can't update: null dvec passed into rtable::update()"<<endl;
 		exit(1);
@@ -201,11 +214,17 @@ int rtable::update(dVec* dv){
 
 	int bcast=0;
 	if(dvv.empty()){
-		dvv.push_back(*dv);
+		for(int i=0;i<dv->e.size();i++){
+			addCost(dv->ip,dv->e[i].ip,dv->e[i].cost);
+		}	
+		for(int i=0;i<dv->h.size();i++){
+			addHost(dv->ip,dv->h[i]);
+		}
 		bcast = 1;
+		
 	}
 	else{
-
+		cout<<"INITIAL NONEMPTY"<<endl;
 		print();
 
 		vector<int> tA; //to Add
@@ -256,10 +275,24 @@ int rtable::update(dVec* dv){
 			bcast=1; //just propagate the thing we received
 		}
 
-		
+
+		cout<<"new router ip's not found"<<endl;
+		for(int i=0;i<(int)dv->e.size();i++){
+			//copy right over.
+			if(getCost(dv->ip,dv->e[i].ip) != dv->e[i].cost){
+				if(bcast==0){
+					bcast=1;
+				}
+				setCost(dv->ip,dv->e[i].ip,dv->e[i].cost);
+			}
+		}
+
+
+		cout<<"NEW ROUTERS ADDED"<<endl;
 		print();
 		cout<<endl;
 
+		cout<<"INPUT DV"<<endl;
 		dv->print();
 		cout<<endl;
 
@@ -303,6 +336,8 @@ int rtable::update(dVec* dv){
 		//if (isComplete()){
 			if(bford(dv->ip)){
 				bcast = 2; //send our dVec
+				cout<<"bellman fording"<<endl;
+				print();
 			}
 		//}
 		delete comp;

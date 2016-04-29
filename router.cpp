@@ -63,7 +63,7 @@ void router::printLinks(){
 void router::inform(int n,int ip,link* link_ptr){
 	cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" informing "<< n <<endl;
 	if((n==1)||(n==2)){ //propagate the new distance vector NOT on the link which we recieved it
-		for(int i=1;i<(int)lVector.size();i++){
+		for(int i=0;i<(int)lVector.size();i++){
 			link* myLink_ptr = &linkVector[lVector[i].link_id];
 			if ((myLink_ptr->id != link_ptr->id)&&(lVector[i].type == 1)){
 				cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating new dVec"<<endl;
