@@ -28,13 +28,23 @@ vector<host> hostVector;
 vector<router> routerVector;
 
 //logs for graphing
-string linkRateLog = "linkRateLog \nend time (ms), start time (ms), packet sent event"; //TODO: THIS DOESN'T ACTUALLY WORK LOL. NEED PROPOGATION DELAY
-string bufferLog = "bufferLog \ntime(s), link index, buffer occupancy";
-string packetLossLog = "packetLossLog \nend time(ms), start time(ms), loss event";
-string flowRateLog = "flowRateLog \ntime (s), flow index, flow rate (Mb/s)"; //TODO: THIS DOESN'T ACTUALLY WORK LOL. NEED TO REDO IT.
-string cwndLog = "cwndLog \ntime (s) , flow index , cwnd";
+//periodic
+string bufferLog = "bufferLog \nlink index, time(s), buffer occupancy";
+string cwndLog = "cwndLog \nflow index, time(s) , cwnd";
 
-string packetDelayLog = "packetDelayLog\n time(s), packetDelay"; //TODO: how?
+//event driven
+string packetLossLog = "packetLossLog \nflow index, time(s), packets lost";
+string flowRateLog = "flowRateLog \nflow index, time(s), flow rate(dataSize/ms)";
+string linkRateLog = "linkRateLog \nlink index, time(s), link rate (dataSize/ms)";
+string packetDelayLog = "packetDelayLog \nflow index, time(s), packetDelay(ms)";
+
+//extra stuff for logging
+//Rate for a given flow/link, from a time t to time t+dt, is the summation of the rates of all packets in the flow/link at that time interval.
+int dt = 100; //milliseconds per sample. Increase for gradation, decrease for speed. If this is infinity, you get avg rate.
+vector<vector<double> > flowRate(flowVector.size()); //rows are flows and columns are times.
+int endTime;
+int startTime;
+double packetRate;
 
 
 router* findRouter(string rname) {
@@ -166,6 +176,7 @@ void pushEvent(string e, int elapseTime){
 //Pops an event from the event queue and executes the appropriate command, as contained in e and assuming correct format of e
 //Pushes data onto a log for output
 void popEvent(){
+	//WITHIN TIME MANAGER:
 	if(q.empty()){
 		cout << "ERROR: The event queue is empty! Cannot pop event!";
 		return;
@@ -177,8 +188,9 @@ void popEvent(){
 	//Extract the time at which the message is executed. This becomes the current time in the time manager.
 	int find = event.find(",");
 	string stimeNow = event.substr(0,find); //time after event is done
-	istringstream iss(stimeNow);
-	int timeNow; iss>>timeNow;
+	//istringstream iss(stimeNow);
+	//int timeNow; iss>>timeNow;
+	int timeNow = stoi(stimeNow);
 	if(timeNow >= t){
 		t = timeNow;
 	}
@@ -187,22 +199,37 @@ void popEvent(){
 	}
 	
 	//Extract the original event message from the expanded event message
-	find = event.find_last_of(","); //right after the last comma lies the original event message
-	string e = event.substr(find+1);
+	int find2 = event.find(",", find + 1); //right after the last comma lies the original event message
+	string sStartTime = event.substr(find+1, find2-find-1);
+	//istringstream iss(stimeNow);
+	//int startTime; iss>>startTime;
+	int startTime = stoi(sStartTime);
+	string e = event.substr(find2+1);
+	
 	
 	//Extract the original event message's meaning
 	find = e.find("_");
 	string objectType = e.substr(0,find);
 	
 	e = e.substr(find+1); //gets the rest of the message
-	find = e.find("_"); 
-	string objectIndex = e.substr(0,find);
+	find = e.find("_");
+	string sObjectIndex = e.substr(0,find);
+	int objectIndex = stoi(sObjectIndex);
 	string function = e.substr(find+1);
 	
 	find = function.find("_"); //in case a function has 1 argument (only for timeouts right now)
 	string functionn = function.substr(0,find);
 	string arg = function.substr(find+1);
 	
+	/*
+	//testing parsing of the event
+	cout << "endTime " << timeNow << endl;
+	cout << "startTime: " << startTime << endl;
+	cout << "objectType: " << objectType << endl;
+	cout << "objectIndex: " << objectIndex << endl;
+	cout << "function: " << function << endl;
+	cout << "arg: " << arg << endl;
+	*/
 	
 	//Execute the event in the event e that was initially input into pushEvent
 
@@ -211,69 +238,101 @@ void popEvent(){
 	//TRANSMIT_PACKET should push a PROPAGATE_PACKET onto the event queue.
 
 
-
-
 	//PROPAGATE_PACKET should result in the link propagating the latest data popped off the the transmission queue.
-
-	int index = stoi(objectIndex);
+	
 	if(objectType == "LINK"){
 		if (function == "TRANSMIT_PACKET"){
 			//linkVector[index].recievePacket();	
-			linkVector[index].tpropagate();
+			linkVector[objectIndex].tpropagate();
 		}
 	}
 	else if (objectType == "FLOW") {
 		if (function == "START") {
-			flowVector[index].startFlow();
+			flowVector[objectIndex].startFlow();
 		}
 		else if (functionn == "TIMEOUT") {
 			int pptr = stoi(arg);
-			flowVector[index].timeoutAck(pptr);
+			flowVector[objectIndex].timeoutAck(pptr);
 		}
 	}
-	//LOGS:
 	
-	eventlog += "\n" + event; //add the event to the log
-	if(objectType == "LINK"){
-		linkRateLog += "\n" + event;
-	}
-	if(objectType == "FLOW"){
-		packetLossLog += "\n" + event;
-	}
-	for(int i = 0; i < (int)flowVector.size(); i++){	
-		//log all flow cwnd's
-		stringstream ss;
-		ss << t / 1000;
-		cwndLog += "\n" + ss.str();
-		ss.str("");
-		ss << i;
-		cwndLog += "," + ss.str();
-		ss.str("");
-		ss << flowVector[i].getCwnd();
-		cwndLog += "," + ss.str();
-		
-		//log flow rates
-		ss.str("");
-		ss << t/1000;
-		flowRateLog += "\n" + ss.str();
-		ss.str("");
-		ss << i;
-		flowRateLog += "," + ss.str();
-		if(flowStopTimeVector[i] > t){ //flow is transmitting
-			flowRateLog += string(",") + "1.00(placeholder)"; //1.00 Mbps is the placeholder flow rate when transmitting
-		}
-		else{ //flow is not transmitting
-			flowRateLog += string(",") + "0.00";
-		}		
-	}
+	//LOGS:
 	/*
-	for(int i = 0; i < (int)linkVector.size(); i++){
-		bufferLog += "\n" + t/1000;
-		bufferLog += ",";
-		bufferLog += i + "," + linkVector[i].getBufferSize().
+	//FLOW AND LINK RATE CALCULATIONS
+	if(function == "TRANSMIT_PACKET"){
+		int endTime = t;
+		//double packetRate = packet.dataSize / (endTime - startTime); //TODO ASK: get packet's dataSize
+		double packetRate = 1024 / (endTime - startTime); //TODO ASK: get packet's dataSize
+		
+		//check for if flowRate/linkRate time dimension is large enough. If not, increase it until it is.
+		while(flowRate.at(0).size() < endTime/dt){
+			for(int i = 0; i < flowVector.size(); i++){
+				flowRate.at(i).pushBack(0);
+			}
+			for(int i = 0; i < linkVector.size(); i++){
+				linkRate.at(i).pushBack(0);
+			}
+		}
+		
+		if(objectType == "FLOW"){
+			for(int t = startTime/dt; t <= endTime/dt; t+=dt){ //Add packet 's rate to all time intervals, normalized by dt
+				//add packet's rate
+				flowRate.at(objectIndex,t/dt) += packetRate;
+			}
+		}
+		else if(objectType == "LINK"){
+			for(int t = startTime/dt; t <= endTime/dt; t+=dt){ //Add packet 's rate to all time intervals, normalized by dt
+					//add packet's rate
+					linkRate.at(objectIndex,t/dt) += packetRate;
+			}
+		}
+	}
+	
+	
+	if(objectType == "FLOW") > 0){
+		//PACKETLOSSLOG
+		//example event -> FLOW_0_TIMEOUT_5
+		if(event.find("TIMEOUT") > 0){
+			//packetLossLog += "\n" + objectIndex + "," + t/1000 + "," + amtPacketsLost; //TODO: get amtPacketsLost
+			packetLossLog += "\n" + objectIndex + "," + t/1000 + "," + 5; //TODO: get amtPacketsLost
+		}
+		
+		//PACKETDELAYLOG
+		//TODO ASK: create packet sent event for packets sent across a flow for this and flowRateLog
+		else if(function == "TRANSMIT_PACKET"){
+			packetDelaylog += "\n" + objectIndex +  "," + t/1000  + "," + (endTime-startTime);
+		}	
 	}
 	*/
-	
+	//PERIODICALLY COLLECT:
+	//if(event.find("DATA_ACQUISITION")>0){ //TODO ASK: create data acquisition events that spawn other data acquisition events?
+		//BUFFER SIZE
+		for(int i = 0; i < (int)linkVector.size(); i++){
+			//bufferLog += "\n" + i + "," + t / 1000 + "," + linkVector[i].getBufferSize();
+			stringstream ss;
+			ss << i;
+			bufferLog += "\n" + ss.str();
+			ss.str("");
+			ss << t / 1000;
+			bufferLog += "," + ss.str();
+			ss.str("");
+			ss << linkVector[i].getBufferSize();
+			bufferLog += "," + ss.str();
+		}
+		//CWND
+		for(int i = 0; i < (int)flowVector.size(); i++){
+			//cwndLog += "\n" + i + "," + t / 1000 + "," + flowVector[i].getCwnd();
+			stringstream ss;
+			ss << i;
+			cwndLog += "\n" + ss.str();
+			ss.str("");
+			ss << t / 1000;
+			cwndLog += "," + ss.str();
+			ss.str("");
+			ss << flowVector[i].getCwnd();
+			cwndLog += "," + ss.str();
+		}
+	//}
 }
 
 void popTimeout(int timeoutIndex){
@@ -316,7 +375,22 @@ void popTimeout(int timeoutIndex){
 }
 
 void outputGuap() {
-		//cout << bufferLog << endl;
+	/*
+	//post-processing link/flow rates from vectors to .csv
+	for(int i = 0; i < flowRateVector.size(); i++){
+		for(int j = 0; j < flowRateVector.at(0).size(); j++){
+			flowRateLog += "\n" + i + "," + (j*dt/1000) + "," + flowRateVector.at(i,j);
+		}
+	}
+	
+	for(int i = 0; i < linkRateVector.size(); i++){
+		linkRateLog += "\nFlow " + i;
+		for(int j = 0; j < linkRateVector.at(0).size(); j++){
+			linkRateLog += "\n" + i + ","+ (j*dt/1000) + "," + linkRateVector.at(i,j);
+		}
+	}
+	*/
+	//cout << bufferLog << endl;
 	//cout << packetLossLog << endl;
 	//cout << flowRateLog << endl;
 	//cout << cwndLog << endl;
@@ -434,6 +508,7 @@ for (int i = 0; i < routerVector.size(); i++) {
 	cout << linkRateLog <<endl;
 	//cin.ignore();
 	//printNetwork();
+	
 	outputGuap();
 	cin.ignore();
 	return 0;
