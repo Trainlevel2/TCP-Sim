@@ -62,6 +62,12 @@ class router: public node {
 		//2 = neighbors known. setting up routing table.
 		//3 = routing table done. listening for dvec updates.
 		int STATE; 
+void b_CTS_hosts();
+
+void b_CTS_routers();
+void recRIP(packet* p);
+		void b_dVec();
+		void p_dVec(packet* p);
 		void lVectorUpdate(link* link_ptr,packet* p);
 		void testing();
 		bool clearToSend();

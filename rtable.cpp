@@ -23,7 +23,7 @@ bool rtable::bford(int ip_from){
 			cvec->erase(cvec->begin(),cvec->end());
 		}
 		ip_to = dvv[i].ip;
-		//cout << "cvec "<<ip_from<<","<<ip_to<<" reset" << endl;
+		////cout << "cvec "<<ip_from<<","<<ip_to<<" reset" << endl;
 		//loop through distance vector
 		for(int j=0;j<(int)dvv.size();j++){
 			
@@ -31,7 +31,7 @@ bool rtable::bford(int ip_from){
 			if (cost < 0) {
 				cost = INF; 
 			}
-			//cout << "pushing back to cvec: " << cost << endl;
+			////cout << "pushing back to cvec: " << cost << endl;
 			cvec->push_back(cost);	
 		}
 		int m=INF;
@@ -41,7 +41,7 @@ bool rtable::bford(int ip_from){
 			}
 		}
 		if (getCost(ip_from,ip_to)!=m){
-			//cout << "bford setcost to " << m << endl;
+			////cout << "bford setcost to " << m << endl;
 			setCost(ip_from,ip_to,m);
 			bcast=true;
 		}	
@@ -52,7 +52,7 @@ bool rtable::bford(int ip_from){
 
 
 int rtable::getCost(int ip_from,int ip_to){
-	cout<<this->rname<<" getting cost from: "<< ip_from<<" to:"<<ip_to <<endl;
+	//cout<<this->rname<<" getting cost from: "<< ip_from<<" to:"<<ip_to <<endl;
 	bool f1 = false;
 	for(int i=0;i<(int)dvv.size();i++){
 		if(ip_from == dvv[i].ip){
@@ -65,14 +65,14 @@ int rtable::getCost(int ip_from,int ip_to){
 				}
 			}
 			if (!f2){
-				cout<<"IP"<<ip_to<<"doesnt exist in routing table"<<endl;
+				//cout<<"IP"<<ip_to<<"doesnt exist in routing table"<<endl;
 				return -1;
 			}
 		}
 
 	}
 	if (!f1){
-		cout<<"IP"<<ip_from<<"doesnt exist in routing table"<<endl;
+		//cout<<"IP"<<ip_from<<"doesnt exist in routing table"<<endl;
 		return -1;
 	}
 	return -1;
@@ -117,13 +117,13 @@ bool rtable::containsIp(int ip){
 
 
 int rtable::addCost(int ip_from,int ip_to,int cost){
-	cout<<this->rname<<"adding Cost "<< cost <<" from "<<ip_from<<" to "<<ip_to<<endl;
+	//cout<<this->rname<<"adding Cost "<< cost <<" from "<<ip_from<<" to "<<ip_to<<endl;
 	if(!containsIp(ip_from)){
-		cout<<"does not contain "<<ip_from<<endl;
+		//cout<<"does not contain "<<ip_from<<endl;
 		addip(ip_from);
 	}
 	if (!containsIp(ip_to)){
-		cout<<"does not contain "<<ip_to<<endl;
+		//cout<<"does not contain "<<ip_to<<endl;
 		addip(ip_to);
 	}
 	setCost(ip_from,ip_to,cost);
@@ -145,7 +145,7 @@ void rtable::addip(int ip){
 	ndv.ip = ip;
 	//create a new row w/ heading ip, usual length
 	if(dvv.empty()){
-		cout<<"ADDING THE FIRST IP " <<ip<<endl;
+		//cout<<"ADDING THE FIRST IP " <<ip<<endl;
 		dVec::entry nu;
 		nu.cost = 0;
 		nu.ip = ip;
@@ -189,7 +189,7 @@ void rtable::addip(int ip){
 
 void rtable::addHost(int ip,int host_ip){
 	if (!containsIp(ip)) {
-		cout << "does not contain " << ip << endl;
+		//cout << "does not contain " << ip << endl;
 		addip(ip);
 	}	
 	dVec* dv = getDv(ip);
@@ -206,7 +206,7 @@ void rtable::addHost(int ip,int host_ip){
 
 int rtable::update(dVec* dv){
 	//int inf = std::numeric_limits<int>::max();
-	cout<<"\n\ninput dv size: "<<(int)dv->e.size()<<endl;
+	//cout<<"\n\ninput dv size: "<<(int)dv->e.size()<<endl;
 	if((int)dv->e.size()==0){
 		cerr<<"can't update: null dvec passed into rtable::update()"<<endl;
 		exit(1);
@@ -224,6 +224,9 @@ int rtable::update(dVec* dv){
 		
 	}
 	else{
+		cout<<"INPUT DV"<<endl;
+		dv->print();
+
 		cout<<"INITIAL NONEMPTY"<<endl;
 		print();
 
@@ -276,7 +279,7 @@ int rtable::update(dVec* dv){
 		}
 
 
-		cout<<"new router ip's not found"<<endl;
+		//cout<<"new router ip's not found"<<endl;
 		for(int i=0;i<(int)dv->e.size();i++){
 			//copy right over.
 			if(getCost(dv->ip,dv->e[i].ip) != dv->e[i].cost){
@@ -290,11 +293,10 @@ int rtable::update(dVec* dv){
 
 		cout<<"NEW ROUTERS ADDED"<<endl;
 		print();
-		cout<<endl;
+		//cout<<endl;
 
-		cout<<"INPUT DV"<<endl;
-		dv->print();
-		cout<<endl;
+		
+		//cout<<endl;
 
 		
 		dVec* mdv = getDv(dv->ip);
@@ -303,6 +305,8 @@ int rtable::update(dVec* dv){
 			for(int i=0;i<dv->h.size();i++){
 				mdv->h.push_back(dv->h[i]);	
 			}
+			cout<<"HOSTS ADDED"<<endl;
+			print();
 		}
 		else{
 
@@ -336,7 +340,7 @@ int rtable::update(dVec* dv){
 		//if (isComplete()){
 			if(bford(dv->ip)){
 				bcast = 2; //send our dVec
-				cout<<"bellman fording"<<endl;
+				//cout<<"bellman fording"<<endl;
 				print();
 			}
 		//}
@@ -350,6 +354,7 @@ int rtable::update(dVec* dv){
 }
 
 dVec* rtable::getDv(int ip){
+	cout<<"getting dv"<<endl;
 	for(int i=0;i<(int)dvv.size();i++){
 		if(dvv[i].ip == ip){
 			return &dvv[i];
@@ -380,19 +385,19 @@ int rtable::setCost(int ip_from,int ip_to,int cost){
 			for(int j=0;j<(int)dvv[i].e.size();j++){
 				if(ip_to == dvv[i].e[j].ip){
 					f2=true;
-					cout << ip_from << " to " << ip_to << " cost update: " << cost << endl;
+					//cout << ip_from << " to " << ip_to << " cost update: " << cost << endl;
 					dvv[i].e[j].cost = cost;
 					return 0;
 				}
 			}
 			if (!f2){
-				cout<<"IP"<<ip_to<<"doesnt exist in routing table"<<endl;
+				//cout<<"IP"<<ip_to<<"doesnt exist in routing table"<<endl;
 				return -1;
 			}
 		}
 	}
 	if (!f1){
-		cout<<"IP"<<ip_from<<"doesnt exist in routing table"<<endl;
+		//cout<<"IP"<<ip_from<<"doesnt exist in routing table"<<endl;
 		return -1;
 	}
 	return -1;

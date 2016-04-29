@@ -29,6 +29,7 @@ router::router(string name, int ip)
 	f.link_id = -1;	//whatever
 	f.type = 2;		//self
 	f.ip = this->ip;
+	f.isCTS = false;
 	lVector.push_back(f);
 	//discovered = false;
 	rt.rname = this->name;
@@ -53,69 +54,32 @@ void router::addLink(int id) {
 
 void router::printLinks(){
 	cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" lvector: "<<endl;
-	cout << "{link_id, type, ip}" << endl;
+	cout << "{l_id,\ttype,\tip,\tisCTS}" << endl;
 	for(int i=0;i<(int)lVector.size();i++){
-		cout<<"{"<<lVector[i].link_id<<","<<lVector[i].type<<","<<lVector[i].ip<<"},"<<endl;
+		cout<<"{";
+
+		if(lVector[i].link_id==-1){
+			cout<<"?"<<",\t";
+		}else{
+			cout<<"L"<<lVector[i].link_id<<",\t";
+		}
+
+		if(lVector[i].type==0){
+			cout<<"H"<<",\t";	
+		}
+		else if(lVector[i].type ==1){
+			cout<<"R"<<",\t";
+		}
+		else if(lVector[i].type==-1){
+			cout<<"?"<<",\t";
+		}
+		else if(lVector[i].type==2){
+			cout<<"slf"<<",\t";
+		}
+		cout<<lVector[i].ip<<",\t";
+		cout<<lVector[i].isCTS<<"},"<<endl;
 	}
 }
-
-//don't inform on dVec to the router which sent it to you!!
-/*
-void router::inform(int n,int ip,link* link_ptr){
-	cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" informing "<< n <<endl;
-	if((n==1)||(n==2)){ //propagate the new distance vector NOT on the link which we recieved it
-		for(int i=1;i<(int)lVector.size();i++){
-			link* myLink_ptr = &linkVector[lVector[i].link_id];
-			if ((myLink_ptr->id != link_ptr->id)&&(lVector[i].type == 1)){
-				cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating new dVec"<<endl;
-				packet pSend(0, 0, this, this);
-				pSend.isRIP = true;
-				pSend.dv = *(rt.getDv(ip));
-				packetVector.push_back(pSend);
-				pushPacket((int)packetVector.size() - 1,link_ptr);	
-			}
-		}
-		if(n==2){	//propagate OUR distance vector
-			for(int i=1;i<(int)lVector.size();i++){
-				cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating modified dVec"<<endl;
-				link* myLink_ptr = &linkVector[lVector[i].link_id];
-				packet pSend(0, 0, this, this);
-				pSend.isRIP = true;
-				pSend.dv = *(rt.getDv(this->ip));
-				packetVector.push_back(pSend);
-				pushPacket((int)packetVector.size() - 1,myLink_ptr);	
-			}
-		}
-	}
-	else if(n==3){
-		for(int i=0;i<(int)lVector.size();i++){
-			cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating CTS"<<endl;
-			if(lVector[i].type==1){
-				link* myLink_ptr = &linkVector[lVector[i].link_id];
-				packet pSend(0, 0, this, this);
-				pSend.isCTS = true;
-				packetVector.push_back(pSend);
-				pushPacket((int)packetVector.size() - 1,myLink_ptr);	
-			}
-		}
-	}
-	else if(n==4){
-		for(int i=0;i<(int)lVector.size();i++){
-			cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" is ready to send: propagating CTS to its HOSTS"<<endl;
-			if(lVector[i].type==0){
-				link* myLink_ptr = &linkVector[lVector[i].link_id];
-				packet pSend(0, 0, this, this);
-				pSend.isCTS = true;
-				packetVector.push_back(pSend);
-				cout<<"informing host connected that "<<this->ip<<" is clearToSend"<<endl;
-				pushPacket((int)packetVector.size() - 1,myLink_ptr);	
-			}
-		}
-	}
-}
-
-
-*/
 
 void router::sendCR(int i,link* link_ptr){
 		packet pSend(0, 0, this, this);
@@ -131,9 +95,9 @@ void router::crResp(link* link_ptr,packet* p){
 	if(p->t==0){
 		//update lVector
 		lVectorUpdate(link_ptr,p);
-		printLinks();
+		//printLinks();
 		cin.ignore();
-		for(int i=1;i<(int)lVector.size();i++){
+		for(int i=0;i<(int)lVector.size();i++){
 			if(lVector[i].type != 2){
 				link* lptr = &linkVector[lVector[i].link_id];
 				if(lptr != link_ptr){
@@ -153,6 +117,93 @@ void router::crResp(link* link_ptr,packet* p){
 	printLinks();
 }
 
+
+void router::b_dVec(){
+	for(int i=0;i<(int)lVector.size();i++){
+		link* lptr = &linkVector[lVector[i].link_id];
+		if (lVector[i].type == 1){
+			cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating new dVec on link: "<< lptr->id <<endl;
+			packet pSend(0, 0, this, this);
+			pSend.isRIP = true;
+			cout<<"this ip is: "<< this->ip <<endl;
+			rt.print();
+			pSend.dv = *(rt.getDv(this->ip));
+			pSend.dv.print();
+			cout<<"we made it EVERYWHERE"<<endl;
+			packetVector.push_back(pSend);
+			pushPacket((int)packetVector.size() - 1,lptr);	
+		}
+	}
+
+}
+
+void router::p_dVec(packet* p){
+	link* link_ptr;
+	for(int i=0;i<(int)lVector.size();i++){
+		if( lVector[i].ip  == p->src->ip){
+			link_ptr = &linkVector[lVector[i].link_id];
+		}
+	}
+	for(int i=0;i<(int)lVector.size();i++){
+		link* lptr = &linkVector[lVector[i].link_id];
+		if ((lVector[i].type == 1)&&(lptr->id != link_ptr->id)){
+			cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating new dVec on link "<< lptr->id <<endl;
+			packet pSend(0, 0, this, this);
+			pSend.isRIP = true;
+			pSend.dv = *(rt.getDv(p->src->ip));
+			packetVector.push_back(pSend);
+			pushPacket((int)packetVector.size() - 1,lptr);	
+		}
+	}
+}
+
+void router::b_CTS_routers(){
+	for(int i=0;i<(int)lVector.size();i++){
+				cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating CTS"<<endl;
+				if(lVector[i].type==1){
+					link* myLink_ptr = &linkVector[lVector[i].link_id];
+					packet pSend(0, 0, this, this);
+					pSend.isCTS = true;
+					packetVector.push_back(pSend);
+					pushPacket((int)packetVector.size() - 1,myLink_ptr);	
+				}
+			}
+}
+
+void router::b_CTS_hosts(){
+	for(int i=0;i<(int)lVector.size();i++){
+							cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" is ready to send: propagating CTS to its HOSTS"<<endl;
+							if(lVector[i].type==0){
+								link* myLink_ptr = &linkVector[lVector[i].link_id];
+								packet pSend(0, 0, this, this);
+								pSend.isCTS = true;
+								packetVector.push_back(pSend);
+								cout<<"informing host connected that "<<this->ip<<" is clearToSend"<<endl;
+								pushPacket((int)packetVector.size() - 1,myLink_ptr);	
+							}
+						}
+}
+
+void router::recRIP(packet* p){
+	cout<<"packet is a RIP"<<endl;
+			cout<<"its dv is"<<endl;
+			p->dv.print();
+			cin.ignore();
+			int n = rt.update(&(p->dv));
+			if((n==1)||(n==2)){
+				cout<<"forwarding dv change"<<endl;
+				p_dVec(p);	
+			}
+			//send out OUR changed dv (by bellman ford).
+			if(n==2){
+				cout<<"broadcasting MY change"<<endl;
+				b_dVec();
+			}
+			if((n==1)||(n==2)){
+				rt.print();
+			}
+}
+
 void router::receivePacket(link* link_ptr) {
 	cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" has recieved packet:"<<endl;
 	packet* p = &packetVector[link_ptr->pnum];
@@ -168,23 +219,12 @@ void router::receivePacket(link* link_ptr) {
 				STATE=1;
 				cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" initial routing table:"<<endl;
 				rtInit();
-				rt.print();
 				cin.ignore();
 				if(RIPbuf.empty()){	
 					cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" empty RIPbuf:"<<endl;
 					//inform(1,this->ip,link_ptr);
 					//we've created an empty routing table. we have to send out our own distance vector EVERYWHERE.
-					for(int i=1;i<(int)lVector.size();i++){
-						link* lptr = &linkVector[lVector[i].link_id];
-						if (lVector[i].type == 1){
-							cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating new dVec on link "<< lptr->id <<endl;
-							packet pSend(0, 0, this, this);
-							pSend.isRIP = true;
-							pSend.dv = *(rt.getDv(this->ip));
-							packetVector.push_back(pSend);
-							pushPacket((int)packetVector.size() - 1,link_ptr);	
-						}
-					}
+					b_dVec();
 				}
 				else{
 					cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" nonEmpty RIPbuf:"<<endl;
@@ -200,70 +240,25 @@ void router::receivePacket(link* link_ptr) {
 							k = n;
 						}
 					}
-					rt.print();
 					cin.ignore();
 					//send out the new dv info, not to sender.
 
 					if((k==1)||(k==2)){
-						for(int i=1;i<(int)lVector.size();i++){
-							link* lptr = &linkVector[lVector[i].link_id];
-							if ((lVector[i].type == 1)&&(lptr->id != link_ptr->id)){
-								cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating new dVec on link "<< lptr->id <<endl;
-								packet pSend(0, 0, this, this);
-								pSend.isRIP = true;
-								pSend.dv = *(rt.getDv(this->ip));
-								packetVector.push_back(pSend);
-								pushPacket((int)packetVector.size() - 1,link_ptr);	
-							}
-						}	
+						p_dVec(p);
 					}
 					//send out OUR changed dv (by bellman ford).
 					if(k==2){
-						for(int i=1;i<(int)lVector.size();i++){
-							link* lptr = &linkVector[lVector[i].link_id];
-							if (lVector[i].type == 1){
-								cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating BFORD changed dVec on link "<< lptr->id <<endl;
-								packet pSend(0, 0, this, this);
-								pSend.isRIP = true;
-								pSend.dv = *(rt.getDv(this->ip));
-								packetVector.push_back(pSend);
-								pushPacket((int)packetVector.size() - 1,link_ptr);	
-							}
-						}
+						b_dVec();
 					}
-				}				
+				}		
 				STATE=1;
 				if(rt.isComplete()){
 					cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" routing table is complete:"<<endl;
 					cout<<"final routing table:"<<endl;
 					rt.print();
 					STATE=2;
-					//inform(3,p->src->ip,link_ptr);
-					//cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating dVec"<<endl;
-					for(int i=0;i<(int)lVector.size();i++){
-						link* lptr = &linkVector[lVector[i].link_id];
-						if ((lVector[i].type == 1)&&(lptr->id != link_ptr->id)){
-							cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating new dVec on link "<< lptr->id <<endl;
-							packet pSend(0, 0, this, this);
-							pSend.isRIP = true;
-							pSend.dv = *(rt.getDv(this->ip));
-							packetVector.push_back(pSend);
-							pushPacket((int)packetVector.size() - 1,link_ptr);	
-						}
-					}
-					cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating CTS"<<endl;
-					for(int i=0;i<(int)lVector.size();i++){
-						
-						if(lVector[i].type==1){
-							link* myLink_ptr = &linkVector[lVector[i].link_id];
-							packet pSend(0, 0, this, this);
-							pSend.isCTS = true;
-							packetVector.push_back(pSend);
-							pushPacket((int)packetVector.size() - 1,myLink_ptr);	
-						}
-					}
+					b_dVec();
 				}
-				//if no routers connected to this router
 				if(!routersConnected){
 					cout<<"no routers connected!"<<endl;
 					if(rt.isComplete()){
@@ -271,23 +266,10 @@ void router::receivePacket(link* link_ptr) {
 						cout<<"final routing table:"<<endl;
 						rt.print();
 						STATE=2;
-						//
-						//inform(4,p->src->ip,link_ptr);
-						//sendCTS on all hosts.
-						for(int i=0;i<(int)lVector.size();i++){
-							cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" is ready to send: propagating CTS to its HOSTS"<<endl;
-							if(lVector[i].type==0){
-								link* myLink_ptr = &linkVector[lVector[i].link_id];
-								packet pSend(0, 0, this, this);
-								pSend.isCTS = true;
-								packetVector.push_back(pSend);
-								cout<<"informing host connected that "<<this->ip<<" is clearToSend"<<endl;
-								pushPacket((int)packetVector.size() - 1,myLink_ptr);	
-							}
-						}
+						b_CTS_hosts();
+						
 					}
 				}
-
 			}
 		}
 		else if (p->isRIP){
@@ -295,48 +277,20 @@ void router::receivePacket(link* link_ptr) {
 			p->dv.print();
 			RIPbuf.push(p->dv);
 		}
+		else if(p->isCTS){
+			cout<<"packet is CTS"<<endl;
+			for(int i=0;i<(int)lVector.size();i++){
+				if((lVector[i].type == 1)&&(lVector[i].ip == p->src->ip)){
+					lVector[i].isCTS = true;
+				}
+			}
+		}
 	}
 	else if(STATE==1){ //building routing table
 		cout<<this->name<<" state=1"<<endl;
 		
 		if(p->isRIP){
-			cout<<"packet is a RIP"<<endl;
-			cout<<"its dv is"<<endl;
-			p->dv.print();
-			cin.ignore();
-			int n = rt.update(&(p->dv));
-			if((n==1)||(n==2)){
-				cout<<"forwarding dv change"<<endl;
-				for(int i=1;i<(int)lVector.size();i++){
-					link* lptr = &linkVector[lVector[i].link_id];
-					if ((lVector[i].type == 1)&&(lptr->id != link_ptr->id)){
-						cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating new dVec on link "<< lptr->id <<endl;
-						packet pSend(0, 0, this, this);
-						pSend.isRIP = true;
-						pSend.dv = *(rt.getDv(this->ip));
-						packetVector.push_back(pSend);
-						pushPacket((int)packetVector.size() - 1,link_ptr);	
-					}
-				}	
-			}
-			//send out OUR changed dv (by bellman ford).
-			if(n==2){
-				cout<<"broadcasting MY change"<<endl;
-				for(int i=1;i<(int)lVector.size();i++){
-					link* lptr = &linkVector[lVector[i].link_id];
-					if (lVector[i].type == 1){
-						cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating new dVec on link "<< lptr->id <<endl;
-						packet pSend(0, 0, this, this);
-						pSend.isRIP = true;
-						pSend.dv = *(rt.getDv(this->ip));
-						packetVector.push_back(pSend);
-						pushPacket((int)packetVector.size() - 1,link_ptr);	
-					}
-				}
-			}
-
-			//inform(rt.update(&(p->dv)),p->src->ip,link_ptr);
-
+			recRIP(p);
 		}
 		else if(p->isCR){
 			//we sent to a router that wasn't ready for RIP yet
@@ -345,7 +299,7 @@ void router::receivePacket(link* link_ptr) {
 		else if(p->isCTS){
 			cout<<"packet is CTS"<<endl;
 			for(int i=0;i<(int)lVector.size();i++){
-				if(lVector[i].type == 1){
+				if((lVector[i].type == 1)&&(lVector[i].ip == p->src->ip)){
 					lVector[i].isCTS = true;
 				}
 			}
@@ -354,53 +308,18 @@ void router::receivePacket(link* link_ptr) {
 			cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" routing table is complete:"<<endl;
 			cout<<"final routing table:"<<endl;
 			rt.print();
-			STATE=2;
 			//inform(3,p->src->ip,link_ptr);
-			for(int i=0;i<(int)lVector.size();i++){
-				cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating CTS"<<endl;
-				if(lVector[i].type==1){
-					link* myLink_ptr = &linkVector[lVector[i].link_id];
-					packet pSend(0, 0, this, this);
-					pSend.isCTS = true;
-					packetVector.push_back(pSend);
-					pushPacket((int)packetVector.size() - 1,myLink_ptr);	
-				}
-			}
+			b_dVec();
+			cout<<this->name<<"STATE: "<<STATE<<endl;
+			b_CTS_routers();
+			STATE=2;
+
 		}
 	}
 	else if(STATE==2){ //routing table complete, waiting on CTS from other routers!
+		//cout<<"blerla;jskdfja;lksdjf;laksjdf"<<endl;
 		if(p->isRIP){
-			//inform(rt.update(&(p->dv)),p->src->ip,link_ptr);
-			int n = rt.update(&(p->dv));
-			if((n==1)||(n==2)){
-				for(int i=1;i<(int)lVector.size();i++){
-					link* lptr = &linkVector[lVector[i].link_id];
-					if ((lVector[i].type == 1)&&(lptr->id != link_ptr->id)){
-						cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating new dVec on link "<< lptr->id <<endl;
-						packet pSend(0, 0, this, this);
-						pSend.isRIP = true;
-						pSend.dv = *(rt.getDv(this->ip));
-						packetVector.push_back(pSend);
-						pushPacket((int)packetVector.size() - 1,link_ptr);	
-					}
-				}	
-			}
-			//send out OUR changed dv (by bellman ford).
-			if(n==2){
-				for(int i=1;i<(int)lVector.size();i++){
-					link* lptr = &linkVector[lVector[i].link_id];
-					if (lVector[i].type == 1){
-						cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating new dVec on link "<< lptr->id <<endl;
-						packet pSend(0, 0, this, this);
-						pSend.isRIP = true;
-						pSend.dv = *(rt.getDv(this->ip));
-						packetVector.push_back(pSend);
-						pushPacket((int)packetVector.size() - 1,link_ptr);	
-					}
-				}
-			}
-			cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" routing table updated:"<<endl;
-			rt.print();
+			recRIP(p);
 		}
 		else if(p->isCR){
 			crResp(link_ptr,p);
@@ -408,15 +327,29 @@ void router::receivePacket(link* link_ptr) {
 		else if(p->isCTS){
 			cout<<"clearToSend packet recieved on"<<this->name<<endl;
 			for(int i=0;i<(int)lVector.size();i++){
-				if(lVector[i].type == 1){
+				if((lVector[i].type == 1)&&(lVector[i].ip == p->src->ip)){
 					lVector[i].isCTS = true;
 				}
 			}
 			if(!this->isCTS){
 				isCTS = clearToSend();
+				if(this->isCTS){
+					//inform(4,p->src->ip,link_ptr);
+					for(int i=0;i<(int)lVector.size();i++){
+						cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" is ready to send: propagating CTS to its HOSTS"<<endl;
+						if(lVector[i].type==0){
+							link* myLink_ptr = &linkVector[lVector[i].link_id];
+							packet pSend(0, 0, this, this);
+							pSend.isCTS = true;
+							packetVector.push_back(pSend);
+							cout<<"informing host connected that "<<this->ip<<" is clearToSend"<<endl;
+							pushPacket((int)packetVector.size() - 1,myLink_ptr);	
+						}
+					}
+				}
 			}
 		}
-		else if(p->f != nullptr){
+		if((p->f != nullptr)&&(this->isCTS)){
 			cout<<"data packet recieved on "<< this->name <<" choosing link"<<endl;
 			link* l = chooseLink(p);
 			cout<<"link "<<l->id<<" chosen"<<endl;
@@ -426,22 +359,7 @@ void router::receivePacket(link* link_ptr) {
 				cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" chooseLink failure"<<endl;
 			}
 		}
-		if(this->isCTS){
-			//inform(4,p->src->ip,link_ptr);
-			for(int i=0;i<(int)lVector.size();i++){
-				cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" is ready to send: propagating CTS to its HOSTS"<<endl;
-				if(lVector[i].type==0){
-					link* myLink_ptr = &linkVector[lVector[i].link_id];
-					packet pSend(0, 0, this, this);
-					pSend.isCTS = true;
-					packetVector.push_back(pSend);
-					cout<<"informing host connected that "<<this->ip<<" is clearToSend"<<endl;
-					pushPacket((int)packetVector.size() - 1,myLink_ptr);	
-				}
-			}
-
-
-		}
+		
 	}
 }
 
@@ -461,7 +379,7 @@ void router::lVectorUpdate(link* link_ptr,packet* p){
 				lVector[i].type = 1;
 				lVector[i].ip = p->src->ip;
 				routersConnected = true;
-				cout<<"router connected!"<<endl;
+				//	cout<<"router connected!"<<endl;
 			}
 			else if(p->src->name[0] == 'H'){
 				lVector[i].type = 0;
@@ -569,4 +487,5 @@ void router::rtInit(){
 	dVec dv;
 	cout<<"creating routing table "<<endl;
 	rt.update(genDv(dv));
+	//rt.print();
 }
