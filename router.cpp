@@ -125,11 +125,9 @@ void router::b_dVec(){
 			cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating new dVec on link: "<< lptr->id <<endl;
 			packet pSend(0, 0, this, this);
 			pSend.isRIP = true;
-			cout<<"this ip is: "<< this->ip <<endl;
 			rt.print();
 			pSend.dv = *(rt.getDv(this->ip));
 			pSend.dv.print();
-			cout<<"we made it EVERYWHERE"<<endl;
 			packetVector.push_back(pSend);
 			pushPacket((int)packetVector.size() - 1,lptr);	
 		}
@@ -159,7 +157,7 @@ void router::p_dVec(packet* p){
 }
 
 void router::b_CTS_routers(){
-	cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating CTS";
+	cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" is almost ready to send! broadcasting CTS to routers";
 	for(int i=0;i<(int)lVector.size();i++){
 				if(lVector[i].type==1){
 					cout<<" on L"<<lVector[i].link_id<<" ";
@@ -174,7 +172,7 @@ void router::b_CTS_routers(){
 }
 
 void router::b_CTS_hosts(){
-	cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" is ready to send!"<<endl;
+	cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" is ready to send!  Sending CTS to hosts"<<endl;
 	for(int i=0;i<(int)lVector.size();i++){
 		if(lVector[i].type==0){
 			link* myLink_ptr = &linkVector[lVector[i].link_id];
@@ -189,7 +187,7 @@ void router::b_CTS_hosts(){
 void router::recRIP(packet* p){
 	cout<<"packet is a RIP"<<endl;
 			cout<<"its dv is"<<endl;
-			p->dv.print();
+			//p->dv.print();
 			cin.ignore();
 			int n = rt.update(&(p->dv));
 			if((n==1)||(n==2)){
@@ -202,7 +200,7 @@ void router::recRIP(packet* p){
 				b_dVec();
 			}
 			if((n==1)||(n==2)){
-				rt.print();
+				//rt.print();
 			}
 }
 
@@ -256,11 +254,15 @@ void router::receivePacket(link* link_ptr) {
 				}		
 				STATE=1;
 				if(rt.isComplete()){
+					STATE=2;
 					cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" routing table is complete:"<<endl;
 					cout<<"final routing table:"<<endl;
 					rt.print();
-					STATE=2;
-					//b_dVec();
+					//inform(3,p->src->ip,link_ptr);
+					b_dVec();
+					cout<<this->name<<"STATE: "<<STATE<<endl;
+					b_CTS_routers();
+					
 				}
 				if(!routersConnected){
 					cout<<"no routers connected!"<<endl;
@@ -302,6 +304,7 @@ void router::receivePacket(link* link_ptr) {
 			recCTS(p);
 		}
 		if(rt.isComplete()){
+			STATE=2;
 			cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" routing table is complete:"<<endl;
 			cout<<"final routing table:"<<endl;
 			rt.print();
@@ -309,7 +312,7 @@ void router::receivePacket(link* link_ptr) {
 			b_dVec();
 			cout<<this->name<<"STATE: "<<STATE<<endl;
 			b_CTS_routers();
-			STATE=2;
+			
 
 		}
 	}

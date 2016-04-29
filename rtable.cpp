@@ -224,11 +224,11 @@ int rtable::update(dVec* dv){
 		
 	}
 	else{
-		cout<<"INPUT DV"<<endl;
-		dv->print();
+		//cout<<"INPUT DV"<<endl;
+		//dv->print();
 
-		cout<<"INITIAL NONEMPTY"<<endl;
-		print();
+		//cout<<"INITIAL NONEMPTY"<<endl;
+		//print();
 
 		vector<int> tA; //to Add
 		vector<int> tB; //to Broadcast
@@ -292,8 +292,8 @@ int rtable::update(dVec* dv){
 		}
 
 
-		cout<<"NEW ROUTERS ADDED"<<endl;
-		print();
+		//cout<<"NEW ROUTERS ADDED"<<endl;
+		//print();
 		//cout<<endl;
 
 		
@@ -307,8 +307,8 @@ int rtable::update(dVec* dv){
 				mdv->h.push_back(dv->h[i]);	
 				bcast = 2;
 			}
-			cout<<"HOSTS ADDED"<<endl;
-			print();
+			//cout<<"HOSTS ADDED"<<endl;
+			//print();
 		}
 		else{
 
