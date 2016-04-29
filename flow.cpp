@@ -8,6 +8,7 @@ using namespace std;
 extern vector<packet> packetVector;
 extern vector<link> linkVector;
 extern void pushEvent(string e, int elapseTime);
+extern int t;
 
 // The packet constructor initializes the packet with set information of data and destination. 
 flow::flow(host* source, host* dest, int data, int id) {
@@ -25,6 +26,7 @@ int flow::startFlow() {
 	lastSent = 10;
 	slowStartState = 1;
 	ssthresh = 160;
+	curTime = t;
 	/*
 	if(source->STATE != 2){
 		source->init();
@@ -43,7 +45,9 @@ int flow::getCwnd(){
 //searchMax should send 'size' packets as oppsed to a big packet of size 'size'.
 
 void flow::searchMax(int size) {
-	cout << "FLOW: "<<this->id<< "SENDING PACKET FROM " << source->name << " TO " << dest->name << ", SIZE " << size << endl;
+	if(source->STATE==2)
+		cout << "FLOW: "<<this->id<< "SENDING PACKET FROM " << source->name << " TO " << dest->name << ", SIZE " << size << endl;
+	curTime = t;
 	packetnum++;
 	packet p(size, packetnum, source, dest);
 	p.f = this;
@@ -56,7 +60,7 @@ void flow::searchMax(int size) {
 	ss.str("");
 	ss << packetnum;
 	pevent += "_TIMEOUT_" + ss.str();
-	pushEvent(pevent, RTT);
+	pushEvent(pevent, RTT*lastSent);
 }
 
 void flow::receiveAck(int pnum) {
@@ -68,6 +72,8 @@ void flow::receiveAck(int pnum) {
 	}
 	else {
 		cout << "FLOW: "<<this->id<< "RECEIVED ACK\tData: " << lastSent << "\tSource: " << p->src->name << "\tDest: " << p->dest->name <<"\tSrc: " << p->src->name<< endl;
+		RTT = (alpha * RTT) + (1 - alpha)*(t - curTime) / lastSent + RTT_EXTRA;
+		cout << "RTT: " << RTT << ", LAST_TIME: " << (t - curTime) / lastSent << endl;
 		data -= lastSent;
 		if(lastSent>=ssthresh)
 			slowStartState=0;
@@ -82,7 +88,9 @@ void flow::receiveAck(int pnum) {
 
 void flow::timeoutAck(int pnum) {
 	//packet* p = &packetVector[pnum];
-	cout << "FLOW: "<<this->id<< " TIMED OUT" << endl;
+	if(this->source->STATE==2)
+		cout << "FLOW: "<<this->id<< " TIMED OUT" << endl;
+	RTT *= 2;
 	//cin.ignore();
 	//change cwnd to 1
 	lastSent = 1;

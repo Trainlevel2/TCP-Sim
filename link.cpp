@@ -60,7 +60,7 @@ void link::propagate(){
 			dest = s;
 		}
 
-		pushEvent("LINK_" + ss.str() + "_TRANSMIT_PACKET", 1000 * packetVector[qp.front()].data / maxThroughput);
+		pushEvent("LINK_" + ss.str() + "_TRANSMIT_PACKET", ((100 * packetVector[qp.front()].data) / maxThroughput) + (delay * 100));
 	}
 }
 
@@ -76,11 +76,11 @@ void link::forcepropagate() {
 		src = qn.front();
 		dest = s;
 	}
-	pushEvent("LINK_" + ss.str() + "_TRANSMIT_PACKET", 1 + 1000 * packetVector[qp.front()].data / maxThroughput);
+	pushEvent("LINK_" + ss.str() + "_TRANSMIT_PACKET", ((100 * packetVector[qp.front()].data) / maxThroughput) + (delay*100));
 }
 
 void link::tpropagate() {
-	cout << "T-Propagating packet\tLink: " << this->id << "\tPacket: " << packetVector[pnum].num << endl;
+	//cout << "T-Propagating packet\tLink: " << this->id << "\tPacket: " << packetVector[pnum].num << endl;
 	dest->receivePacket(this);
 	qn.pop();
 	qp.pop();

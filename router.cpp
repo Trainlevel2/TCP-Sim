@@ -213,7 +213,6 @@ void router::recRIP(packet* p){
 }
 
 void router::recCTS(packet* p){
-			cout<<"packet is CTS"<<endl;
 			for(int i=0;i<(int)lVector.size();i++){
 				if((lVector[i].type == 1)&&(lVector[i].ip == p->src->ip)){
 					lVector[i].isCTS = true;
@@ -222,7 +221,7 @@ void router::recCTS(packet* p){
 }
 
 void router::receivePacket(link* link_ptr) {
-	cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" has recieved packet:"<<endl;
+	//cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" has recieved packet:"<<endl;
 	packet* p = &packetVector[link_ptr->pnum];
 	//cout<<"packet recieved info: "<<endl;
 	//cout<<"pnum: "<<p->num<<endl;
@@ -325,7 +324,7 @@ void router::receivePacket(link* link_ptr) {
 		}
 	}
 	else if(STATE==2){ //routing table complete, waiting on CTS from other routers!
-		cout<<this->name<<" state=2"<<endl;
+		//cout<<this->name<<" state=2"<<endl;
 		if(p->isRIP){
 			recRIP(p);
 		}
@@ -342,9 +341,9 @@ void router::receivePacket(link* link_ptr) {
 			}
 		}
 		if((p->f != nullptr)&&(this->isCTS)){
-			cout<<"data packet recieved on "<< this->name <<" choosing link"<<endl;
+			//cout<<"data packet recieved on "<< this->name <<" choosing link"<<endl;
 			link* l = chooseLink(p);
-			cout<<"link "<<l->id<<" chosen"<<endl;
+			//cout<<"link "<<l->id<<" chosen"<<endl;
 			if(l){
 				pushPacket(tnum,l);
 			}else{

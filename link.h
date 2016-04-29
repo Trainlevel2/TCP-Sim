@@ -36,6 +36,7 @@ class link {
 		string toString();
 		int id;
 		int bufferSize;
+		int delay;
 		int cost; //will start out as 1, fixed
 
 

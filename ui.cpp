@@ -107,6 +107,8 @@ void createLink(string linkName, string nodeA, string nodeB, int a, int b, int c
 
 	link l(a, (int)linkVector.size(), nA, nB);
 	l.bufferSize = c;
+	l.delay = b;
+	l.cost = a*c / b;
 	linkVector.push_back(l);
 	nA->addLink(l.id);
 	nB->addLink(l.id);
@@ -147,6 +149,7 @@ void pushEvent(string e, int elapseTime){
 	ss << currentTime;
 	event += string(max_int_len - ss.str().size(), '0') + ss.str() + "," + e; //csv for simplicity
 	q.push(event);
+	cout << "PUSH_EVENT:\t\t" << event << endl;
 	
 	//if flow, update when the flow is going to be done sending
 	int whereTheFlowAt = e.find("FLOW_");
@@ -168,7 +171,7 @@ void popEvent(){
 		return;
 	}
 	string event = q.top();
-	//cout << "POP\t\t" << event << endl;
+	cout << "POP\t\t" << event << endl;
 	q.pop();
 	
 	//Extract the time at which the message is executed. This becomes the current time in the time manager.
@@ -360,7 +363,7 @@ int main(int argc, char *argv[])
 	if(WINDOWS){
 		file = ".\\TestCases\\testcase0.txt";	
 	}else{
-		file = "./TestCases/testcase3.txt";	
+		file = "./TestCases/testcase1.txt";	
 	}
 	read.open(file.c_str());
 	while(!read.eof())
