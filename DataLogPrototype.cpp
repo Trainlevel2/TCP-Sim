@@ -1,5 +1,6 @@
 //logs for graphing
-
+//THIS WILL NOT WORK! CODE NEEDS TO BE ADDED INTO UI.CPP
+//OR WE COULD MAKE EVERYTHING IN UI.CPP GLOBAL AND DO THIS IN A SEPARATE CLASS B/C UI.CPP IS GETTING SO BLOATED WITH CODE
 
 //LOGGING LINK RATE AND FLOW RATE
 //INITIALIZATION FOR LOGS
@@ -8,7 +9,7 @@ string bufferLog = "bufferLog \ntime(s), link index, buffer occupancy";
 string cwndLog = "cwndLog \ntime(s) , flow index, cwnd";
 
 //event driven
-string packetLossLog = "packetLossLog \ntime(s), flow index, othervariable??"; //TODO: what is the othervariable?
+string packetLossLog = "packetLossLog \ntime(s), flow index"; //TODO: Can we figure out how many packets were lost?
 string flowRateLog = "flowRateLog \ntime(s), flow rate(dataSize/ms)";
 string linkRateLog = "linkRateLog \ntime(s), link rate (dataSize/ms)";
 string packetDelayLog = "packetDelayLog \ntime(s), flow index, packetDelay(ms)";
@@ -58,12 +59,13 @@ POPEVENT(){
 		//PACKETLOSSLOG
 		//example event -> FLOW_0_TIMEOUT_5
 		if(event.find("TIMEOUT") > 0){
-			packetLossLog += "\n" + t/1000 + "," + flowIndex + "," + otherVariable; //TODO: Extract the flowIndex and otherVariable from the event so that the .csv will be easier to parse
+			packetLossLog += "\n" + t/1000 + "," + flowIndex + "," + amtPacketsLost; //TODO: Extract the flowIndex from the event so that the .csv will be easier to parse
+			//TODO: get amtPacketsLost how?
 		}
 		
 		//PACKETDELAYLOG
 		//TODO: create packet sent event for packets sent across a flow for this and flowRateLog
-		else if(event.find("TRANSMIT_PACKET" > 0){ //TODO: check syntax after FLOW_2_TRANSMIT_PACKET works
+		else if(event.find("TRANSMIT_PACKET" > 0){ //TODO: check syntax after FLOW_2_TRANSMIT_PACKET event exists/works
 			packetDelaylog += "\n" + t/1000 + "," + flowIndex + "," + (endTime-startTime);
 		}
 		
