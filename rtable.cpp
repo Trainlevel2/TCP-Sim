@@ -10,6 +10,7 @@ using namespace std;
 #include <limits>
 #include <cstdint>
 #include <climits>
+#include <algorithm>
 #include "rtable.h"
 #define INF INT_MAX
 
@@ -82,27 +83,28 @@ int rtable::getCost(int ip_from,int ip_to){
 //assume AmB,BmA empty
 void rtable::compare(vector<int>& A, vector<int>& B, vector<int>& AmB, vector<int>& BmA){
 	vector<int> common;
+	cout<<"common: ";
 	for(int i=0;i<(int)A.size();i++){
 		for(int j=0;j<(int)B.size();j++){
 			if(A[i]==B[j]){
 				common.push_back(A[i]);
+				cout<<A[i]<<",";
 			}
 		}
 	}
+	cout<<endl;
 
-	for(int i=0;i<(int)common.size();i++){
-		
-		for(int j=0;j<(int)A.size();j++){
-			if(common[i] != A[j]){
-				AmB.push_back(A[j]);
-			}
-		}
+	for(int i=0;i<(int)A.size();i++){
+		if(!(std::find(common.begin(), common.end(), A[i]) != common.end())) {
+    		AmB.push_back(A[i]);
+		} 
+	}
 
-		for(int j=0;j<(int)B.size();j++){
-			if(common[i] != B[j]){
-				BmA.push_back(B[j]);
-			}
-		}
+
+	for(int i=0;i<(int)B.size();i++){
+		if(!(std::find(common.begin(), common.end(), B[i]) != common.end())) {
+    		BmA.push_back(B[i]);
+		} 
 	}
 }
 
@@ -214,10 +216,10 @@ int rtable::update(dVec* dv){
 
 	int bcast=0;
 	if(dvv.empty()){
-		for(int i=0;i<dv->e.size();i++){
+		for(int i=0;i<(int)dv->e.size();i++){
 			addCost(dv->ip,dv->e[i].ip,dv->e[i].cost);
 		}	
-		for(int i=0;i<dv->h.size();i++){
+		for(int i=0;i<(int)dv->h.size();i++){
 			addHost(dv->ip,dv->h[i]);
 		}
 		bcast = 1;
@@ -227,8 +229,8 @@ int rtable::update(dVec* dv){
 		//cout<<"INPUT DV"<<endl;
 		//dv->print();
 
-		//cout<<"INITIAL NONEMPTY"<<endl;
-		//print();
+		cout<<"INITIAL NONEMPTY"<<endl;
+		print();
 
 		vector<int> tA; //to Add
 		vector<int> tB; //to Broadcast
@@ -249,37 +251,39 @@ int rtable::update(dVec* dv){
 
 		
 		if((tB.empty())&&(tA.empty())){
-			cout<<"new router ip's not found"<<endl;
+			cout<<"same distance vector ip's!"<<endl;
 			for(int i=0;i<(int)dv->e.size();i++){
 				//copy right over.
 				if(getCost(dv->ip,dv->e[i].ip) != dv->e[i].cost){
 					if(bcast==0){
 						bcast=1;
 					}
+					cout<<"setting cost"<<endl;
 					setCost(dv->ip,dv->e[i].ip,dv->e[i].cost);
 				}
 			}
 		}
 		else{
 			if (!tA.empty()){
-				cout<<"routers to add found"<<endl;
+				cout<<"routers to add found: ";
 				for(int i=0;i<(int)tA.size();i++){
 					for(int j=0;j<(int)dv->e.size();j++){
 						if (dv->e[j].ip == tA[i]){
+							cout<<tA[i]<<",";
 							addCost(dv->ip,dv->e[j].ip,dv->e[j].cost);
 						}
 					}
 				}
+				cout<<endl;
 			}
 			else if(!tB.empty()){
 				bcast=2;
 				cout<<"need to Broadcast knowledge of routers"<<endl;
-				
 			}
 			bcast=1; //just propagate the thing we received
 		}
 
-
+/*
 		//cout<<"new router ip's not found"<<endl;
 		for(int i=0;i<(int)dv->e.size();i++){
 			//copy right over.
@@ -290,7 +294,7 @@ int rtable::update(dVec* dv){
 				setCost(dv->ip,dv->e[i].ip,dv->e[i].cost);
 			}
 		}
-
+*/
 
 		//cout<<"NEW ROUTERS ADDED"<<endl;
 		//print();
@@ -303,7 +307,7 @@ int rtable::update(dVec* dv){
 		dVec* mdv = getDv(dv->ip);
 
 		if(mdv->h.empty()){
-			for(int i=0;i<dv->h.size();i++){
+			for(int i=0;i<(int)dv->h.size();i++){
 				mdv->h.push_back(dv->h[i]);	
 				bcast = 2;
 			}
@@ -345,10 +349,10 @@ int rtable::update(dVec* dv){
 
 		
 		//if (isComplete()){
-			if(bford(dv->ip)){
+			if(bford(this->ip)){
 				bcast = 2; //send our dVec
-				//cout<<"bellman fording"<<endl;
-				print();
+				cout<<"bellman fording"<<endl;
+				//print();
 			}
 		//}
 		delete comp;
@@ -361,7 +365,6 @@ int rtable::update(dVec* dv){
 }
 
 dVec* rtable::getDv(int ip){
-	cout<<"getting dv"<<endl;
 	for(int i=0;i<(int)dvv.size();i++){
 		if(dvv[i].ip == ip){
 			return &dvv[i];

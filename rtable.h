@@ -8,8 +8,9 @@ using namespace std;
 class rtable{
 	public:
 		string rname;
+		int ip;
 		vector<dVec> dvv;
-		
+
 		int setCost(int ip_from,int ip_to,int cost);
 		bool bford(int ip_from);
 		void addip(int ip);

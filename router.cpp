@@ -33,10 +33,12 @@ router::router(string name, int ip)
 	lVector.push_back(f);
 	//discovered = false;
 	rt.rname = this->name;
+	rt.ip = this->ip;
 	//isDefaultGateway = false;
 	isCTS = false;
 	routersConnected = false;
 	STATE=0;
+
 	//test code
 	//rtHardCode();
 
@@ -114,7 +116,7 @@ void router::crResp(link* link_ptr,packet* p){
 		lVectorUpdate(link_ptr,p);
 		STATE=1;
 	}
-	printLinks();
+	//printLinks();
 }
 
 
@@ -122,12 +124,11 @@ void router::b_dVec(){
 	for(int i=0;i<(int)lVector.size();i++){
 		link* lptr = &linkVector[lVector[i].link_id];
 		if (lVector[i].type == 1){
-			cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating new dVec on link: "<< lptr->id <<endl;
-			packet pSend(0, 0, this, this);
+			cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" broadcasting new dVec on link: "<< lptr->id <<endl;
+			packet pSend(0, (int)packetVector.size(), this, this);
 			pSend.isRIP = true;
-			rt.print();
 			pSend.dv = *(rt.getDv(this->ip));
-			pSend.dv.print();
+			//pSend.dv.print();
 			packetVector.push_back(pSend);
 			pushPacket((int)packetVector.size() - 1,lptr);	
 		}
@@ -135,21 +136,24 @@ void router::b_dVec(){
 
 }
 
-void router::p_dVec(packet* p){
+void router::p_dVec(int ip_except){
+	cout<<"ip_except: "<<ip_except<<endl;
 	link* link_ptr;
 	for(int i=0;i<(int)lVector.size();i++){
-		if( lVector[i].ip  == p->src->ip){
+		if( lVector[i].ip  == ip_except){
 			link_ptr = &linkVector[lVector[i].link_id];
 		}
 	}
+	//there's no neighbor!!!!!!!!!!!!!!!
 	for(int i=0;i<(int)lVector.size();i++){
 		link* lptr = &linkVector[lVector[i].link_id];
 		if ((lVector[i].type == 1)&&(lptr->id != link_ptr->id)){
-			cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating new dVec on link "<< lptr->id <<endl;
-			packet pSend(0, 0, this, this);
+			cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating new dVec on link : "<< lptr->id <<endl;
+			packet pSend(0,  (int)packetVector.size(), this, this);
 			pSend.isRIP = true;
-			cout<<"\n\n\nsource ip is: "<<p->src->ip<<"\n\n\n"<<endl;
-			pSend.dv = *(rt.getDv(lVector[i].ip));
+			//cout<<"\n\n\nsource ip is: "<<p->src->ip<<"\n\n\n"<<endl;
+			pSend.dv = *(rt.getDv(ip_except));
+			pSend.dv.print();
 			packetVector.push_back(pSend);
 			pushPacket((int)packetVector.size() - 1,lptr);	
 		}
@@ -186,21 +190,21 @@ void router::b_CTS_hosts(){
 
 void router::recRIP(packet* p){
 	cout<<"packet is a RIP"<<endl;
-			cout<<"its dv is"<<endl;
-			//p->dv.print();
+			//cout<<"its dv is"<<endl;
+			p->dv.print();
 			cin.ignore();
 			int n = rt.update(&(p->dv));
 			if((n==1)||(n==2)){
-				cout<<"forwarding dv change"<<endl;
-				p_dVec(p);	
+				//cout<<"forwarding dv change"<<endl;
+				p_dVec(p->src->ip);	
 			}
 			//send out OUR changed dv (by bellman ford).
 			if(n==2){
-				cout<<"broadcasting MY change"<<endl;
+				//cout<<"broadcasting MY change"<<endl;
 				b_dVec();
 			}
 			if((n==1)||(n==2)){
-				//rt.print();
+				rt.print();
 			}
 }
 
@@ -216,6 +220,9 @@ void router::recCTS(packet* p){
 void router::receivePacket(link* link_ptr) {
 	cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" has recieved packet:"<<endl;
 	packet* p = &packetVector[link_ptr->pnum];
+	//cout<<"packet recieved info: "<<endl;
+	//cout<<"pnum: "<<p->num<<endl;
+	//cout<<"pnum: "<<link_ptr->pnum<<endl;
 	int tnum = link_ptr->pnum;
 	link_ptr->pnum = -1;
 	if(STATE==0){ //Links Unknown
@@ -238,19 +245,22 @@ void router::receivePacket(link* link_ptr) {
 					cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" nonEmpty RIPbuf:"<<endl;
 				
 					int k=0;
+					//int ipRet=-1;
 					while(!RIPbuf.empty()){
-						int n = rt.update(&RIPbuf.front());
+						//cout<<"front is: "<<RIPbuf.front()<<endl;
+						packet* pp = &packetVector[RIPbuf.front()];
+						//cout<<"pnum is: "<< pp->num <<endl;
+						int n = rt.update(&pp->dv);
 						//cout<<"inform "<<n<<endl;
 						//get ip from RIPbuf
-						int ipRet = RIPbuf.front().ip;
 						RIPbuf.pop();
 						if (n>k){
 							k = n;
 						}
+						b_dVec();
 					}
 					//cin.ignore();
-					//send out the new dv info, not to sender.
-					b_dVec();
+					rt.print();
 				}		
 				STATE=1;
 				if(rt.isComplete()){
@@ -262,7 +272,6 @@ void router::receivePacket(link* link_ptr) {
 					b_dVec();
 					cout<<this->name<<"STATE: "<<STATE<<endl;
 					b_CTS_routers();
-					
 				}
 				if(!routersConnected){
 					cout<<"no routers connected!"<<endl;
@@ -277,17 +286,13 @@ void router::receivePacket(link* link_ptr) {
 			}
 		}
 		else if (p->isRIP){
-			cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" has recieved DVEC packet:"<<endl;
+			cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" is buffering DVEC packet:"<<endl;
 			p->dv.print();
-			RIPbuf.push(p->dv);
+			RIPbuf.push(p->num);
 		}
 		else if(p->isCTS){
 			cout<<"packet is CTS"<<endl;
-			for(int i=0;i<(int)lVector.size();i++){
-				if((lVector[i].type == 1)&&(lVector[i].ip == p->src->ip)){
-					lVector[i].isCTS = true;
-				}
-			}
+			recCTS(p);
 		}
 	}
 	else if(STATE==1){ //building routing table
@@ -312,12 +317,10 @@ void router::receivePacket(link* link_ptr) {
 			b_dVec();
 			cout<<this->name<<"STATE: "<<STATE<<endl;
 			b_CTS_routers();
-			
-
 		}
 	}
 	else if(STATE==2){ //routing table complete, waiting on CTS from other routers!
-		//cout<<"blerla;jskdfja;lksdjf;laksjdf"<<endl;
+		cout<<this->name<<" state=2"<<endl;
 		if(p->isRIP){
 			recRIP(p);
 		}
@@ -471,5 +474,5 @@ void router::rtInit(){
 	dVec dv;
 	cout<<"creating routing table "<<endl;
 	rt.update(genDv(dv));
-	//rt.print();
+	rt.print();
 }

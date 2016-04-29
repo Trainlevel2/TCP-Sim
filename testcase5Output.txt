@@ -1,0 +1,270 @@
+Welcome to the Network Simulator!
+HOST: H1
+HOST: H2
+ROUTER: R1
+ROUTER: R2
+ROUTER: R3
+LINK: L1 FROM H1 TO R1, PARAMETER 10
+adding link to router
+LINK: L2 FROM R2 TO R1, PARAMETER 10
+adding link to router
+adding link to router
+LINK: L3 FROM R2 TO R3, PARAMETER 10
+adding link to router
+adding link to router
+LINK: L4 FROM R3 TO H2, PARAMETER 10
+adding link to router
+FLOW: F1 FROM H1 TO H2, PARAMETER 20 1
+
+
+FLOW: 0 START
+FLOW: 0SENDING PACKET FROM H1 TO H2, SIZE 10
+H1 STATE: 0 : SENT CR0
+
+
+T-Propagating packet    Link: 0 Packet: 0
+R1 STATE: 0 : has recieved packet:
+R1 STATE: 0 : responding to: CR0
+
+R1 STATE: 0 : sending: CR1 on link 0
+R1 STATE: 0 : sending: CR0 on link 1
+T-Propagating packet    Link: 0 Packet: 0
+H1 STATE: 1 : RECEIVED CR1, WAITING ON CTS
+T-Propagating packet    Link: 1 Packet: 0
+R2 STATE: 0 : has recieved packet:
+R2 STATE: 0 : responding to: CR0
+
+R2 STATE: 0 : sending: CR1 on link 1
+R2 STATE: 0 : sending: CR0 on link 2
+T-Propagating packet    Link: 1 Packet: 0
+R1 STATE: 0 : has recieved packet:
+R1 STATE: 0 : responding to: CR1
+R1 STATE: 1 : has completed discovery:
+R1 STATE: 1 : initial routing table:
+creating routing table
+
+R1 STATE: 1 : empty RIPbuf:
+R1 STATE: 1 : propagating new dVec on link: 1
+
+R1 ROUTING TABLE
+1000 :{1000,0}{1001,1}
+ hosts: 0,
+1001 :{1000,2147483647}{1001,0}
+ hosts:
+
+1000 :{1000,0}{1001,1}
+ hosts: 0,
+T-Propagating packet    Link: 1 Packet: 0
+R2 STATE: 0 : has recieved packet:
+R2 STATE: 0 : has recieved DVEC packet:
+1000 :{1000,0}{1001,1}
+ hosts: 0,
+T-Propagating packet    Link: 2 Packet: 0
+R3 STATE: 0 : has recieved packet:
+R3 STATE: 0 : responding to: CR0
+
+R3 STATE: 0 : sending: CR1 on link 2
+R3 STATE: 0 : sending: CR0 on link 3
+T-Propagating packet    Link: 2 Packet: 0
+R2 STATE: 0 : has recieved packet:
+R2 STATE: 0 : responding to: CR1
+R2 STATE: 1 : has completed discovery:
+R2 STATE: 1 : initial routing table:
+creating routing table
+
+R2 STATE: 1 : nonEmpty RIPbuf:
+routers to add found
+R2 STATE: 1 : propagating new dVec on link: 1
+
+R2 ROUTING TABLE
+1001 :{1001,0}{1000,1}{1002,1}
+ hosts:
+1000 :{1001,1}{1000,0}{1002,2}
+ hosts: 0,
+1002 :{1001,2147483647}{1000,2147483647}{1002,0}
+ hosts:
+
+1001 :{1001,0}{1000,1}{1002,1}
+ hosts:
+R2 STATE: 1 : propagating new dVec on link: 2
+
+R2 ROUTING TABLE
+1001 :{1001,0}{1000,1}{1002,1}
+ hosts:
+1000 :{1001,1}{1000,0}{1002,2}
+ hosts: 0,
+1002 :{1001,2147483647}{1000,2147483647}{1002,0}
+ hosts:
+
+1001 :{1001,0}{1000,1}{1002,1}
+ hosts:
+T-Propagating packet    Link: 1 Packet: 0
+R1 STATE: 1 : has recieved packet:
+R1 state=1
+packet is a RIP
+
+routers to add found
+forwarding dv change
+T-Propagating packet    Link: 2 Packet: 0
+R3 STATE: 0 : has recieved packet:
+R3 STATE: 0 : has recieved DVEC packet:
+1001 :{1001,0}{1000,1}{1002,1}
+ hosts:
+T-Propagating packet    Link: 3 Packet: 0
+H2 STATE: 0 : RECEIVED CR0
+
+T-Propagating packet    Link: 3 Packet: 0
+R3 STATE: 0 : has recieved packet:
+R3 STATE: 0 : responding to: CR1
+R3 STATE: 1 : has completed discovery:
+R3 STATE: 1 : initial routing table:
+creating routing table
+
+R3 STATE: 1 : nonEmpty RIPbuf:
+routers to add found
+R3 STATE: 1 : propagating new dVec on link: 2
+
+R3 ROUTING TABLE
+1002 :{1002,0}{1001,1}{1000,2147483647}
+ hosts: 1,
+1001 :{1002,1}{1001,0}{1000,1}
+ hosts:
+1000 :{1002,2147483647}{1001,2147483647}{1000,0}
+ hosts:
+
+1002 :{1002,0}{1001,1}{1000,2147483647}
+ hosts: 1,
+T-Propagating packet    Link: 2 Packet: 0
+R2 STATE: 1 : has recieved packet:
+R2 state=1
+packet is a RIP
+
+routers to add found
+forwarding dv change
+R2 STATE: 1 : propagating new dVec on link 1
+broadcasting MY change
+R2 STATE: 1 : propagating new dVec on link: 1
+
+R2 ROUTING TABLE
+1001 :{1001,0}{1000,1}{1002,1}
+ hosts:
+1000 :{1001,1}{1000,0}{1002,2}
+ hosts: 0,
+1002 :{1001,1}{1000,2}{1002,0}
+ hosts: 1,
+
+1001 :{1001,0}{1000,1}{1002,1}
+ hosts:
+R2 STATE: 1 : propagating new dVec on link: 2
+
+R2 ROUTING TABLE
+1001 :{1001,0}{1000,1}{1002,1}
+ hosts:
+1000 :{1001,1}{1000,0}{1002,2}
+ hosts: 0,
+1002 :{1001,1}{1000,2}{1002,0}
+ hosts: 1,
+
+1001 :{1001,0}{1000,1}{1002,1}
+ hosts:
+R2 STATE: 2 : routing table is complete:
+final routing table:
+
+R2 ROUTING TABLE
+1001 :{1001,0}{1000,1}{1002,1}
+ hosts:
+1000 :{1001,1}{1000,0}{1002,2}
+ hosts: 0,
+1002 :{1001,1}{1000,2}{1002,0}
+ hosts: 1,
+
+R2 STATE: 2 : propagating new dVec on link: 1
+
+R2 ROUTING TABLE
+1001 :{1001,0}{1000,1}{1002,1}
+ hosts:
+1000 :{1001,1}{1000,0}{1002,2}
+ hosts: 0,
+1002 :{1001,1}{1000,2}{1002,0}
+ hosts: 1,
+
+1001 :{1001,0}{1000,1}{1002,1}
+ hosts:
+R2 STATE: 2 : propagating new dVec on link: 2
+
+R2 ROUTING TABLE
+1001 :{1001,0}{1000,1}{1002,1}
+ hosts:
+1000 :{1001,1}{1000,0}{1002,2}
+ hosts: 0,
+1002 :{1001,1}{1000,2}{1002,0}
+ hosts: 1,
+
+1001 :{1001,0}{1000,1}{1002,1}
+ hosts:
+R2STATE: 2
+R2 STATE: 2 : is almost ready to send! broadcasting CTS to routers on L1  on L2
+T-Propagating packet    Link: 1 Packet: 0
+R1 STATE: 1 : has recieved packet:
+R1 state=1
+packet is a RIP
+
+routers to add found
+forwarding dv change
+T-Propagating packet    Link: 1 Packet: 0
+R1 STATE: 1 : has recieved packet:
+R1 state=1
+packet is a RIP
+
+routers to add found
+forwarding dv change
+T-Propagating packet    Link: 1 Packet: 0
+R1 STATE: 1 : has recieved packet:
+R1 state=1
+packet is a RIP
+
+routers to add found
+forwarding dv change
+T-Propagating packet    Link: 1 Packet: 0
+R1 STATE: 1 : has recieved packet:
+R1 state=1
+packet is CTS
+T-Propagating packet    Link: 2 Packet: 0
+R3 STATE: 1 : has recieved packet:
+R3 state=1
+packet is a RIP
+
+routers to add found
+forwarding dv change
+T-Propagating packet    Link: 2 Packet: 0
+R3 STATE: 1 : has recieved packet:
+R3 state=1
+packet is a RIP
+
+routers to add found
+forwarding dv change
+T-Propagating packet    Link: 2 Packet: 0
+R3 STATE: 1 : has recieved packet:
+R3 state=1
+packet is CTS
+FLOW: 0 TIMED OUT
+FLOW: 0SENDING PACKET FROM H1 TO H2, SIZE 1
+
+FLOW: 0 TIMED OUT
+FLOW: 0SENDING PACKET FROM H1 TO H2, SIZE 1
+
+FLOW: 0 TIMED OUT
+FLOW: 0SENDING PACKET FROM H1 TO H2, SIZE 1
+
+FLOW: 0 TIMED OUT
+FLOW: 0SENDING PACKET FROM H1 TO H2, SIZE 1
+
+FLOW: 0 TIMED OUT
+FLOW: 0SENDING PACKET FROM H1 TO H2, SIZE 1
+
+FLOW: 0 TIMED OUT
+FLOW: 0SENDING PACKET FROM H1 TO H2, SIZE 1
+
+FLOW: 0 TIMED OUT
+FLOW: 0SENDING PACKET FROM H1 TO H2, SIZE 1
+
