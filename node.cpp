@@ -23,9 +23,7 @@ node::node(string name, int ip){
 //general packet transmission function
 //pushes to the queue of the link
 void node::pushPacket(int pnum,link* link_ptr) {
-	link_ptr->qn.push(this);
-	link_ptr->qp.push(pnum);
-	link_ptr->propagate();
+	link_ptr->prepPropagate(this, pnum);
 }
 
 

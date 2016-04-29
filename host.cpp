@@ -42,16 +42,12 @@ void host::pushPacket(int pnum,link* link_ptr) {
 		if(this->STATE == 0){
 			this->init();
 		}else if(this->STATE ==2){
-			link_ptr->qn.push(this);
-			link_ptr->qp.push(pnum);
-			link_ptr->propagate();
+			link_ptr->prepPropagate(this, pnum);
 		}
 	}else{
-		link_ptr->qn.push(this);
-		link_ptr->qp.push(pnum);
-		link_ptr->propagate();
+		link_ptr->prepPropagate(this, pnum);
 	}
-	cin.ignore();
+	//cin.ignore();
 }
 
 void host::init(){

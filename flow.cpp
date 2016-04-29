@@ -56,7 +56,7 @@ void flow::searchMax(int size) {
 	ss.str("");
 	ss << packetnum;
 	pevent += "_TIMEOUT_" + ss.str();
-	pushEvent(pevent, P_TIMEOUT);
+	pushEvent(pevent, RTT);
 }
 
 void flow::receiveAck(int pnum) {

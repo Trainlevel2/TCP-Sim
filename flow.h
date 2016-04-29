@@ -36,7 +36,8 @@ class flow {
 		int getCwnd();
 		void timeoutAck(int pnum);
 	private:
-		const int P_TIMEOUT = 10000;
+		double RTT = 10000;
+		const double alpha = 0.5;
 		int packetnum = 0;
 		void searchMax(int size);
 		

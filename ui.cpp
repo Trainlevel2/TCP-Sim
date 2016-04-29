@@ -19,8 +19,6 @@ void popEvent();
 std::priority_queue<string, vector<string>, std::greater<string> > q;
 int t = 0;
 
-
-
 string eventlog = "";
 vector<link> linkVector;
 vector<flow> flowVector;
@@ -97,7 +95,7 @@ void createRouter(string routerName){
 // Add a link from a given host/router to a new Router
 void createLink(string linkName, string nodeA, string nodeB, int a, int b, int c){
 	//implement later
-	cout << "LINK: " << linkName << " FROM " << nodeA << " TO " << nodeB << ", PARAMETER " << a << endl;
+	cout << "LINK: " << linkName << " FROM " << nodeA << " TO " << nodeB << ", PARAMETERS " << a << "," << b << "," << c << endl;
 	node* nA;
 	nA = findHost(nodeA);
 	if (!nA)
@@ -108,6 +106,7 @@ void createLink(string linkName, string nodeA, string nodeB, int a, int b, int c
 		nB = findRouter(nodeB);
 
 	link l(a, (int)linkVector.size(), nA, nB);
+	l.bufferSize = c;
 	linkVector.push_back(l);
 	nA->addLink(l.id);
 	nB->addLink(l.id);
@@ -313,6 +312,43 @@ void popTimeout(int timeoutIndex){
 	}
 }
 
+void outputGuap() {
+		//cout << bufferLog << endl;
+	//cout << packetLossLog << endl;
+	//cout << flowRateLog << endl;
+	//cout << cwndLog << endl;
+	//cout << packetDelayLog << endl;
+	ofstream guapFile1;
+	guapFile1.open("BufferGuap.txt");
+	guapFile1 << bufferLog;
+	guapFile1.close();
+
+	ofstream guapFile2;
+	guapFile2.open("packetLossGuap.txt");
+	guapFile2 << packetLossLog;
+	guapFile2.close();
+
+	ofstream guapFile3;
+	guapFile3.open("flowRateGuap.txt");
+	guapFile3 << flowRateLog;
+	guapFile3.close();
+
+	ofstream guapFile4;
+	guapFile4.open("cwndGuap.txt");
+	guapFile4 << cwndLog;
+	guapFile4.close();
+
+	ofstream guapFile5;
+	guapFile5.open("packetDelayGuap.txt");
+	guapFile5 << packetDelayLog;
+	guapFile5.close();
+
+	ofstream guapFile6;
+	guapFile6.open("eventGuap.txt");
+	guapFile6 << eventlog;
+	guapFile6.close();
+}
+
 int main(int argc, char *argv[])
 {
 	cout<<"Welcome to the Network Simulator!"<<endl;
@@ -324,7 +360,7 @@ int main(int argc, char *argv[])
 	if(WINDOWS){
 		file = ".\\TestCases\\testcase0.txt";	
 	}else{
-		file = "./TestCases/testcase1.txt";	
+		file = "./TestCases/testcase3.txt";	
 	}
 	read.open(file.c_str());
 	while(!read.eof())
@@ -393,13 +429,9 @@ for (int i = 0; i < routerVector.size(); i++) {
 	cin.ignore();
 	SimulateNetwork();
 	cout << linkRateLog <<endl;
-	//cout << bufferLog << endl;
-	//cout << packetLossLog << endl;
-	//cout << flowRateLog << endl;
-	//cout << cwndLog << endl;
-	//cout << packetDelayLog << endl;
 	//cin.ignore();
 	//printNetwork();
+	outputGuap();
 	cin.ignore();
 	return 0;
 }

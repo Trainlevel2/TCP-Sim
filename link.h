@@ -35,7 +35,7 @@ class link {
 		//packet* popPacket();
 		string toString();
 		int id;
-
+		int bufferSize;
 		int cost; //will start out as 1, fixed
 
 
@@ -49,6 +49,7 @@ class link {
 		void propagate();
 		void forcepropagate();
 		void tpropagate();
+		void prepPropagate(node* n, int pnum);
 		int pnum; //CURRENT packet being transmitted on the link
 		node* src = nullptr;
 		node* dest = nullptr;

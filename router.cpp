@@ -98,7 +98,7 @@ void router::crResp(link* link_ptr,packet* p){
 		//update lVector
 		lVectorUpdate(link_ptr,p);
 		//printLinks();
-		cin.ignore();
+		//cin.ignore();
 		for(int i=0;i<(int)lVector.size();i++){
 			if(lVector[i].type != 2){
 				link* lptr = &linkVector[lVector[i].link_id];
@@ -196,7 +196,7 @@ void router::recRIP(packet* p){
 	cout<<"packet is a RIP"<<endl;
 			//cout<<"its dv is"<<endl;
 			p->dv.print();
-			cin.ignore();
+			//cin.ignore();
 			int n = rt.update(&(p->dv));
 			if((n==1)||(n==2)){
 				//cout<<"forwarding dv change"<<endl;
@@ -238,7 +238,7 @@ void router::receivePacket(link* link_ptr) {
 				STATE=1;
 				cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" initial routing table:"<<endl;
 				rtInit();
-				cin.ignore();
+				//cin.ignore();
 				if(RIPbuf.empty()){	
 					cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" empty RIPbuf:"<<endl;
 					//inform(1,this->ip,link_ptr);
@@ -285,6 +285,7 @@ void router::receivePacket(link* link_ptr) {
 						rt.print();
 						STATE=2;
 						b_CTS_hosts();
+						this->isCTS = true;
 					}
 				}
 			}
