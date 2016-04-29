@@ -1,0 +1,128 @@
+Welcome to the Network Simulator!
+HOST: H1
+HOST: H2
+ROUTER: R1
+ROUTER: R2
+LINK: L1 FROM H1 TO R1, PARAMETER 10
+adding link to router
+LINK: L2 FROM R2 TO R1, PARAMETER 10
+adding link to router
+adding link to router
+LINK: L3 FROM R2 TO H2, PARAMETER 10
+adding link to router
+FLOW: F1 FROM H1 TO H2, PARAMETER 20 1
+
+
+FLOW: 0 START
+FLOW: 0SENDING PACKET FROM H1 TO H2, SIZE 10
+H1 STATE: 0 : SENT CR0
+T-Propagating packet    Link: 0 Packet: 0
+R1 STATE: 0 : has recieved packet:
+R1 STATE: 0 : responding to: CR0
+R1 STATE: 0 : lvector:
+{link_id, type, ip}
+{-1,2,1000},
+{0,0,0},
+{1,-1,-1},
+
+R1 STATE: 0 : lvector:
+{link_id, type, ip}
+{-1,2,1000},
+{0,0,0},
+{1,-1,-1},
+T-Propagating packet    Link: 0 Packet: 0
+H1 STATE: 1 : RECEIVED CR1, WAITING ON CTS
+T-Propagating packet    Link: 1 Packet: 0
+R2 STATE: 0 : has recieved packet:
+R2 STATE: 0 : responding to: CR0
+router connected!
+R2 STATE: 0 : lvector:
+{link_id, type, ip}
+{-1,2,1001},
+{1,1,1000},
+{2,-1,-1},
+
+R2 STATE: 0 : lvector:
+{link_id, type, ip}
+{-1,2,1001},
+{1,1,1000},
+{2,-1,-1},
+T-Propagating packet    Link: 1 Packet: 0
+R1 STATE: 0 : has recieved packet:
+R1 STATE: 0 : responding to: CR1
+router connected!
+R1 STATE: 1 : lvector:
+{link_id, type, ip}
+{-1,2,1000},
+{0,0,0},
+{1,1,1001},
+R1 STATE: 1 : has completed discovery:
+R1 STATE: 1 : lvector:
+{link_id, type, ip}
+{-1,2,1000},
+{0,0,0},
+{1,1,1001},
+
+R1 STATE: 1 : initial routing table:
+creating routing table
+input dv size: 2
+
+R1 ROUTING TABLE
+1000 :{1000,0}{1001,1}
+ hosts: 0,
+
+
+R1 STATE: 1 : empty RIPbuf:
+R1 STATE: 1 : informing 1
+T-Propagating packet    Link: 2 Packet: 0
+H2 STATE: 0 : RECEIVED CR0
+T-Propagating packet    Link: 2 Packet: 0
+R2 STATE: 0 : has recieved packet:
+R2 STATE: 0 : responding to: CR1
+R2 STATE: 1 : lvector:
+{link_id, type, ip}
+{-1,2,1001},
+{1,1,1000},
+{2,0,1},
+R2 STATE: 1 : has completed discovery:
+R2 STATE: 1 : lvector:
+{link_id, type, ip}
+{-1,2,1001},
+{1,1,1000},
+{2,0,1},
+
+R2 STATE: 1 : initial routing table:
+creating routing table
+input dv size: 2
+
+R2 ROUTING TABLE
+1001 :{1001,0}{1000,1}
+ hosts: 1,
+
+
+R2 STATE: 1 : empty RIPbuf:
+R2 STATE: 1 : informing 1
+R2 STATE: 1 : propagating new dVec
+T-Propagating packet    Link: 2 Packet: 0
+FLOW: 0 TIMED OUT
+
+FLOW: 0SENDING PACKET FROM H1 TO H2, SIZE 1
+H1 not in zero-state, can't initize
+FLOW: 0 TIMED OUT
+
+FLOW: 0SENDING PACKET FROM H1 TO H2, SIZE 1
+H1 not in zero-state, can't initize
+FLOW: 0 TIMED OUT
+
+FLOW: 0SENDING PACKET FROM H1 TO H2, SIZE 1
+H1 not in zero-state, can't initize
+FLOW: 0 TIMED OUT
+
+FLOW: 0SENDING PACKET FROM H1 TO H2, SIZE 1
+H1 not in zero-state, can't initize
+FLOW: 0 TIMED OUT
+
+FLOW: 0SENDING PACKET FROM H1 TO H2, SIZE 1
+H1 not in zero-state, can't initize
+FLOW: 0 TIMED OUT
+
