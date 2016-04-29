@@ -272,6 +272,7 @@ int rtable::update(dVec* dv){
 				}
 			}
 			else if(!tB.empty()){
+				bcast=2;
 				cout<<"need to Broadcast knowledge of routers"<<endl;
 				
 			}
@@ -304,6 +305,7 @@ int rtable::update(dVec* dv){
 		if(mdv->h.empty()){
 			for(int i=0;i<dv->h.size();i++){
 				mdv->h.push_back(dv->h[i]);	
+				bcast = 2;
 			}
 			cout<<"HOSTS ADDED"<<endl;
 			print();
@@ -322,14 +324,19 @@ int rtable::update(dVec* dv){
 						for(int j=0;j<(int)dv->h.size();j++){
 							if(dv->h[j]==tA2[i]){
 								addHost(dv->ip,dv->h[j]);
+								bcast=2;
 							}
 						}
 					}
 				}
 				if (!tB2.empty()){
+					bcast=2;
 					cout<<"need to broadcast knowledge of hosts"<<endl;
 				}
-				bcast=1;
+				if(bcast!=2){
+					bcast=1;	
+				}
+				
 			}
 		
 		}
