@@ -13,8 +13,8 @@ using namespace std;
 #include <cstdlib>
 #include <queue>
 #include <new>
-#include <limits>
-#define INF std::numeric_limits<int>::max()
+#include <climits>
+#define INF INT_MAX
 extern vector<link> linkVector;
 extern vector<packet> packetVector;
 extern vector<router> routerVector;
@@ -121,7 +121,7 @@ void router::crResp(link* link_ptr,packet* p){
 
 
 void router::b_dVec(){
-	for(int i=0;i<(int)lVector.size();i++){
+	for(int i=1;i<(int)lVector.size();i++){
 		link* lptr = &linkVector[lVector[i].link_id];
 		if (lVector[i].type == 1){
 			cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" broadcasting new dVec on link: "<< lptr->id <<endl;
@@ -138,14 +138,14 @@ void router::b_dVec(){
 
 void router::p_dVec(int ip_except){
 	cout<<"ip_except: "<<ip_except<<endl;
-	link* link_ptr;
+	link* link_ptr = nullptr;
 	for(int i=0;i<(int)lVector.size();i++){
 		if( lVector[i].ip  == ip_except){
 			link_ptr = &linkVector[lVector[i].link_id];
 		}
 	}
 	//there's no neighbor!!!!!!!!!!!!!!!
-	for(int i=0;i<(int)lVector.size();i++){
+	for(int i=1;i<(int)lVector.size();i++){
 		link* lptr = &linkVector[lVector[i].link_id];
 		if ((lVector[i].type == 1)&&(lptr->id != link_ptr->id)){
 			cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating new dVec on link : "<< lptr->id <<endl;
