@@ -1,18 +1,20 @@
 //logs for graphing
-//THIS WILL NOT WORK! CODE NEEDS TO BE ADDED INTO UI.CPP
+//CODE NEEDS TO BE ADDED INTO UI.CPP!
 //OR WE COULD MAKE EVERYTHING IN UI.CPP GLOBAL AND DO THIS IN A SEPARATE CLASS B/C UI.CPP IS GETTING SO BLOATED WITH CODE
+
+//link/flow indices are in many of these logs because excel can just sort by that variable so that they're separated. And after that graph time vs. the other variable.
 
 //LOGGING LINK RATE AND FLOW RATE
 //INITIALIZATION FOR LOGS
 //periodic
-string bufferLog = "bufferLog \ntime(s), link index, buffer occupancy";
-string cwndLog = "cwndLog \ntime(s) , flow index, cwnd";
+string bufferLog = "bufferLog \nlink index, time(s), buffer occupancy";
+string cwndLog = "cwndLog \nflow index, time(s) , cwnd";
 
 //event driven
-string packetLossLog = "packetLossLog \ntime(s), flow index"; //TODO: Can we figure out how many packets were lost?
-string flowRateLog = "flowRateLog \ntime(s), flow rate(dataSize/ms)";
-string linkRateLog = "linkRateLog \ntime(s), link rate (dataSize/ms)";
-string packetDelayLog = "packetDelayLog \ntime(s), flow index, packetDelay(ms)";
+string packetLossLog = "packetLossLog \nflow index, time(s), packets lost"; //TODO: Can we figure out how many packets were lost?
+string flowRateLog = "flowRateLog \nflow index, time(s), flow rate(dataSize/ms)";
+string linkRateLog = "linkRateLog \nlink index, time(s), link rate (dataSize/ms)";
+string packetDelayLog = "packetDelayLog \nflow index, time(s), packetDelay(ms)";
 
 
 //EXTRA INITIALIZATION FOR LOG CALCULATIONS
@@ -59,29 +61,27 @@ POPEVENT(){
 		//PACKETLOSSLOG
 		//example event -> FLOW_0_TIMEOUT_5
 		if(event.find("TIMEOUT") > 0){
-			packetLossLog += "\n" + t/1000 + "," + flowIndex + "," + amtPacketsLost; //TODO: Extract the flowIndex from the event so that the .csv will be easier to parse
+			packetLossLog += "\n" + flowIndex + "," + t/1000 + "," + amtPacketsLost; //TODO: Extract the flowIndex from the event so that the .csv will be easier to parse
 			//TODO: get amtPacketsLost how?
 		}
 		
 		//PACKETDELAYLOG
 		//TODO: create packet sent event for packets sent across a flow for this and flowRateLog
 		else if(event.find("TRANSMIT_PACKET" > 0){ //TODO: check syntax after FLOW_2_TRANSMIT_PACKET event exists/works
-			packetDelaylog += "\n" + t/1000 + "," + flowIndex + "," + (endTime-startTime);
-		}
-		
+			packetDelaylog += "\n" + flowIndex +  "," + t/1000  + "," + (endTime-startTime);
+		}	
 	}
-
 	
 	//PERIODICALLY COLLECT:
 	if(event.find("DATA_ACQUISITION")>0){ //TODO: create data acquisition events that spawn other data acquisition events
 		//BUFFER SIZE
 		for(int i = 0; i < (int)linkVector.size(); i++){
-			//bufferLog += "\n" + t/1000 + "," + i + "," + linkVector[i].getBufferSize();
+			//bufferLog += "\n" + i + "," + t / 1000 + "," + linkVector[i].getBufferSize();
 			stringstream ss;
-			ss << t / 1000;
+			ss << i;
 			bufferLog += "\n" + ss.str();
 			ss.str("");
-			ss << i;
+			ss << t / 1000;
 			bufferLog += "," + ss.str();
 			ss.str("");
 			ss << linkVector[i].getBufferSize();
@@ -89,12 +89,12 @@ POPEVENT(){
 		}
 		//CWND
 		for(int i = 0; i < (int)flowVector.size(); i++){
-			//cwndLog += "\n" + t/1000 + "," + i + "," + flowVector[i].getCwnd();
+			//cwndLog += "\n" + i + "," + t / 1000 + "," + flowVector[i].getCwnd();
 			stringstream ss;
-			ss << t / 1000;
+			ss << i;
 			cwndLog += "\n" + ss.str();
 			ss.str("");
-			ss << i;
+			ss << t / 1000;
 			cwndLog += "," + ss.str();
 			ss.str("");
 			ss << flowVector[i].getCwnd();
@@ -102,18 +102,19 @@ POPEVENT(){
 		}
 	}
 }
+
+//AFTER POPEVENT:
 //POST-PROCESSING LINK/FLOW RATES TO .CSV
 for(int i = 0; i < flowRateVector.size(); i++){
-	flowRateLog += "\nFlow " + i;
 	for(int j = 0; j < flowRateVector.at(0).size(); j++){
-		flowRateLog += "\n" + (j*dt/1000) + "," + flowRateVector.at(i,j);
+		flowRateLog += "\n" + i + "," + (j*dt/1000) + "," + flowRateVector.at(i,j);
 	}
 }
 
 for(int i = 0; i < linkRateVector.size(); i++){
 	linkRateLog += "\nFlow " + i;
 	for(int j = 0; j < linkRateVector.at(0).size(); j++){
-		linkRateLog += "\n" + (j*dt/1000) + "," + linkRateVector.at(i,j);
+		linkRateLog += "\n" + i + ","+ (j*dt/1000) + "," + linkRateVector.at(i,j);
 	}
 }
 
