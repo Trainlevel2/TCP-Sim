@@ -25,6 +25,8 @@ R1 STATE: 0 : lvector:
 {0,0,0},
 {1,-1,-1},
 
+R1 STATE: 0 : sending: CR1 on link 0
+R1 STATE: 0 : sending: CR0 on link 1
 R1 STATE: 0 : lvector:
 {link_id, type, ip}
 {-1,2,1000},
@@ -42,6 +44,8 @@ R2 STATE: 0 : lvector:
 {1,1,1000},
 {2,-1,-1},
 
+R2 STATE: 0 : sending: CR1 on link 1
+R2 STATE: 0 : sending: CR0 on link 2
 R2 STATE: 0 : lvector:
 {link_id, type, ip}
 {-1,2,1001},
@@ -65,15 +69,31 @@ R1 STATE: 1 : lvector:
 
 R1 STATE: 1 : initial routing table:
 creating routing table
+
+
 input dv size: 2
+R1adding Cost 0 from 1000 to 1000
+does not contain 1000
+ADDING THE FIRST IP 1000
+1000 to 1000 cost update: 0
+R1adding Cost 1 from 1000 to 1001
+does not contain 1001
+1000 to 1001 cost update: 1
 
 R1 ROUTING TABLE
 1000 :{1000,0}{1001,1}
  hosts: 0,
+1001 :{1000,2147483647}{1001,0}
+ hosts:
 
 
 R1 STATE: 1 : empty RIPbuf:
-R1 STATE: 1 : informing 1
+R1 STATE: 1 : propagating new dVec on link 1
+T-Propagating packet    Link: 1 Packet: 0
+R2 STATE: 0 : has recieved packet:
+R2 STATE: 0 : has recieved DVEC packet:
+1000 :{1000,0}{1001,1}
+ hosts: 0,
 T-Propagating packet    Link: 2 Packet: 0
 H2 STATE: 0 : RECEIVED CR0
 T-Propagating packet    Link: 2 Packet: 0
@@ -93,36 +113,70 @@ R2 STATE: 1 : lvector:
 
 R2 STATE: 1 : initial routing table:
 creating routing table
+
+
 input dv size: 2
+R2adding Cost 0 from 1001 to 1001
+does not contain 1001
+ADDING THE FIRST IP 1001
+1001 to 1001 cost update: 0
+R2adding Cost 1 from 1001 to 1000
+does not contain 1000
+1001 to 1000 cost update: 1
 
 R2 ROUTING TABLE
 1001 :{1001,0}{1000,1}
  hosts: 1,
+1000 :{1001,2147483647}{1000,0}
+ hosts:
 
 
-R2 STATE: 1 : empty RIPbuf:
-R2 STATE: 1 : informing 1
-R2 STATE: 1 : propagating new dVec
-T-Propagating packet    Link: 2 Packet: 0
-FLOW: 0 TIMED OUT
+R2 STATE: 1 : nonEmpty RIPbuf:
 
-FLOW: 0SENDING PACKET FROM H1 TO H2, SIZE 1
-H1 not in zero-state, can't initize
-FLOW: 0 TIMED OUT
 
-FLOW: 0SENDING PACKET FROM H1 TO H2, SIZE 1
-H1 not in zero-state, can't initize
-FLOW: 0 TIMED OUT
+input dv size: 2
+INITIAL NONEMPTY
 
-FLOW: 0SENDING PACKET FROM H1 TO H2, SIZE 1
-H1 not in zero-state, can't initize
-FLOW: 0 TIMED OUT
+R2 ROUTING TABLE
+1001 :{1001,0}{1000,1}
+ hosts: 1,
+1000 :{1001,2147483647}{1000,0}
+ hosts:
 
-FLOW: 0SENDING PACKET FROM H1 TO H2, SIZE 1
-H1 not in zero-state, can't initize
-FLOW: 0 TIMED OUT
+routers to add found
+R2adding Cost 0 from 1000 to 1000
+1000 to 1000 cost update: 0
+R2adding Cost 1 from 1000 to 1001
+1000 to 1001 cost update: 1
+new router ip's not found
+R2 getting cost from: 1000 to:1000
+R2 getting cost from: 1000 to:1001
+NEW ROUTERS ADDED
 
-FLOW: 0SENDING PACKET FROM H1 TO H2, SIZE 1
-H1 not in zero-state, can't initize
-FLOW: 0 TIMED OUT
+R2 ROUTING TABLE
+1001 :{1001,0}{1000,1}
+ hosts: 1,
+1000 :{1001,1}{1000,0}
+ hosts:
 
+
+INPUT DV
+1000 :{1000,0}{1001,1}
+ hosts: 0,
+
+R2 getting cost from: 1000 to:1001
+R2 getting cost from: 1001 to:1001
+R2 getting cost from: 1000 to:1000
+R2 getting cost from: 1000 to:1001
+R2 getting cost from: 1000 to:1001
+R2 getting cost from: 1000 to:1001
+R2 getting cost from: 1001 to:1000
+R2 getting cost from: 1000 to:1000
+R2 getting cost from: 1000 to:1000
+R2 getting cost from: 1000 to:1000
+
+R2 ROUTING TABLE
+1001 :{1001,0}{1000,1}
+ hosts: 1,
+1000 :{1001,1}{1000,0}
+ hosts: 0,

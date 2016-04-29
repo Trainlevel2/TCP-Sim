@@ -60,6 +60,7 @@ void router::printLinks(){
 }
 
 //don't inform on dVec to the router which sent it to you!!
+/*
 void router::inform(int n,int ip,link* link_ptr){
 	cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" informing "<< n <<endl;
 	if((n==1)||(n==2)){ //propagate the new distance vector NOT on the link which we recieved it
@@ -113,6 +114,8 @@ void router::inform(int n,int ip,link* link_ptr){
 	}
 }
 
+
+*/
 
 void router::sendCR(int i,link* link_ptr){
 		packet pSend(0, 0, this, this);
@@ -200,6 +203,7 @@ void router::receivePacket(link* link_ptr) {
 					rt.print();
 					cin.ignore();
 					//send out the new dv info, not to sender.
+
 					if((k==1)||(k==2)){
 						for(int i=0;i<(int)lVector.size();i++){
 							link* lptr = &linkVector[lVector[i].link_id];
@@ -218,7 +222,7 @@ void router::receivePacket(link* link_ptr) {
 						for(int i=0;i<(int)lVector.size();i++){
 							link* lptr = &linkVector[lVector[i].link_id];
 							if (lVector[i].type == 1){
-								cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating new dVec on link "<< lptr->id <<endl;
+								cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating BFORD changed dVec on link "<< lptr->id <<endl;
 								packet pSend(0, 0, this, this);
 								pSend.isRIP = true;
 								pSend.dv = *(rt.getDv(this->ip));
@@ -229,6 +233,36 @@ void router::receivePacket(link* link_ptr) {
 					}
 				}				
 				STATE=1;
+				if(rt.isComplete()){
+					cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" routing table is complete:"<<endl;
+					cout<<"final routing table:"<<endl;
+					rt.print();
+					STATE=2;
+					//inform(3,p->src->ip,link_ptr);
+					//cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating dVec"<<endl;
+					for(int i=0;i<(int)lVector.size();i++){
+						link* lptr = &linkVector[lVector[i].link_id];
+						if ((lVector[i].type == 1)&&(lptr->id != link_ptr->id)){
+							cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating new dVec on link "<< lptr->id <<endl;
+							packet pSend(0, 0, this, this);
+							pSend.isRIP = true;
+							pSend.dv = *(rt.getDv(this->ip));
+							packetVector.push_back(pSend);
+							pushPacket((int)packetVector.size() - 1,link_ptr);	
+						}
+					}
+					cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating CTS"<<endl;
+					for(int i=0;i<(int)lVector.size();i++){
+						
+						if(lVector[i].type==1){
+							link* myLink_ptr = &linkVector[lVector[i].link_id];
+							packet pSend(0, 0, this, this);
+							pSend.isCTS = true;
+							packetVector.push_back(pSend);
+							pushPacket((int)packetVector.size() - 1,myLink_ptr);	
+						}
+					}
+				}
 				//if no routers connected to this router
 				if(!routersConnected){
 					cout<<"no routers connected!"<<endl;
@@ -263,7 +297,13 @@ void router::receivePacket(link* link_ptr) {
 		}
 	}
 	else if(STATE==1){ //building routing table
+		cout<<this->name<<" state=1"<<endl;
+		
 		if(p->isRIP){
+			cout<<"packet is a RIP"<<endl;
+			cout<<"its dv is"<<endl;
+			p->dv.print();
+			cin.ignore();
 			int n = rt.update(&(p->dv));
 			if((n==1)||(n==2)){
 				cout<<"forwarding dv change"<<endl;
@@ -294,6 +334,7 @@ void router::receivePacket(link* link_ptr) {
 					}
 				}
 			}
+
 			//inform(rt.update(&(p->dv)),p->src->ip,link_ptr);
 
 		}
@@ -326,7 +367,7 @@ void router::receivePacket(link* link_ptr) {
 			}
 		}
 	}
-	else if(STATE==2){ //routing table complete
+	else if(STATE==2){ //routing table complete, waiting on CTS from other routers!
 		if(p->isRIP){
 			//inform(rt.update(&(p->dv)),p->src->ip,link_ptr);
 			int n = rt.update(&(p->dv));

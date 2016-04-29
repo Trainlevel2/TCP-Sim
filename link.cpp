@@ -66,6 +66,7 @@ void link::tpropagate() {
 		//cout << "link " << this->id << " force propagate" << endl;
 		forcepropagate();
 	}
+	cin.ignore();
 	return;
 }
 
