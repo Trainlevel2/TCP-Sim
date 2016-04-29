@@ -343,6 +343,7 @@ void router::receivePacket(link* link_ptr) {
 			crResp(link_ptr,p);
 		}
 		else if(p->isCTS){
+			cout<<"packet is CTS"<<endl;
 			for(int i=0;i<(int)lVector.size();i++){
 				if(lVector[i].type == 1){
 					lVector[i].isCTS = true;
