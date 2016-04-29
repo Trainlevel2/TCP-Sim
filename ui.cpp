@@ -324,7 +324,7 @@ int main(int argc, char *argv[])
 	if(WINDOWS){
 		file = ".\\TestCases\\testcase0.txt";	
 	}else{
-		file = "./TestCases/testcase4.txt";	
+		file = "./TestCases/testcase1.txt";	
 	}
 	read.open(file.c_str());
 	while(!read.eof())

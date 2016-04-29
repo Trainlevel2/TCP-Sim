@@ -30,16 +30,18 @@ void link::propagate(){
 	//node* nn = qn.front();
 	//packet* pp = &packetVector[qp.front()];
 	//cout << "Queuing Packet\tLink: " << this->id << "\tPacket: " << pp->num << endl;
-	pnum = qp.front();
-	stringstream ss;
-	ss << this->id;
-	if (qn.front() != src) {
-		node* s = src;
-		src = qn.front();
-		dest = s;
-	}
-	if(qp.size() == 1)
+	if (qp.size() == 1) {
+		pnum = qp.front();
+		stringstream ss;
+		ss << this->id;
+		if (qn.front() != src) {
+			node* s = src;
+			src = qn.front();
+			dest = s;
+		}
+
 		pushEvent("LINK_" + ss.str() + "_TRANSMIT_PACKET", 1000 * packetVector[qp.front()].data / maxThroughput);
+	}
 }
 
 void link::forcepropagate() {
@@ -54,7 +56,7 @@ void link::forcepropagate() {
 		src = qn.front();
 		dest = s;
 	}
-	pushEvent("LINK_" + ss.str() + "_TRANSMIT_PACKET", 1000 * packetVector[qp.front()].data / maxThroughput);
+	pushEvent("LINK_" + ss.str() + "_TRANSMIT_PACKET", 1 + 1000 * packetVector[qp.front()].data / maxThroughput);
 }
 
 void link::tpropagate() {

@@ -102,7 +102,7 @@ void router::crResp(link* link_ptr,packet* p){
 		for(int i=0;i<(int)lVector.size();i++){
 			if(lVector[i].type != 2){
 				link* lptr = &linkVector[lVector[i].link_id];
-				if(lptr != link_ptr){
+				if(lptr != link_ptr && STATE == 0){
 					cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" sending: "<<"CR"<< 0<<" on link "<<lptr->id<<endl;
 					sendCR(0,lptr);
 				}
@@ -114,7 +114,11 @@ void router::crResp(link* link_ptr,packet* p){
 		}
 	}else{
 		lVectorUpdate(link_ptr,p);
-		STATE=1;
+		STATE = 1;
+		for (int i = 0; i < (int)lVector.size(); i++) {
+			if (lVector[i].type == -1)
+				STATE = 0;
+		}
 	}
 	//printLinks();
 }
@@ -136,11 +140,11 @@ void router::b_dVec(){
 
 }
 
-void router::p_dVec(int ip_except){
-	cout<<"ip_except: "<<ip_except<<endl;
+void router::p_dVec(packet* p){
+	cout<<"ip_except: "<<p->src->ip<<endl;
 	link* link_ptr = nullptr;
 	for(int i=0;i<(int)lVector.size();i++){
-		if( lVector[i].ip  == ip_except){
+		if( lVector[i].ip  == p->src->ip){
 			link_ptr = &linkVector[lVector[i].link_id];
 		}
 	}
@@ -152,7 +156,7 @@ void router::p_dVec(int ip_except){
 			packet pSend(0,  (int)packetVector.size(), this, this);
 			pSend.isRIP = true;
 			//cout<<"\n\n\nsource ip is: "<<p->src->ip<<"\n\n\n"<<endl;
-			pSend.dv = *(rt.getDv(ip_except));
+			pSend.dv = *(rt.getDv(p->dv.ip));
 			pSend.dv.print();
 			packetVector.push_back(pSend);
 			pushPacket((int)packetVector.size() - 1,lptr);	
@@ -196,7 +200,7 @@ void router::recRIP(packet* p){
 			int n = rt.update(&(p->dv));
 			if((n==1)||(n==2)){
 				//cout<<"forwarding dv change"<<endl;
-				p_dVec(p->src->ip);	
+				p_dVec(p);	
 			}
 			//send out OUR changed dv (by bellman ford).
 			if(n==2){
@@ -230,7 +234,7 @@ void router::receivePacket(link* link_ptr) {
 			crResp(link_ptr,p);
 			if(discoveryComplete()){
 				cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" has completed discovery:"<<endl;
-				//printLinks();
+				printLinks();
 				STATE=1;
 				cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" initial routing table:"<<endl;
 				rtInit();

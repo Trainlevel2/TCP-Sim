@@ -67,7 +67,6 @@ void b_CTS_hosts();
 void b_CTS_routers();
 void recRIP(packet* p);
 void recCTS(packet* p);
-		void p_dVec(int ip_except);
 		void b_dVec();
 		void p_dVec(packet* p);
 		void lVectorUpdate(link* link_ptr,packet* p);

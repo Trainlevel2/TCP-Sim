@@ -229,8 +229,8 @@ int rtable::update(dVec* dv){
 		//cout<<"INPUT DV"<<endl;
 		//dv->print();
 
-		cout<<"INITIAL NONEMPTY"<<endl;
-		print();
+		//cout<<"INITIAL NONEMPTY"<<endl;
+		//print();
 
 		vector<int> tA; //to Add
 		vector<int> tB; //to Broadcast
@@ -275,6 +275,7 @@ int rtable::update(dVec* dv){
 					}
 				}
 				cout<<endl;
+
 			}
 			else if(!tB.empty()){
 				bcast=2;
@@ -283,7 +284,7 @@ int rtable::update(dVec* dv){
 			bcast=1; //just propagate the thing we received
 		}
 
-/*
+
 		//cout<<"new router ip's not found"<<endl;
 		for(int i=0;i<(int)dv->e.size();i++){
 			//copy right over.
@@ -294,7 +295,7 @@ int rtable::update(dVec* dv){
 				setCost(dv->ip,dv->e[i].ip,dv->e[i].cost);
 			}
 		}
-*/
+
 
 		//cout<<"NEW ROUTERS ADDED"<<endl;
 		//print();
