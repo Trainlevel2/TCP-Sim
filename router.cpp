@@ -63,7 +63,7 @@ void router::printLinks(){
 void router::inform(int n,int ip,link* link_ptr){
 	cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" informing "<< n <<endl;
 	if((n==1)||(n==2)){ //propagate the new distance vector NOT on the link which we recieved it
-		for(int i=0;i<(int)lVector.size();i++){
+		for(int i=1;i<(int)lVector.size();i++){
 			link* myLink_ptr = &linkVector[lVector[i].link_id];
 			if ((myLink_ptr->id != link_ptr->id)&&(lVector[i].type == 1)){
 				cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating new dVec"<<endl;
@@ -75,7 +75,7 @@ void router::inform(int n,int ip,link* link_ptr){
 			}
 		}
 		if(n==2){	//propagate OUR distance vector
-			for(int i=0;i<(int)lVector.size();i++){
+			for(int i=1;i<(int)lVector.size();i++){
 				cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating modified dVec"<<endl;
 				link* myLink_ptr = &linkVector[lVector[i].link_id];
 				packet pSend(0, 0, this, this);
@@ -130,7 +130,7 @@ void router::crResp(link* link_ptr,packet* p){
 		lVectorUpdate(link_ptr,p);
 		printLinks();
 		cin.ignore();
-		for(int i=0;i<(int)lVector.size();i++){
+		for(int i=1;i<(int)lVector.size();i++){
 			if(lVector[i].type != 2){
 				link* lptr = &linkVector[lVector[i].link_id];
 				if(lptr != link_ptr){
@@ -171,7 +171,7 @@ void router::receivePacket(link* link_ptr) {
 					cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" empty RIPbuf:"<<endl;
 					//inform(1,this->ip,link_ptr);
 					//we've created an empty routing table. we have to send out our own distance vector EVERYWHERE.
-					for(int i=0;i<(int)lVector.size();i++){
+					for(int i=1;i<(int)lVector.size();i++){
 						link* lptr = &linkVector[lVector[i].link_id];
 						if (lVector[i].type == 1){
 							cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating new dVec on link "<< lptr->id <<endl;
@@ -201,7 +201,7 @@ void router::receivePacket(link* link_ptr) {
 					cin.ignore();
 					//send out the new dv info, not to sender.
 					if((k==1)||(k==2)){
-						for(int i=0;i<(int)lVector.size();i++){
+						for(int i=1;i<(int)lVector.size();i++){
 							link* lptr = &linkVector[lVector[i].link_id];
 							if ((lVector[i].type == 1)&&(lptr->id != link_ptr->id)){
 								cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating new dVec on link "<< lptr->id <<endl;
@@ -215,7 +215,7 @@ void router::receivePacket(link* link_ptr) {
 					}
 					//send out OUR changed dv (by bellman ford).
 					if(k==2){
-						for(int i=0;i<(int)lVector.size();i++){
+						for(int i=1;i<(int)lVector.size();i++){
 							link* lptr = &linkVector[lVector[i].link_id];
 							if (lVector[i].type == 1){
 								cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating new dVec on link "<< lptr->id <<endl;
@@ -267,7 +267,7 @@ void router::receivePacket(link* link_ptr) {
 			int n = rt.update(&(p->dv));
 			if((n==1)||(n==2)){
 				cout<<"forwarding dv change"<<endl;
-				for(int i=0;i<(int)lVector.size();i++){
+				for(int i=1;i<(int)lVector.size();i++){
 					link* lptr = &linkVector[lVector[i].link_id];
 					if ((lVector[i].type == 1)&&(lptr->id != link_ptr->id)){
 						cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating new dVec on link "<< lptr->id <<endl;
@@ -282,7 +282,7 @@ void router::receivePacket(link* link_ptr) {
 			//send out OUR changed dv (by bellman ford).
 			if(n==2){
 				cout<<"broadcasting MY change"<<endl;
-				for(int i=0;i<(int)lVector.size();i++){
+				for(int i=1;i<(int)lVector.size();i++){
 					link* lptr = &linkVector[lVector[i].link_id];
 					if (lVector[i].type == 1){
 						cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating new dVec on link "<< lptr->id <<endl;
@@ -331,7 +331,7 @@ void router::receivePacket(link* link_ptr) {
 			//inform(rt.update(&(p->dv)),p->src->ip,link_ptr);
 			int n = rt.update(&(p->dv));
 			if((n==1)||(n==2)){
-				for(int i=0;i<(int)lVector.size();i++){
+				for(int i=1;i<(int)lVector.size();i++){
 					link* lptr = &linkVector[lVector[i].link_id];
 					if ((lVector[i].type == 1)&&(lptr->id != link_ptr->id)){
 						cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating new dVec on link "<< lptr->id <<endl;
@@ -345,7 +345,7 @@ void router::receivePacket(link* link_ptr) {
 			}
 			//send out OUR changed dv (by bellman ford).
 			if(n==2){
-				for(int i=0;i<(int)lVector.size();i++){
+				for(int i=1;i<(int)lVector.size();i++){
 					link* lptr = &linkVector[lVector[i].link_id];
 					if (lVector[i].type == 1){
 						cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" propagating new dVec on link "<< lptr->id <<endl;
