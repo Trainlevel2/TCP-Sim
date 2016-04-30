@@ -27,7 +27,7 @@ int flow::startFlow() {
 	cout << "FLOW: "<<this->id<<" START" << endl;
 	lastSent = 1;
 	slowStartState = 1;
-	ssthresh = -1;
+	ssthresh = -2;
 	curTime = t;
 	/*
 	if(source->STATE != 2){
@@ -75,6 +75,8 @@ void flow::receiveAck(int pnum) {
 		return;
 	}
 	else {
+		if (ssthresh == -2)
+			ssthresh = -1;
 		cout << "FLOW: "<<this->id<< "RECEIVED ACK\tData: " << lastSent << "\tSource: " << p->src->name << "\tDest: " << p->dest->name <<"\tSrc: " << p->src->name<< endl;
 		RTT = (alpha * RTT) + (1 - alpha)*(t - curTime) / lastSent + RTT_EXTRA;
 		stringstream ss;
@@ -91,6 +93,7 @@ void flow::receiveAck(int pnum) {
 		guapLog += "," + ss.str() + "\n";
 		cout << "RTT: " << RTT << ", LAST_TIME: " << (t - curTime) / lastSent << endl;
 		data -= lastSent;
+		//cout << "========================SSTHRESH" << ssthresh << endl;
 		if(lastSent>=ssthresh&&ssthresh!=-1)
 			slowStartState=0;
 		if(slowStartState==1)
@@ -110,14 +113,6 @@ void flow::timeoutAck(int pnum) {
 		stringstream ss;
 		ss << this->id;
 		packetLossLog += "FLOW_" + ss.str();
-		/*
-		ss.str("");
-		ss << t;
-		packetLossLog += "," + ss.str();
-		ss.str("");
-		ss << curTime;
-		packetLossLog += "," + ss.str();
-		*/
 		ss.str("");
 		ss << pnum;
 		packetLossLog += "," + ss.str();
@@ -128,6 +123,7 @@ void flow::timeoutAck(int pnum) {
 	RTT *= 2;
 	//cin.ignore();
 	//change cwnd to 1
+	//cout << "===========TIMEOUT=============SSTHRESH" << ssthresh << endl;
 	if(ssthresh == -1)
 		ssthresh = lastSent;
 	if(lastSent != 1)

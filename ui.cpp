@@ -296,7 +296,7 @@ void popEvent(){
 	}
 	
 	
-	if(objectType == "FLOW") > 0){
+	if(objectType == "FLOW"){
 		//PACKETLOSSLOG
 		//example event -> FLOW_0_TIMEOUT_5
 		if(event.find("TIMEOUT") > 0){
