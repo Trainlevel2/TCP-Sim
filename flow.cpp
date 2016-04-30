@@ -25,9 +25,9 @@ flow::flow(host* source, host* dest, int data, int id) {
 //return 1 if flow uninitialized.
 int flow::startFlow() {
 	cout << "FLOW: "<<this->id<<" START" << endl;
-	lastSent = 10;
+	lastSent = 1;
 	slowStartState = 1;
-	ssthresh = 160;
+	ssthresh = -1;
 	curTime = t;
 	/*
 	if(source->STATE != 2){
@@ -91,7 +91,7 @@ void flow::receiveAck(int pnum) {
 		guapLog += "," + ss.str() + "\n";
 		cout << "RTT: " << RTT << ", LAST_TIME: " << (t - curTime) / lastSent << endl;
 		data -= lastSent;
-		if(lastSent>=ssthresh)
+		if(lastSent>=ssthresh&&ssthresh!=-1)
 			slowStartState=0;
 		if(slowStartState==1)
 			lastSent = lastSent * 2;
@@ -128,8 +128,11 @@ void flow::timeoutAck(int pnum) {
 	RTT *= 2;
 	//cin.ignore();
 	//change cwnd to 1
+	if(ssthresh = -1)
+		ssthresh = lastSent;
+	if(lastSent != 1)
+		ssthresh/=2;
 	lastSent = 1;
 	slowStartState = 1;
-	ssthresh/=2;
 	searchMax(lastSent);
 }
