@@ -12,6 +12,8 @@ using namespace std;
 #include "node.h"
 extern void pushEvent(string e, int elapseTime);
 extern vector<packet> packetVector;
+extern int t;
+extern string linkRateLog;
 
 // The packet constructor initializes the packet with set information of data and destination. 
 link::link(int maxT, int id, node* source, node* destination){
@@ -24,6 +26,7 @@ link::link(int maxT, int id, node* source, node* destination){
 	//printf("The id of this link is [%s], which is %d characters long",buffer,n);
 	this->id = id;
 	//buffsiz = buff;
+	curTime = t;
 }
 
 int link::getBufferFill() {
@@ -66,6 +69,7 @@ void link::propagate(){
 			src = qn.front();
 			dest = s;
 		}
+		curTime = t;
 		pushEvent("LINK_" + ss.str() + "_TRANSMIT_PACKET", ((100 * packetVector[qp.front()].data) / maxThroughput) + (delay * 100));
 	}
 }
@@ -82,11 +86,24 @@ void link::forcepropagate() {
 		src = qn.front();
 		dest = s;
 	}
+	curTime = t;
 	pushEvent("LINK_" + ss.str() + "_TRANSMIT_PACKET", ((100 * packetVector[qp.front()].data) / maxThroughput) + (delay*100));
 }
 
 void link::tpropagate() {
 	//cout << "T-Propagating packet\tLink: " << this->id << "\tPacket: " << packetVector[pnum].num << endl;
+	stringstream ss;
+	ss << this->id;
+	linkRateLog += "LINK_" + ss.str();
+	ss.str("");
+	ss << t;
+	linkRateLog += "," + ss.str();
+	ss.str("");
+	ss << curTime;
+	linkRateLog += "," + ss.str();
+	ss.str("");
+	ss << packetVector[qp.front()].data;
+	linkRateLog += "," + ss.str() + "\n";
 	dest->receivePacket(this);
 	qn.pop();
 	qp.pop();

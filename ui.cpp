@@ -413,8 +413,8 @@ void outputGuap() {
 	guapFile2.close();
 
 	ofstream guapFile3;
-	guapFile3.open("flowRateGuap.txt");
-	guapFile3 << flowRateLog;
+	guapFile3.open("linkRateGuap.txt");
+	guapFile3 << linkRateLog;
 	guapFile3.close();
 
 	ofstream guapFile4;

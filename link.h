@@ -38,7 +38,7 @@ class link {
 		int bufferSize;
 		int delay;
 		int cost; //will start out as 1, fixed
-
+		int curTime = 0;
 
 		//propagation of current packet
 		//this function should modify the current packet value
