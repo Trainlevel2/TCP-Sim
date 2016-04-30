@@ -128,7 +128,7 @@ void flow::timeoutAck(int pnum) {
 	RTT *= 2;
 	//cin.ignore();
 	//change cwnd to 1
-	if(ssthresh = -1)
+	if(ssthresh == -1)
 		ssthresh = lastSent;
 	if(lastSent != 1)
 		ssthresh/=2;
