@@ -1,0 +1,14 @@
+packetLossLog 
+flow index, time(s), packets lostFLOW_0,1,10
+FLOW_0,8,64
+FLOW_0,9,1
+FLOW_0,10,1
+FLOW_0,11,1
+FLOW_0,12,1
+FLOW_0,34,6
+FLOW_0,35,1
+FLOW_0,36,1
+FLOW_0,37,1
+FLOW_0,38,1
+FLOW_0,42,0
+FLOW_0,43,1
