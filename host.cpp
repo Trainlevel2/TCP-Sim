@@ -39,11 +39,16 @@ host::host(string name, int ip)
 void host::pushPacket(int pnum,link* link_ptr) {
 	packet* p = &packetVector[pnum];
 	if(p->f != nullptr){
-		if(this->STATE == 0){
-			this->init();
-		}else if(this->STATE ==2){
-			link_ptr->prepPropagate(this, pnum);
+		if (!(link_ptr->dest->ip < 1000 && link_ptr->src->ip < 1000)) {
+			if (this->STATE == 0) {
+				this->init();
+			}
+			else if (this->STATE == 2) {
+				link_ptr->prepPropagate(this, pnum);
+			}
 		}
+		else
+			link_ptr->prepPropagate(this, pnum);
 	}else{
 		link_ptr->prepPropagate(this, pnum);
 	}
@@ -51,17 +56,17 @@ void host::pushPacket(int pnum,link* link_ptr) {
 }
 
 void host::init(){
-	if(STATE==0){
-		cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" SENT CR0 "<<endl;
+	if (STATE == 0) {
+		cout << this->name << " STATE: " << this->STATE << " :" << " SENT CR0 " << endl;
 		link* link_ptr = &linkVector[this->link_id];
 		packet pSend(0, 0, this, this);
 		pSend.isCR = true;
 		pSend.t = 0;
 		packetVector.push_back(pSend);
-		pushPacket((int)packetVector.size() - 1,link_ptr);	
+		pushPacket((int)packetVector.size() - 1, link_ptr);
 	}
-	else{
-		cout<< this->name <<" not in zero-state, can't initize"<<endl;
+	else {
+		cout << this->name << " not in zero-state, can't initize" << endl;
 	}
 }
 
@@ -99,47 +104,70 @@ void host::receivePacket(link* link_ptr){
 	int tnum = link_ptr->pnum;
 	link_ptr->pnum = -1;
 	int snum=-1;
+	if (link_ptr->dest->ip < 1000 && link_ptr->src->ip < 1000) {
+		if (!p->isAck) {
+			cout << this->name << " RECEIVED DATA, SENDING ACK" << endl;
+			packet pSend(0, p->num, this, p->src);
+			pSend.f = p->f;
+			pSend.isAck = true;
+			packetVector.push_back(pSend);
+			snum = (int)packetVector.size() - 1;
+			pushPacket(snum, link_ptr);
+		}
+		else {
+			cout << this->name << " RECEIVED ACK" << endl;
+			int pnum = p->num;
+			p->f->receiveAck(tnum);
+			//Delete associated timeout
+			popTimeout(pnum); //the 0 is a stand-in for the timeout index, since there will only be one timeout at a time for now
+		}
+	}
+	else {
 
-	if (STATE==0){ //router Unknown
-		if(p->isCR){
-			if(p->t==0){
-				cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" RECEIVED CR0 "<<endl;
-				this->defaultGateway = p->src->ip;
-				packet pSend(0, p->num, this, p->src);
-				pSend.isCR = true;
-				pSend.t = 1;
-				packetVector.push_back(pSend);
-				snum = (int)packetVector.size() - 1;
-				pushPacket(snum,link_ptr);
-				STATE=1;
-			}else if(p->t==1){
-				STATE=1;
-				cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" RECEIVED CR1, WAITING ON CTS "<<endl;
-				this->defaultGateway = p->src->ip;
+		if (STATE == 0) { //router Unknown
+			if (p->isCR) {
+				if (p->t == 0) {
+					cout << this->name << " STATE: " << this->STATE << " :" << " RECEIVED CR0 " << endl;
+					this->defaultGateway = p->src->ip;
+					packet pSend(0, p->num, this, p->src);
+					pSend.isCR = true;
+					pSend.t = 1;
+					packetVector.push_back(pSend);
+					snum = (int)packetVector.size() - 1;
+					pushPacket(snum, link_ptr);
+					STATE = 1;
+				}
+				else if (p->t == 1) {
+					STATE = 1;
+					cout << this->name << " STATE: " << this->STATE << " :" << " RECEIVED CR1, WAITING ON CTS " << endl;
+					this->defaultGateway = p->src->ip;
+				}
 			}
 		}
-	}else if(STATE==1){ //router known
-		if(p->isCTS){
-			cout<<this->name<<" STATE: "<<this->STATE<<" :"<<" RECEIVED CTS"<<endl;
-			STATE=2;
-		}
-	}else if(STATE==2){ //clear to send
-		if(p->f != nullptr){
-			if (!p->isAck) {
-				cout <<this->name<< " RECEIVED DATA, SENDING ACK" << endl;
-				packet pSend(0, p->num, this, p->src);
-				pSend.f = p->f;
-				pSend.isAck = true;
-				packetVector.push_back(pSend);
-				snum = (int)packetVector.size() - 1;
-				pushPacket(snum,link_ptr);
+		else if (STATE == 1) { //router known
+			if (p->isCTS) {
+				cout << this->name << " STATE: " << this->STATE << " :" << " RECEIVED CTS" << endl;
+				STATE = 2;
 			}
-			else {
-				cout <<this->name<< " RECEIVED ACK" << endl;
-				int pnum = p->num;
-				p->f->receiveAck(tnum);
-				//Delete associated timeout
-				popTimeout(pnum); //the 0 is a stand-in for the timeout index, since there will only be one timeout at a time for now
+		}
+		else if (STATE == 2) { //clear to send
+			if (p->f != nullptr) {
+				if (!p->isAck) {
+					cout << this->name << " RECEIVED DATA, SENDING ACK" << endl;
+					packet pSend(0, p->num, this, p->src);
+					pSend.f = p->f;
+					pSend.isAck = true;
+					packetVector.push_back(pSend);
+					snum = (int)packetVector.size() - 1;
+					pushPacket(snum, link_ptr);
+				}
+				else {
+					cout << this->name << " RECEIVED ACK" << endl;
+					int pnum = p->num;
+					p->f->receiveAck(tnum);
+					//Delete associated timeout
+					popTimeout(pnum); //the 0 is a stand-in for the timeout index, since there will only be one timeout at a time for now
+				}
 			}
 		}
 	}

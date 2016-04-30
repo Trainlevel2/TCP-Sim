@@ -93,7 +93,7 @@ void flow::receiveAck(int pnum) {
 		guapLog += "," + ss.str() + "\n";
 		cout << "RTT: " << RTT << ", LAST_TIME: " << (t - curTime) / lastSent << endl;
 		data -= lastSent;
-		//cout << "========================SSTHRESH" << ssthresh << endl;
+		cout << "========================SSTHRESH" << ssthresh << endl;
 		if(lastSent>=ssthresh&&ssthresh!=-1)
 			slowStartState=0;
 		if(slowStartState==1)
@@ -120,14 +120,14 @@ void flow::timeoutAck(int pnum) {
 		ss << lastSent;
 		packetLossLog += "," + ss.str() + "\n";
 	}
-	RTT *= 2;
+	RTT *= 16;
 	//cin.ignore();
 	//change cwnd to 1
-	//cout << "===========TIMEOUT=============SSTHRESH" << ssthresh << endl;
+	cout << "===========TIMEOUT=============SSTHRESH" << ssthresh << endl;
 	if(ssthresh == -1)
 		ssthresh = lastSent;
 	if(lastSent != 1)
-		ssthresh/=2;
+		ssthresh = lastSent/2;
 	lastSent = 1;
 	slowStartState = 1;
 	searchMax(lastSent);

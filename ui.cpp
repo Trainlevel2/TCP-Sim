@@ -130,13 +130,13 @@ void createLink(string linkName, string nodeA, string nodeB, int a, int b, int c
 void createFlow(string flowName, string hostA, string hostB, int a, int b){
 	//implement later
 	cout << "FLOW: " << flowName << " FROM " << hostA << " TO " << hostB << ", PARAMETER " << a << " " << b << endl;
-	flow l(findHost(hostA), findHost(hostB), a, (int)flowVector.size());
+	flow l(findHost(hostA), findHost(hostB), a*1000, (int)flowVector.size());
 	flowVector.push_back(l);
 	flowStopTimeVector.push_back(0);
 	stringstream ss;
 	ss << (int)flowVector.size() - 1;
 	string event = "FLOW_" + ss.str() + "_START";
-	pushEvent(event, b);
+	pushEvent(event, b*1000000);
 }
 
 // Run through and record data on the Network
@@ -161,7 +161,7 @@ void pushEvent(string e, int elapseTime){
 	ss << currentTime;
 	event += string(max_int_len - ss.str().size(), '0') + ss.str() + "," + e; //csv for simplicity
 	q.push(event);
-	cout << "PUSH_EVENT:\t\t" << event << endl;
+	//cout << "PUSH_EVENT:\t\t" << event << endl;
 	
 	//if flow, update when the flow is going to be done sending
 	int whereTheFlowAt = e.find("FLOW_");
@@ -184,7 +184,7 @@ void popEvent(){
 		return;
 	}
 	string event = q.top();
-	cout << "POP\t\t" << event << endl;
+	//cout << "POP\t\t" << event << endl;
 	q.pop();
 	eventlog += event + "\n";
 	//Extract the time at which the message is executed. This becomes the current time in the time manager.
@@ -449,7 +449,7 @@ int main(int argc, char *argv[])
 	if(WINDOWS){
 		file = ".\\TestCases\\testcase0.txt";	
 	}else{
-		file = "./TestCases/testcase3.txt";	
+		file = "./TestCases/testcase0.txt";	
 	}
 	read.open(file.c_str());
 	while(!read.eof())
