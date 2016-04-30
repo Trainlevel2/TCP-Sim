@@ -20,6 +20,8 @@ extern vector<packet> packetVector;
 extern vector<router> routerVector;
 //extern vector<node> nodeVector;
 extern void popTimeout(int timeoutIndex);
+extern void pushEvent(string e, int elapseTime);
+extern vector<flow> flowVector;
 
 router::router(string name, int ip)
 :node::node(name,ip){
@@ -138,6 +140,22 @@ void router::b_dVec(){
 		}
 	}
 
+}
+
+void router::spamUpdate() {
+	cout << "==============================================================SPAMMING UPDATE ROUTER " << rvID << endl;
+	bool done = true;
+	for (int i = 0; i < flowVector.size(); i++) {
+		if (!flowVector[i].done)
+			done = false;
+	}
+	if (!done) {
+		stringstream ss;
+		ss << rvID;
+		string e = "ROUTER_" + ss.str() + "_UPDATE";
+		pushEvent(e, UPDATE_TIMER);
+		rtInit();
+	}
 }
 
 void router::p_dVec(packet* p){
@@ -321,6 +339,7 @@ void router::receivePacket(link* link_ptr) {
 			b_dVec();
 			cout<<this->name<<"STATE: "<<STATE<<endl;
 			b_CTS_routers();
+			spamUpdate();
 		}
 	}
 	else if(STATE==2){ //routing table complete, waiting on CTS from other routers!

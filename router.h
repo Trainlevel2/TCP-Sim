@@ -34,7 +34,7 @@ class router: public node {
 
 	public:
 		
-		
+		int rvID;
 
 		//int discovered;
 		rtable rt;
@@ -63,7 +63,8 @@ class router: public node {
 		//3 = routing table done. listening for dvec updates.
 		int STATE; 
 void b_CTS_hosts();
-
+void spamUpdate();
+const int UPDATE_TIMER = 100000;
 void b_CTS_routers();
 void recRIP(packet* p);
 void recCTS(packet* p);

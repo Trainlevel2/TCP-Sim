@@ -51,6 +51,7 @@ class link {
 		void forcepropagate();
 		void tpropagate();
 		void prepPropagate(node* n, int pnum);
+		int getBufferFill();
 		int pnum; //CURRENT packet being transmitted on the link
 		node* src = nullptr;
 		node* dest = nullptr;

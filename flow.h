@@ -25,6 +25,7 @@ class flow {
 		host* source;
 		host* dest;
 		int data;
+		bool done = false;
 		int state; //0=start, 1=searchMax
 		int lastSent;
 		int slowStartState;

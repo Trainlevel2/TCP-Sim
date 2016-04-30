@@ -37,6 +37,7 @@ string packetLossLog = "packetLossLog \nflow index, time(s), packets lost";
 string flowRateLog = "flowRateLog \nflow index, time(s), flow rate(dataSize/ms)";
 string linkRateLog = "linkRateLog \nlink index, time(s), link rate (dataSize/ms)";
 string packetDelayLog = "packetDelayLog \nflow index, time(s), packetDelay(ms)";
+string guapLog = "";
 
 //extra stuff for logging
 //Rate for a given flow/link, from a time t to time t+dt, is the summation of the rates of all packets in the flow/link at that time interval.
@@ -98,6 +99,7 @@ void createRouter(string routerName){
 	//implement later
 	cout << "ROUTER: " << routerName << endl;
 	router r(routerName, (int)routerVector.size());
+	r.rvID = routerVector.size();
 	routerVector.push_back(r);
 }
 
@@ -184,7 +186,7 @@ void popEvent(){
 	string event = q.top();
 	cout << "POP\t\t" << event << endl;
 	q.pop();
-	
+	eventlog += event + "\n";
 	//Extract the time at which the message is executed. This becomes the current time in the time manager.
 	int find = event.find(",");
 	string stimeNow = event.substr(0,find); //time after event is done
@@ -253,6 +255,11 @@ void popEvent(){
 		else if (functionn == "TIMEOUT") {
 			int pptr = stoi(arg);
 			flowVector[objectIndex].timeoutAck(pptr);
+		}
+	}
+	else if (objectType == "ROUTER") {
+		if (function == "UPDATE") {
+			routerVector[objectIndex].spamUpdate();
 		}
 	}
 	
@@ -424,6 +431,11 @@ void outputGuap() {
 	guapFile6.open("eventGuap.txt");
 	guapFile6 << eventlog;
 	guapFile6.close();
+
+	ofstream guapFile7;
+	guapFile7.open("guapGuap.txt");
+	guapFile7 << guapLog;
+	guapFile7.close();
 }
 
 int main(int argc, char *argv[])
@@ -437,7 +449,7 @@ int main(int argc, char *argv[])
 	if(WINDOWS){
 		file = ".\\TestCases\\testcase0.txt";	
 	}else{
-		file = "./TestCases/testcase1.txt";	
+		file = "./TestCases/testcase3.txt";	
 	}
 	read.open(file.c_str());
 	while(!read.eof())

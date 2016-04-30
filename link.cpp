@@ -26,7 +26,7 @@ link::link(int maxT, int id, node* source, node* destination){
 	//buffsiz = buff;
 }
 
-void link::prepPropagate(node* n, int packet_in) {
+int link::getBufferFill() {
 	queue<int> temp = qp;
 	int sum = 0;
 	while (temp.size() != 0) {
@@ -34,7 +34,13 @@ void link::prepPropagate(node* n, int packet_in) {
 		sum += packetSize;
 		temp.pop();
 	}
+	return sum;
+}
+
+void link::prepPropagate(node* n, int packet_in) {
+	int sum = getBufferFill();
 	int packetSize = packetVector[packet_in].data;
+	int bufLeft = bufferSize - sum;
 	sum += packetSize;
 	if (sum < bufferSize) {
 		qn.push(n);
@@ -44,6 +50,7 @@ void link::prepPropagate(node* n, int packet_in) {
 	else {
 		cout << "DROPPED PACKET KEK" << endl;
 	}
+	cost = maxThroughput*bufLeft / delay;
 }
 
 void link::propagate(){
@@ -59,7 +66,6 @@ void link::propagate(){
 			src = qn.front();
 			dest = s;
 		}
-
 		pushEvent("LINK_" + ss.str() + "_TRANSMIT_PACKET", ((100 * packetVector[qp.front()].data) / maxThroughput) + (delay * 100));
 	}
 }

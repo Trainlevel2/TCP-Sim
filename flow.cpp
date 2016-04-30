@@ -9,6 +9,8 @@ extern vector<packet> packetVector;
 extern vector<link> linkVector;
 extern void pushEvent(string e, int elapseTime);
 extern int t;
+extern string guapLog;
+extern string packetLossLog;
 
 // The packet constructor initializes the packet with set information of data and destination. 
 flow::flow(host* source, host* dest, int data, int id) {
@@ -65,14 +67,28 @@ void flow::searchMax(int size) {
 
 void flow::receiveAck(int pnum) {
 	packet* p = &packetVector[pnum];
-	if(data == 0)
+	if (data == 0) {
 		cout << "FLOW END" << endl;
+		done = true;
+	}
 	if (data == 0 || p->num < packetnum) {
 		return;
 	}
 	else {
 		cout << "FLOW: "<<this->id<< "RECEIVED ACK\tData: " << lastSent << "\tSource: " << p->src->name << "\tDest: " << p->dest->name <<"\tSrc: " << p->src->name<< endl;
 		RTT = (alpha * RTT) + (1 - alpha)*(t - curTime) / lastSent + RTT_EXTRA;
+		stringstream ss;
+		ss << this->id;
+		guapLog += "FLOW_" + ss.str();
+		ss.str("");
+		ss << t;
+		guapLog += "," + ss.str();
+		ss.str("");
+		ss << curTime;
+		guapLog += "," + ss.str();
+		ss.str("");
+		ss << lastSent;
+		guapLog += "," + ss.str() + "\n";
 		cout << "RTT: " << RTT << ", LAST_TIME: " << (t - curTime) / lastSent << endl;
 		data -= lastSent;
 		if(lastSent>=ssthresh)
@@ -90,6 +106,25 @@ void flow::timeoutAck(int pnum) {
 	//packet* p = &packetVector[pnum];
 	if(this->source->STATE==2)
 		cout << "FLOW: "<<this->id<< " TIMED OUT" << endl;
+	if (pnum > 0) {
+		stringstream ss;
+		ss << this->id;
+		packetLossLog += "FLOW_" + ss.str();
+		/*
+		ss.str("");
+		ss << t;
+		packetLossLog += "," + ss.str();
+		ss.str("");
+		ss << curTime;
+		packetLossLog += "," + ss.str();
+		*/
+		ss.str("");
+		ss << pnum;
+		packetLossLog += "," + ss.str();
+		ss.str("");
+		ss << lastSent;
+		packetLossLog += "," + ss.str() + "\n";
+	}
 	RTT *= 2;
 	//cin.ignore();
 	//change cwnd to 1
